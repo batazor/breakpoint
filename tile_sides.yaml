@@ -1,0 +1,111 @@
+tiles:
+  # Water - Sand transitions
+  sand_waterA:
+    side: # rotation 0: land on side 0
+      - sand
+      - water
+      - water
+      - water
+      - water
+      - water
+
+  sand_waterB:
+    side: # rotation 0: land on sides 0-1
+      - sand
+      - sand
+      - water
+      - water
+      - water
+      - water
+
+  sand_waterC:
+    side: # rotation 0: land on sides 0-2
+      - sand
+      - sand
+      - sand
+      - water
+      - water
+      - water
+
+  sand_waterD:
+    side: # rotation 0: water gap starts at side 0 (two adjacent water)
+      - water
+      - sand
+      - sand
+      - sand
+      - sand
+      - water
+
+  # Water - Plains transitions (grass)
+  plains_waterA:
+    side:
+      - plains
+      - water
+      - water
+      - water
+      - water
+      - water
+
+  plains_waterB:
+    side:
+      - plains
+      - plains
+      - water
+      - water
+      - water
+      - water
+
+  plains_waterC:
+    side:
+      - plains
+      - plains
+      - plains
+      - water
+      - water
+      - water
+
+  plains_waterD:
+    side:
+      - plains
+      - plains
+      - water
+      - water
+      - plains
+      - plains
+
+  # Water - Mountain transitions (rock)
+  mountain_waterA:
+    side:
+      - mountain
+      - water
+      - water
+      - water
+      - water
+      - water
+
+  mountain_waterB:
+    side:
+      - mountain
+      - mountain
+      - water
+      - water
+      - water
+      - water
+
+  mountain_waterC:
+    side:
+      - mountain
+      - mountain
+      - mountain
+      - water
+      - water
+      - water
+
+  mountain_waterD:
+    side:
+      - mountain
+      - mountain
+      - mountain
+      - water
+      - water
+      - mountain

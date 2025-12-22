@@ -7,8 +7,8 @@
 
 [node name="HexGrid" type="Node3D" parent="."]
 script = ExtResource("1")
-map_width = 2
-map_height = 2
+map_width = 6
+map_height = 6
 hex_radius = 1.0
 hex_height = 0.25
 use_multimesh = true

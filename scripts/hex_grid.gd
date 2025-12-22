@@ -13,8 +13,8 @@ const HEX_DIRS: Array[Vector2i] = [
 ]
 const ROT_STEP := deg_to_rad(60.0)
 
-@export var map_width: int = 2
-@export var map_height: int = 2
+@export var map_width: int = 3
+@export var map_height: int = 3
 @export var hex_radius: float = 1.0
 @export var hex_height: float = 0.25
 @export var y_offset: float = 0.0
@@ -94,6 +94,13 @@ const ROT_STEP := deg_to_rad(60.0)
 @export var use_rim_highlight: bool = true
 @export var rim_color: Color = Color(1.0, 1.0, 0.2)
 @export var rim_power: float = 2.0
+@export_range(0.0, 1.0, 0.01) var highlight_fill_strength: float = 0.25
+@export_range(0.0, 1.0, 0.01) var highlight_rim_min: float = 0.2
+@export var use_overlay_highlight: bool = true
+@export var overlay_height: float = 0.04
+@export var overlay_scale: float = 1.03
+@export var overlay_offset: float = 0.02
+@export_file("*.yaml", "*.yml") var tile_sides_yaml_path: String = "res://tile_sides.yaml"
 
 var bounds_rect: Rect2
 var multimesh_instance: MultiMeshInstance3D
@@ -107,15 +114,26 @@ var water_level_runtime: float
 var sand_level_runtime: float
 var mountain_level_runtime: float
 var mesh_radius_cache: Dictionary = {}
+var mesh_top_cache: Dictionary = {}
+var mesh_height_cache: Dictionary = {}
+var mesh_center_cache: Dictionary = {}
 var tile_instance_map: Array = []
 var multimesh_bucket_instances: Dictionary = {}
 var mesh_instances: Array = []
 var hover_axial: Vector2i = Vector2i(-1, -1)
 var selection_axial: Vector2i = Vector2i(-1, -1)
 var highlight_material: ShaderMaterial
+var selection_indicator: MeshInstance3D
+var hover_indicator: MeshInstance3D
+var overlay_mesh: Mesh
+var _left_was_down: bool = false
+var _last_mouse_pos: Vector2 = Vector2(-1, -1)
+var tile_side_map: Dictionary = {}
 
 
 func _ready() -> void:
+	set_process(true)
+	_load_tile_side_map()
 	bounds_rect = HexUtil.bounds_for_rect(map_width, map_height, hex_radius)
 	collision_root = Node3D.new()
 	collision_root.name = "CollisionRoot"
@@ -123,11 +141,13 @@ func _ready() -> void:
 	_init_world_generator()
 	_precompute_heights()
 	_ensure_highlight_material()
+	_ensure_overlay_indicators()
 	regenerate_grid()
 
 
 func regenerate_grid() -> void:
 	_clear_children()
+	_load_tile_side_map()
 	_init_world_generator()
 	_precompute_heights()
 	bounds_rect = HexUtil.bounds_for_rect(map_width, map_height, hex_radius)
@@ -139,6 +159,20 @@ func regenerate_grid() -> void:
 		_build_mesh_instances()
 
 	_build_colliders()
+
+
+func _process(_delta: float) -> void:
+	var viewport := get_viewport()
+	if viewport == null:
+		return
+	var mouse_pos := viewport.get_mouse_position()
+	if mouse_pos != _last_mouse_pos:
+		_update_hover(mouse_pos)
+		_last_mouse_pos = mouse_pos
+	var left_down := Input.is_mouse_button_pressed(MOUSE_BUTTON_LEFT)
+	if left_down and not _left_was_down:
+		_pick_tile(mouse_pos)
+	_left_was_down = left_down
 
 
 func _clear_children() -> void:
@@ -155,6 +189,10 @@ func _clear_children() -> void:
 	mesh_instances.clear()
 	hover_axial = Vector2i(-1, -1)
 	selection_axial = Vector2i(-1, -1)
+	if selection_indicator != null:
+		selection_indicator.visible = false
+	if hover_indicator != null:
+		hover_indicator.visible = false
 
 
 func _build_hex_mesh() -> Mesh:
@@ -171,6 +209,7 @@ func _build_multimesh() -> void:
 	if use_tile_meshes:
 		_build_multimesh_per_biome()
 		return
+	_ensure_highlight_material()
 
 	var hex_mesh := _build_hex_mesh()
 
@@ -199,6 +238,7 @@ func _build_multimesh() -> void:
 	multimesh_instance.name = "HexMultiMesh"
 	multimesh_instance.multimesh = multimesh
 	multimesh_instance.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	multimesh_instance.material_overlay = highlight_material
 	add_child(multimesh_instance)
 
 
@@ -282,6 +322,7 @@ func _build_multimesh_per_biome() -> void:
 						key = "mountain_water" + variant
 						rotation_steps = int(transition["rotation"])
 
+			rotation_steps = _rotation_from_mesh_side_map(key, q, r, rotation_steps)
 			var t := _tile_transform(q, r, rotation_steps)
 			_append_bucket(buckets, key, mesh, t, tint, scale, tile_idx)
 
@@ -322,6 +363,8 @@ func _water_transition_info(q: int, r: int) -> Dictionary:
 	var biome := _tile_biome(q, r)
 	if biome == WorldGeneratorScript.Biome.WATER:
 		return {}
+	if _is_edge_tile(q, r):
+		return {}
 	if not _has_water_neighbor(q, r):
 		return {}
 	if not _has_same_biome_neighbor(q, r, biome):
@@ -343,6 +386,10 @@ func _land_neighbor_dirs(q: int, r: int) -> Array[int]:
 		if is_land:
 			land_dirs.append(i)
 	return land_dirs
+
+
+func _is_edge_tile(q: int, r: int) -> bool:
+	return q == 0 or r == 0 or q == map_width - 1 or r == map_height - 1
 
 
 func _has_water_neighbor(q: int, r: int) -> bool:
@@ -428,11 +475,131 @@ func _tile_mesh_key_and_rotation(q: int, r: int) -> Dictionary:
 			rotation_steps = int(transition["rotation"])
 			key = "mountain_water" + variant
 
+	rotation_steps = _rotation_from_mesh_side_map(key, q, r, rotation_steps)
 	return {
 		"key": key,
 		"rotation_steps": rotation_steps,
 		"rotation_deg": float(rotation_steps) * rad_to_deg(ROT_STEP),
 	}
+
+
+func _rotation_from_mesh_side_map(key: String, q: int, r: int, fallback_steps: int) -> int:
+	if tile_side_map.is_empty():
+		return fallback_steps
+	if not tile_side_map.has(key):
+		return fallback_steps
+	var entry = tile_side_map[key]
+	if entry == null or not entry.has("side"):
+		return fallback_steps
+	var sides: Array = entry["side"]
+	if sides.size() != 6:
+		return fallback_steps
+	var neighbor_water := _neighbor_water_mask(q, r)
+	if neighbor_water.size() != 6:
+		return fallback_steps
+
+	var best_steps := fallback_steps
+	var best_score := -1
+	for rot in range(6):
+		var score := _score_side_match(sides, neighbor_water, rot)
+		if score > best_score or (score == best_score and rot == fallback_steps):
+			best_score = score
+			best_steps = rot
+	return best_steps
+
+
+func _score_side_match(sides: Array, neighbor_water: Array[bool], rotation_steps: int) -> int:
+	var score := 0
+	for side_idx in range(6):
+		var side_val := String(sides[side_idx]).to_lower()
+		var side_is_water := side_val == "water"
+		var world_dir := (side_idx + rotation_steps) % 6
+		var is_water_neighbor := neighbor_water[world_dir]
+		if side_is_water == is_water_neighbor:
+			score += 1
+	return score
+
+
+func _neighbor_water_mask(q: int, r: int) -> Array[bool]:
+	var mask: Array[bool] = []
+	for i in range(HEX_DIRS.size()):
+		var nq := q + HEX_DIRS[i].x
+		var nr := r + HEX_DIRS[i].y
+		var is_water := false
+		if nq >= 0 and nq < map_width and nr >= 0 and nr < map_height:
+			is_water = _tile_biome(nq, nr) == WorldGeneratorScript.Biome.WATER
+		mask.append(is_water)
+	return mask
+
+
+func _load_tile_side_map() -> void:
+	tile_side_map.clear()
+	if tile_sides_yaml_path.is_empty():
+		return
+	var file := FileAccess.open(tile_sides_yaml_path, FileAccess.READ)
+	if file == null:
+		push_warning("Failed to open tile sides yaml at %s" % tile_sides_yaml_path)
+		return
+	var text := file.get_as_text()
+	file.close()
+	tile_side_map = _parse_tile_side_yaml(text)
+
+
+func _parse_tile_side_yaml(text: String) -> Dictionary:
+	# Minimal YAML subset parser for the expected structure:
+	# tiles:
+	#   key:
+	#     side:
+	#       - water
+	#       - mountain
+	#       ...
+	var result: Dictionary = {}
+	var lines := text.split("\n")
+	var in_tiles := false
+	var current_tile := ""
+	var collecting_side := false
+	var sides: Array = []
+
+	for line in lines:
+		var trimmed := line.strip_edges()
+		if trimmed.is_empty() or trimmed.begins_with("#"):
+			continue
+
+		if not in_tiles:
+			if trimmed == "tiles:":
+				in_tiles = true
+			continue
+
+		# Tile name lines (2-space indent, not more)
+		if line.begins_with("  ") and not line.begins_with("    "):
+			_commit_tile_to_map(result, current_tile, sides)
+			current_tile = trimmed.rstrip(":")
+			sides = []
+			collecting_side = false
+			continue
+
+		# Nested lines under tile (4+ spaces)
+		if not line.begins_with("    "):
+			continue
+
+		if trimmed == "side:":
+			collecting_side = true
+			continue
+
+		if collecting_side and trimmed.begins_with("-"):
+			var val := trimmed.substr(1, trimmed.length()).strip_edges()
+			sides.append(val)
+
+	_commit_tile_to_map(result, current_tile, sides)
+	return result
+
+
+func _commit_tile_to_map(result: Dictionary, tile_key: String, sides: Array) -> void:
+	if tile_key.is_empty():
+		return
+	if sides.is_empty():
+		return
+	result[tile_key] = {"side": sides.duplicate()}
 
 
 func _build_mesh_instances() -> void:
@@ -457,6 +624,9 @@ func _build_colliders() -> void:
 
 	for r in range(map_height):
 		for q in range(map_width):
+			var info := _tile_render_info(q, r)
+			if info.is_empty():
+				continue
 			var body := StaticBody3D.new()
 			body.collision_layer = 1
 			body.collision_mask = 1
@@ -465,16 +635,28 @@ func _build_colliders() -> void:
 
 			var shape := CollisionShape3D.new()
 			shape.shape = shared_shape
+			if info.has("mesh") and info.has("transform"):
+				var mesh: Mesh = info["mesh"]
+				var t: Transform3D = info["transform"]
+				var scale := t.basis.get_scale().abs()
+				var mesh_height := _mesh_height(mesh)
+				var height_scale := 1.0
+				if not is_equal_approx(hex_height, 0.0):
+					height_scale = mesh_height / hex_height
+				shape.scale = Vector3(
+					scale.x,
+					scale.y * height_scale,
+					scale.z
+				)
+				var center_y := _mesh_center_y(mesh) * scale.y
+				shape.position = Vector3(0.0, center_y, 0.0)
 			body.add_child(shape)
 
 			collision_root.add_child(body)
 
 
 func _unhandled_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		_pick_tile(event.position)
-	elif event is InputEventMouseMotion:
-		_update_hover(event.position)
+	pass
 
 
 func _pick_tile(screen_pos: Vector2) -> void:
@@ -595,6 +777,7 @@ func _show_selection(axial: Vector2i) -> void:
 	selection_axial = axial
 	_refresh_highlight(prev)
 	_refresh_highlight(selection_axial)
+	_update_overlay_indicator(selection_indicator, selection_axial, selection_color, selection_emission_energy)
 	_log_tile_debug(axial)
 
 
@@ -605,6 +788,7 @@ func _show_hover(axial: Vector2i) -> void:
 	hover_axial = axial
 	_refresh_highlight(prev)
 	_refresh_highlight(hover_axial)
+	_update_overlay_indicator(hover_indicator, hover_axial, hover_color, hover_emission_energy)
 
 
 func _hide_hover() -> void:
@@ -613,6 +797,7 @@ func _hide_hover() -> void:
 	var prev := hover_axial
 	hover_axial = Vector2i(-1, -1)
 	_refresh_highlight(prev)
+	_update_overlay_indicator(hover_indicator, hover_axial, hover_color, hover_emission_energy)
 
 
 func _refresh_highlight(axial: Vector2i) -> void:
@@ -627,6 +812,110 @@ func _refresh_highlight(axial: Vector2i) -> void:
 	var energy := selection_emission_energy if is_selected else hover_emission_energy
 	var use_rim := use_rim_highlight
 	_apply_highlight(axial, color, energy, use_rim)
+
+
+func _ensure_overlay_indicators() -> void:
+	if not use_overlay_highlight:
+		return
+	if selection_indicator != null and hover_indicator != null:
+		return
+	overlay_mesh = CylinderMesh.new()
+	var mesh := overlay_mesh as CylinderMesh
+	mesh.top_radius = hex_radius * overlay_scale
+	mesh.bottom_radius = hex_radius * overlay_scale
+	mesh.height = overlay_height
+	mesh.radial_segments = 6
+	mesh.rings = 1
+
+	selection_indicator = MeshInstance3D.new()
+	selection_indicator.name = "SelectionOverlay"
+	selection_indicator.mesh = overlay_mesh
+	selection_indicator.material_override = _build_overlay_material(selection_color)
+	selection_indicator.visible = false
+	add_child(selection_indicator)
+
+	hover_indicator = MeshInstance3D.new()
+	hover_indicator.name = "HoverOverlay"
+	hover_indicator.mesh = overlay_mesh
+	hover_indicator.material_override = _build_overlay_material(hover_color)
+	hover_indicator.visible = false
+	add_child(hover_indicator)
+
+
+func _build_overlay_material(color: Color) -> StandardMaterial3D:
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = color
+	mat.emission_enabled = true
+	mat.emission = color
+	mat.set("emission_energy_multiplier", 1.0)
+	mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mat.cull_mode = BaseMaterial3D.CULL_DISABLED
+	return mat
+
+
+func _update_overlay_indicator(indicator: MeshInstance3D, axial: Vector2i, color: Color, energy: float) -> void:
+	if not use_overlay_highlight:
+		if indicator != null:
+			indicator.visible = false
+		return
+	_ensure_overlay_indicators()
+	if indicator == null:
+		return
+	if axial.x < 0 or axial.y < 0:
+		indicator.visible = false
+		return
+	var info := _tile_render_info(axial.x, axial.y)
+	if info.is_empty():
+		indicator.visible = false
+		return
+	var t: Transform3D = info["transform"]
+	var mesh: Mesh = info["mesh"]
+	var pos := t.origin
+	var scale := t.basis.get_scale()
+	var top_offset := _mesh_top_offset(mesh) * scale.y
+	var y := pos.y + top_offset + overlay_height * 0.5 + overlay_offset
+	indicator.transform = Transform3D(hex_basis, Vector3(pos.x, y, pos.z))
+	indicator.visible = true
+	var mat: Material = indicator.material_override
+	if mat is StandardMaterial3D:
+		var smat := mat as StandardMaterial3D
+		smat.albedo_color = color
+		_apply_emission(smat, color, energy, false)
+
+
+func _tile_render_info(q: int, r: int) -> Dictionary:
+	if use_multimesh:
+		if use_tile_meshes:
+			var idx := r * map_width + q
+			if idx < 0 or idx >= tile_instance_map.size():
+				return {}
+			var entry = tile_instance_map[idx]
+			if entry == null:
+				return {}
+			var key: String = entry["key"]
+			var inst_idx: int = int(entry["index"])
+			var inst: MultiMeshInstance3D = multimesh_bucket_instances.get(key, null)
+			if inst == null or inst.multimesh == null:
+				return {}
+			var t := inst.multimesh.get_instance_transform(inst_idx)
+			return {"transform": t, "mesh": inst.multimesh.mesh}
+		else:
+			if multimesh_instance == null or multimesh_instance.multimesh == null:
+				return {}
+			var idx := r * map_width + q
+			if idx < 0 or idx >= multimesh_instance.multimesh.instance_count:
+				return {}
+			var t := multimesh_instance.multimesh.get_instance_transform(idx)
+			return {"transform": t, "mesh": multimesh_instance.multimesh.mesh}
+	else:
+		var idx := r * map_width + q
+		if idx < 0 or idx >= mesh_instances.size():
+			return {}
+		var inst: MeshInstance3D = mesh_instances[idx]
+		if inst == null or inst.mesh == null:
+			return {}
+		return {"transform": inst.transform, "mesh": inst.mesh}
 
 
 func _apply_highlight(axial: Vector2i, color: Color, energy: float, use_rim: bool) -> void:
@@ -684,11 +973,13 @@ func _ensure_highlight_material() -> void:
 	var shader := Shader.new()
 	shader.code = """
 shader_type spatial;
-render_mode unshaded, depth_draw_never, depth_test_disabled, blend_add;
+render_mode unshaded, depth_draw_never, depth_test_disabled, blend_mix;
 
 uniform vec3 rim_color = vec3(1.0, 1.0, 0.2);
 uniform float rim_power = 2.0;
 uniform float use_rim = 1.0;
+uniform float fill_strength = 0.25;
+uniform float rim_min = 0.2;
 
 varying vec4 instance_custom;
 
@@ -708,15 +999,19 @@ void fragment() {
 	float rim = 1.0;
 	if (use_rim > 0.5) {
 		float ndv = clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0);
-		rim = pow(1.0 - ndv, rim_power);
+		rim = mix(rim_min, 1.0, pow(1.0 - ndv, rim_power));
 	}
-	EMISSION = data.rgb * strength * rim;
-	ALBEDO = vec3(0.0);
-	ALPHA = 1.0;
+	vec3 glow = data.rgb;
+	float alpha = clamp(strength * fill_strength, 0.0, 1.0);
+	alpha = max(alpha, rim_min);
+	EMISSION = glow * strength * rim;
+	ALBEDO = glow;
+	ALPHA = alpha;
 }
 """
 	highlight_material = ShaderMaterial.new()
 	highlight_material.shader = shader
+	highlight_material.render_priority = 1
 	_sync_highlight_shader_params()
 
 
@@ -726,6 +1021,8 @@ func _sync_highlight_shader_params() -> void:
 	highlight_material.set_shader_parameter("rim_color", rim_color)
 	highlight_material.set_shader_parameter("rim_power", rim_power)
 	highlight_material.set_shader_parameter("use_rim", 1.0 if use_rim_highlight else 0.0)
+	highlight_material.set_shader_parameter("fill_strength", highlight_fill_strength)
+	highlight_material.set_shader_parameter("rim_min", highlight_rim_min)
 
 
 func _ensure_mesh_highlight(mesh: Mesh) -> void:
@@ -875,6 +1172,7 @@ func _load_tile_mesh(path: String) -> Mesh:
 func _add_multimesh_bucket(bucket_name: String, mesh: Mesh, transforms: Array, tint: Color, bucket_scale: Vector3) -> MultiMeshInstance3D:
 	if transforms.is_empty():
 		return null
+	_ensure_highlight_material()
 	var use_mesh := mesh if mesh != null else _hex_mesh_singleton()
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
@@ -906,6 +1204,7 @@ func _add_multimesh_bucket(bucket_name: String, mesh: Mesh, transforms: Array, t
 	inst.name = bucket_name
 	inst.multimesh = mm
 	inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
+	inst.material_overlay = highlight_material
 	add_child(inst)
 	return inst
 
@@ -922,6 +1221,43 @@ func _mesh_scale_factor(mesh: Mesh) -> float:
 	if radius <= 0.0:
 		return 1.0
 	return hex_radius / radius
+
+
+func _mesh_top_offset(mesh: Mesh) -> float:
+	if mesh == null:
+		return hex_height * 0.5
+	if mesh_top_cache.has(mesh):
+		return float(mesh_top_cache[mesh])
+	var aabb := mesh.get_aabb()
+	var top := aabb.position.y + aabb.size.y
+	if top <= 0.0:
+		top = hex_height * 0.5
+	mesh_top_cache[mesh] = top
+	return top
+
+
+func _mesh_height(mesh: Mesh) -> float:
+	if mesh == null:
+		return hex_height
+	if mesh_height_cache.has(mesh):
+		return float(mesh_height_cache[mesh])
+	var aabb := mesh.get_aabb()
+	var h := aabb.size.y
+	if h <= 0.0:
+		h = hex_height
+	mesh_height_cache[mesh] = h
+	return h
+
+
+func _mesh_center_y(mesh: Mesh) -> float:
+	if mesh == null:
+		return 0.0
+	if mesh_center_cache.has(mesh):
+		return float(mesh_center_cache[mesh])
+	var aabb := mesh.get_aabb()
+	var center := aabb.position.y + aabb.size.y * 0.5
+	mesh_center_cache[mesh] = center
+	return center
 
 
 func _mesh_circumradius(mesh: Mesh) -> float:

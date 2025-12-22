@@ -13,6 +13,11 @@ const HEX_DIRS: Array[Vector2i] = [
 ]
 const ROT_STEP := deg_to_rad(60.0)
 const TILE_SIDES_PATH := "res://tile_sides.yaml"
+const DEFAULT_FOREST_SCENES: Array[PackedScene] = [
+	preload("res://assets/resources/forest/forest.gltf.glb"),
+	preload("res://assets/resources/forest/detail_forestA.gltf.glb"),
+	preload("res://assets/resources/forest/detail_forestB.gltf.glb"),
+]
 
 signal tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3)
 
@@ -109,6 +114,22 @@ signal tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3)
 @export var overlay_offset: float = 0.02
 @export_file("*.yaml", "*.yml") var tile_sides_yaml_path: String = "res://tile_sides.yaml"
 
+@export var forest_enabled: bool = true
+@export var forest_scenes: Array[PackedScene] = DEFAULT_FOREST_SCENES
+@export_range(0.0, 1.0, 0.01) var forest_spawn_chance: float = 0.4
+@export var forest_min_trees: int = 1
+@export var forest_max_trees: int = 4
+@export var forest_tile_radius: float = 0.5
+@export var forest_min_distance: float = 0.4
+@export var forest_scale_min: float = 0.85
+@export var forest_scale_max: float = 1.15
+@export var forest_random_yaw: bool = true
+@export var forest_y_offset: float = 0.0
+@export var forest_seed: int = 0
+@export var randomize_forest_seed: bool = false
+@export var forest_allowed_biomes: Array[String] = ["plains"]
+@export var forest_position_attempts: int = 6
+
 var bounds_rect: Rect2
 var multimesh_instance: MultiMeshInstance3D
 var collision_root: Node3D
@@ -138,6 +159,9 @@ var overlay_mesh: Mesh
 var _left_was_down: bool = false
 var _last_mouse_pos: Vector2 = Vector2(-1, -1)
 var tile_side_map: Dictionary = {}
+var forest_root: Node3D
+var forest_rng: RandomNumberGenerator = RandomNumberGenerator.new()
+var forest_positions: Array[Vector3] = []
 
 
 func _ready() -> void:
@@ -147,6 +171,7 @@ func _ready() -> void:
 	collision_root = Node3D.new()
 	collision_root.name = "CollisionRoot"
 	add_child(collision_root)
+	_ensure_forest_root()
 	_init_world_generator()
 	_precompute_heights()
 	_ensure_highlight_material()
@@ -168,6 +193,7 @@ func regenerate_grid() -> void:
 		_build_mesh_instances()
 
 	_build_colliders()
+	_scatter_forest()
 
 
 func _process(_delta: float) -> void:
@@ -202,6 +228,9 @@ func _clear_children() -> void:
 		selection_indicator.visible = false
 	if hover_indicator != null:
 		hover_indicator.visible = false
+	if is_instance_valid(forest_root):
+		for child in forest_root.get_children():
+			child.queue_free()
 
 
 func _build_hex_mesh() -> Mesh:
@@ -835,6 +864,124 @@ func get_tile_surface_position(axial: Vector2i) -> Vector3:
 	var scale := t.basis.get_scale()
 	var top_offset := _mesh_top_offset(mesh) * scale.y
 	return Vector3(t.origin.x, t.origin.y + top_offset, t.origin.z)
+
+
+func _ensure_forest_root() -> void:
+	if is_instance_valid(forest_root):
+		return
+	forest_root = Node3D.new()
+	forest_root.name = "ForestRoot"
+	add_child(forest_root)
+
+
+func _init_forest_rng() -> void:
+	forest_rng = RandomNumberGenerator.new()
+	if randomize_forest_seed:
+		forest_rng.randomize()
+	elif forest_seed != 0:
+		forest_rng.seed = forest_seed
+	else:
+		forest_rng.seed = height_seed
+
+
+func _scatter_forest() -> void:
+	if not forest_enabled:
+		return
+	_ensure_forest_scenes()
+	if forest_scenes.is_empty():
+		return
+	_ensure_forest_root()
+	_init_forest_rng()
+	forest_positions.clear()
+
+	var min_count: int = max(forest_min_trees, 0)
+	var max_count: int = max(forest_max_trees, min_count)
+
+	for r in range(map_height):
+		for q in range(map_width):
+			if not _is_forest_biome(q, r):
+				continue
+			if forest_rng.randf() > forest_spawn_chance:
+				continue
+			var tile_pos: Vector3 = get_tile_surface_position(Vector2i(q, r))
+			var count: int = forest_rng.randi_range(min_count, max_count)
+			for i in range(count):
+				_scatter_forest_on_tile(tile_pos)
+
+
+func _scatter_forest_on_tile(tile_pos: Vector3) -> void:
+	var attempts: int = max(forest_position_attempts, 1)
+	for i in range(attempts):
+		var offset: Vector3 = _random_forest_offset()
+		var pos: Vector3 = tile_pos + offset
+		if _can_place_forest(pos):
+			_spawn_tree_at(pos)
+			return
+
+
+func _random_forest_offset() -> Vector3:
+	var radius: float = max(forest_tile_radius, 0.0)
+	var angle: float = forest_rng.randf() * TAU
+	var dist: float = sqrt(forest_rng.randf()) * radius
+	return Vector3(cos(angle) * dist, 0.0, sin(angle) * dist)
+
+
+func _can_place_forest(pos: Vector3) -> bool:
+	var min_dist: float = max(forest_min_distance, 0.0)
+	if min_dist <= 0.0:
+		return true
+	for p: Vector3 in forest_positions:
+		if p.distance_to(pos) < min_dist:
+			return false
+	return true
+
+
+func _spawn_tree_at(pos: Vector3) -> void:
+	var scene: PackedScene = _pick_forest_scene()
+	if scene == null:
+		return
+	var inst := scene.instantiate()
+	var node: Node3D
+	if inst is Node3D:
+		node = inst
+	else:
+		node = Node3D.new()
+		node.add_child(inst)
+	node.position = pos + Vector3(0.0, forest_y_offset, 0.0)
+	if forest_random_yaw:
+		node.rotation.y = forest_rng.randf() * TAU
+	var scale := forest_rng.randf_range(forest_scale_min, forest_scale_max)
+	node.scale = Vector3.ONE * scale
+	forest_root.add_child(node)
+	forest_positions.append(pos)
+
+
+func _pick_forest_scene() -> PackedScene:
+	if forest_scenes.is_empty():
+		return null
+	var idx: int = forest_rng.randi_range(0, forest_scenes.size() - 1)
+	var candidate: PackedScene = forest_scenes[idx]
+	if candidate is PackedScene:
+		return candidate
+	for scene: PackedScene in forest_scenes:
+		if scene is PackedScene:
+			return scene
+	return null
+
+
+func _is_forest_biome(q: int, r: int) -> bool:
+	var biome_name := _biome_name_runtime(_tile_biome(q, r))
+	if forest_allowed_biomes.is_empty():
+		return true
+	for allowed in forest_allowed_biomes:
+		if String(allowed) == biome_name:
+			return true
+	return false
+
+
+func _ensure_forest_scenes() -> void:
+	if forest_scenes.is_empty():
+		forest_scenes = DEFAULT_FOREST_SCENES
 
 
 func _build_hex_shape() -> ConvexPolygonShape3D:

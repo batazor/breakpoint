@@ -365,11 +365,14 @@ func _water_transition_info(q: int, r: int) -> Dictionary:
 		return {}
 	if _is_edge_tile(q, r):
 		return {}
-	if not _has_water_neighbor(q, r):
-		return {}
-	if not _has_same_biome_neighbor(q, r, biome):
-		return {}
 	var land_dirs := _land_neighbor_dirs(q, r)
+	if land_dirs.size() < 2:
+		return {}
+	var water_count := 6 - land_dirs.size()
+	if water_count < 2:
+		return {}
+	if _same_biome_neighbor_count(q, r, biome) < 2:
+		return {}
 	if land_dirs.size() == 0 or land_dirs.size() == 6:
 		return {}
 	return _pick_transition_and_rotation(land_dirs)
@@ -392,26 +395,16 @@ func _is_edge_tile(q: int, r: int) -> bool:
 	return q == 0 or r == 0 or q == map_width - 1 or r == map_height - 1
 
 
-func _has_water_neighbor(q: int, r: int) -> bool:
-	for i in range(HEX_DIRS.size()):
-		var nq := q + HEX_DIRS[i].x
-		var nr := r + HEX_DIRS[i].y
-		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
-			continue
-		if _tile_biome(nq, nr) == WorldGeneratorScript.Biome.WATER:
-			return true
-	return false
-
-
-func _has_same_biome_neighbor(q: int, r: int, biome: int) -> bool:
+func _same_biome_neighbor_count(q: int, r: int, biome: int) -> int:
+	var count := 0
 	for i in range(HEX_DIRS.size()):
 		var nq := q + HEX_DIRS[i].x
 		var nr := r + HEX_DIRS[i].y
 		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
 			continue
 		if _tile_biome(nq, nr) == biome:
-			return true
-	return false
+			count += 1
+	return count
 
 
 func _pick_transition_and_rotation(land_dirs: Array[int]) -> Dictionary:

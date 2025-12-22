@@ -166,11 +166,11 @@
 			"biome_name": "sand",
 			"height": 0.500781655311584,
 			"height_raw": -0.0792634636163712,
-			"mesh_key": "sand_waterA",
+			"mesh_key": "sand",
 			"q": 1,
 			"r": 1,
-			"rotation_deg": 60.0,
-			"rotation_steps": 1
+			"rotation_deg": 0.0,
+			"rotation_steps": 0
 		},
 		{
 			"biome": 0,
@@ -331,7 +331,7 @@
 			"biome_name": "mountain",
 			"height": 0.805049419403076,
 			"height_raw": 0.100946977734566,
-			"mesh_key": "mountain_waterD",
+			"mesh_key": "mountain",
 			"q": 4,
 			"r": 3,
 			"rotation_deg": 0.0,

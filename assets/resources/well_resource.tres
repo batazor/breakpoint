@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="GameResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/game_resource.gd" id="1"]
+[ext_resource type="Texture2D" path="res://icon.svg" id="2"]
+[ext_resource type="PackedScene" path="res://assets/resources/well.gltf.glb" id="3"]
+
+[resource]
+id = &"well"
+title = "Well"
+icon = ExtResource("2")
+scene = ExtResource("3")

@@ -1,0 +1,70 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/build_menu.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/ui/resource_card.tscn" id="2"]
+[ext_resource type="Resource" path="res://assets/resources/well_resource.tres" id="3"]
+
+[node name="BuildMenu" type="CanvasLayer"]
+layer = 2
+script = ExtResource("1")
+resource_card_scene = ExtResource("2")
+resources = [ExtResource("3")]
+
+[node name="BuildPanel" type="PanelContainer" parent="."]
+anchor_left = 0.0
+anchor_top = 0.0
+anchor_right = 0.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = 420.0
+offset_bottom = -16.0
+size_flags_vertical = 3
+
+[node name="PanelMargin" type="MarginContainer" parent="BuildPanel"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/margin_left = 12
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_right = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="PanelVBox" type="VBoxContainer" parent="BuildPanel/PanelMargin"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Title" type="Label" parent="BuildPanel/PanelMargin/PanelVBox"]
+text = "Build Menu"
+
+[node name="Tabs" type="TabContainer" parent="BuildPanel/PanelMargin/PanelVBox"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Resources" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ResourcesVBox" type="VBoxContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Resources"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ResourcesScroll" type="ScrollContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Resources/ResourcesVBox"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ResourcesGrid" type="GridContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Resources/ResourcesVBox/ResourcesScroll"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+columns = 2
+
+[node name="Buildings" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BuildingsLabel" type="Label" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Buildings"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+horizontal_alignment = 1
+vertical_alignment = 1
+text = "Buildings (coming soon)"

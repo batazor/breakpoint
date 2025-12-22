@@ -1,0 +1,10 @@
+resources:
+  well:
+    id: well
+    title: Well
+    description: "Fresh water source for nearby tiles."
+    icon: res://icon.svg
+    scene: res://assets/resources/well.gltf.glb
+    buildable_tiles:
+      - plains
+      - sand

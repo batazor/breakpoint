@@ -117,10 +117,10 @@ func _apply_camera_pose() -> void:
 	if camera == null:
 		return
 
-	var t := clampf(inverse_lerp(min_zoom, max_zoom, current_distance), 0.0, 1.0)
+	var t: float = clampf(inverse_lerp(min_zoom, max_zoom, current_distance), 0.0, 1.0)
 	# Ease so that pitch change is stronger when getting higher.
 	t = pow(t, 1.6)
-	var pitch := lerp_angle(max_pitch_degrees, min_pitch_degrees, t)
+	var pitch: float = lerp_angle(max_pitch_degrees, min_pitch_degrees, t)
 	camera.rotation_degrees = Vector3(
 		pitch,
 		camera_rotation_degrees.y + current_yaw,

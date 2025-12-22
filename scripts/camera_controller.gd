@@ -6,13 +6,13 @@ extends Node3D
 @export var min_zoom: float = 10.0
 @export var max_zoom: float = 120.0
 @export var start_zoom: float = 38.0
-@export var camera_rotation_degrees: Vector3 = Vector3(-35.0, 45.0, 0.0)
+@export var camera_rotation_degrees: Vector3 = Vector3(-55.0, 45.0, 0.0)
 @export var clamp_margin: float = 6.0
 @export var rotate_speed: float = 360.0  # degrees per second for Q/E yaw
 @export var distance_lerp_speed: float = 16.0
 @export var yaw_lerp_speed: float = 60.0
-@export var min_pitch_degrees: float = -85.0
-@export var max_pitch_degrees: float = -10.0
+@export var min_pitch_degrees: float = -89.0
+@export var max_pitch_degrees: float = -25.0
 
 var grid: Node
 var camera: Camera3D

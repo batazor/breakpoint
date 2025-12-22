@@ -12,7 +12,6 @@ class_name HeightGenerator
 @export var falloff_power: float = 3.0  # степень для falloff (больше — резче края)
 @export var warp_strength: float = 12.0   # домен-варп, чтобы материки не были круглыми
 @export var warp_frequency: float = 0.05
-@export var height_steps: int = 5  # 0/1 — без квантования; меньше — грубее террасы
 @export var island_noise_strength: float = 0.6  # добавляет вариативность береговой линии
 @export var island_noise_frequency: float = 0.05
 @export var island_noise_octaves: int = 3
@@ -31,7 +30,7 @@ class_name HeightGenerator
 @export var plate_jitter: float = 0.2  # разброс центров за границами карты
 
 
-func _height_core(q: int, r: int, map_width: int, map_height: int, apply_steps: bool) -> float:
+func _height_core(q: int, r: int, map_width: int, map_height: int) -> float:
 	# Создаём экземпляр FastNoiseLite
 	var noise: FastNoiseLite = FastNoiseLite.new()
 	noise.seed = seed
@@ -128,7 +127,9 @@ func _height_core(q: int, r: int, map_width: int, map_height: int, apply_steps: 
 			var nvec: Vector2 = (plate_centers[second] - plate_centers[nearest]).normalized()
 			var rel_vel: Vector2 = plate_vels[second] - plate_vels[nearest]
 			var converge: float = clamp(-rel_vel.dot(nvec), 0.0, 1.0)
-			var edge_factor: float = clamp(pow(1.0 - sqrt(d1) / (map_width * 0.25 + 0.01), plate_edge_sharpness), 0.0, 1.0)
+			var edge_base := 1.0 - sqrt(d1) / (map_width * 0.25 + 0.01)
+			edge_base = max(edge_base, 0.0)
+			var edge_factor: float = clamp(pow(edge_base, plate_edge_sharpness), 0.0, 1.0)
 			var land_mask2: float = clamp((h + 0.15) / 0.5, 0.0, 1.0)
 			h += converge * edge_factor * plate_mountain_strength * land_mask2
 
@@ -139,20 +140,17 @@ func _height_core(q: int, r: int, map_width: int, map_height: int, apply_steps: 
 			var t: float = (ln - lake_threshold) / max(0.001, 1.0 - lake_threshold)
 			h -= lake_strength * t
 
-	if apply_steps and height_steps > 1:
-		var step: float = 2.0 / float(height_steps - 1)  # шаг по диапазону [-1..1]
-		h = round(h / step) * step
 	return clamp(h, -1.0, 1.0)
 
 
 # Основная функция: возвращает высоту в диапазоне [-1.0, 1.0] для координаты (q, r)
 func get_height(q: int, r: int, map_width: int, map_height: int) -> float:
-	return _height_core(q, r, map_width, map_height, true)
+	return _height_core(q, r, map_width, map_height)
 
 
-# Высота без террасирования (без height_steps), для квантили и анализа распределения.
+# Сырая высота, для квантили и анализа распределения.
 func get_height_raw(q: int, r: int, map_width: int, map_height: int) -> float:
-	return _height_core(q, r, map_width, map_height, false)
+	return _height_core(q, r, map_width, map_height)
 
 
 var plate_centers: Array[Vector2] = []

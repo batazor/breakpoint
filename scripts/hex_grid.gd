@@ -1,11 +1,20 @@
 extends Node3D
 
 const HexUtil = preload("res://scripts/hex.gd")
-const HeightGenScript = preload("res://scripts/height_generator.gd")
+const WorldGeneratorScript = preload("res://scripts/world_generator.gd")
 const RAY_LENGTH := 4000.0
+const HEX_DIRS: Array[Vector2i] = [
+	Vector2i(1, 0),
+	Vector2i(1, -1),
+	Vector2i(0, -1),
+	Vector2i(-1, 0),
+	Vector2i(-1, 1),
+	Vector2i(0, 1),
+]
+const ROT_STEP := deg_to_rad(60.0)
 
-@export var map_width: int = 80
-@export var map_height: int = 52
+@export var map_width: int = 2
+@export var map_height: int = 2
 @export var hex_radius: float = 1.0
 @export var hex_height: float = 0.25
 @export var y_offset: float = 0.0
@@ -17,25 +26,29 @@ const RAY_LENGTH := 4000.0
 @export var color_sand: Color = Color(0.85, 0.8, 0.45)
 @export var color_grass: Color = Color(0.35, 0.6, 0.3)
 @export var color_rock: Color = Color(0.6, 0.6, 0.6)
-@export var color_shore: Color = Color(0.80, 0.70, 0.45)
-@export_range(-1.0, 1.0, 0.01) var height_water_level: float = -0.05  # используется, если use_quantiles=false
-@export var use_quantiles: bool = true
 @export_range(0.0, 1.0, 0.01) var water_pct: float = 0.45
 @export_range(0.0, 1.0, 0.01) var sand_pct: float = 0.10
 @export_range(0.0, 1.0, 0.01) var mountain_pct: float = 0.10
-@export_range(0.0, 0.5, 0.01) var shoreline_band: float = 0.08
-@export_range(-1.0, 1.0, 0.01) var height_sand_level: float = 0.10   # fallback, если use_quantiles=false
-@export_range(-1.0, 1.0, 0.01) var height_grass_level: float = 0.55  # fallback, если use_quantiles=false
 @export var use_tile_meshes: bool = true
 @export_file("*.glb") var tile_mesh_water_path: String = "res://assets/tiles/hex_water.gltf.glb"
-@export_file("*.glb") var tile_mesh_shore_path: String = "res://assets/tiles/hex_sand.gltf.glb"
 @export_file("*.glb") var tile_mesh_sand_path: String = "res://assets/tiles/hex_sand.gltf.glb"
 @export_file("*.glb") var tile_mesh_grass_path: String = "res://assets/tiles/hex_forest.gltf.glb"
 @export_file("*.glb") var tile_mesh_rock_path: String = "res://assets/tiles/hex_rock.gltf.glb"
-@export var tile_mesh_scale_uniform: Vector3 = Vector3(1.08, 1.0, 1.08)
+@export_file("*.glb") var tile_mesh_sand_water_a_path: String = "res://assets/tiles/hex_sand_waterA_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_sand_water_b_path: String = "res://assets/tiles/hex_sand_waterB_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_sand_water_c_path: String = "res://assets/tiles/hex_sand_waterC_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_sand_water_d_path: String = "res://assets/tiles/hex_sand_waterD_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_grass_water_a_path: String = "res://assets/tiles/hex_forest_waterA_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_grass_water_b_path: String = "res://assets/tiles/hex_forest_waterB_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_grass_water_c_path: String = "res://assets/tiles/hex_forest_waterC_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_grass_water_d_path: String = "res://assets/tiles/hex_forest_waterD_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_rock_water_a_path: String = "res://assets/tiles/hex_rock_waterA_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_rock_water_b_path: String = "res://assets/tiles/hex_rock_waterB_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_rock_water_c_path: String = "res://assets/tiles/hex_rock_waterC_detail.gltf.glb"
+@export_file("*.glb") var tile_mesh_rock_water_d_path: String = "res://assets/tiles/hex_rock_waterD_detail.gltf.glb"
+@export var tile_mesh_scale_uniform: Vector3 = Vector3.ONE
 @export var tile_jitter: float = 0.02
 @export var tile_mesh_scale_water: Vector3 = Vector3.ONE
-@export var tile_mesh_scale_shore: Vector3 = Vector3.ONE
 @export var tile_mesh_scale_sand: Vector3 = Vector3.ONE
 @export var tile_mesh_scale_grass: Vector3 = Vector3.ONE
 @export var tile_mesh_scale_rock: Vector3 = Vector3.ONE
@@ -69,22 +82,37 @@ const RAY_LENGTH := 4000.0
 @export var height_vertical_offset: float = 0.0
 @export var water_plane_height: float = 0.0
 @export var fallback_to_hex_mesh: bool = true
-@export var randomize_height_seed: bool = true
+@export var randomize_height_seed: bool = false
+@export var debug_lock_height_seed: bool = true
+@export var debug_seed_value: int = 12345
+@export var save_map_snapshot: bool = true
+@export var map_snapshot_path: String = "res://last_map.json"
 @export var selection_color: Color = Color(1.0, 0.6, 0.2, 0.6)
-@export var selection_height: float = 0.05
-@export var selection_scale: float = 1.05
+@export var hover_color: Color = Color(1.0, 1.0, 0.2, 0.35)
+@export var hover_emission_energy: float = 0.8
+@export var selection_emission_energy: float = 1.6
+@export var use_rim_highlight: bool = true
+@export var rim_color: Color = Color(1.0, 1.0, 0.2)
+@export var rim_power: float = 2.0
 
 var bounds_rect: Rect2
 var multimesh_instance: MultiMeshInstance3D
 var collision_root: Node3D
 var shared_shape: ConvexPolygonShape3D
-var hex_basis: Basis = Basis(Vector3.UP, deg_to_rad(30.0))  # rotate mesh to flat-top
-var selection_indicator: MeshInstance3D
-var height_gen: HeightGenerator
+var hex_basis: Basis = Basis.IDENTITY
+var world_gen
 var height_cache: PackedFloat32Array = PackedFloat32Array()
+var tile_data: Array = []
 var water_level_runtime: float
 var sand_level_runtime: float
 var mountain_level_runtime: float
+var mesh_radius_cache: Dictionary = {}
+var tile_instance_map: Array = []
+var multimesh_bucket_instances: Dictionary = {}
+var mesh_instances: Array = []
+var hover_axial: Vector2i = Vector2i(-1, -1)
+var selection_axial: Vector2i = Vector2i(-1, -1)
+var highlight_material: ShaderMaterial
 
 
 func _ready() -> void:
@@ -92,15 +120,15 @@ func _ready() -> void:
 	collision_root = Node3D.new()
 	collision_root.name = "CollisionRoot"
 	add_child(collision_root)
-	_init_height_generator()
+	_init_world_generator()
 	_precompute_heights()
-	_create_selection_indicator()
+	_ensure_highlight_material()
 	regenerate_grid()
 
 
 func regenerate_grid() -> void:
 	_clear_children()
-	_init_height_generator()
+	_init_world_generator()
 	_precompute_heights()
 	bounds_rect = HexUtil.bounds_for_rect(map_width, map_height, hex_radius)
 	shared_shape = _build_hex_shape()
@@ -121,6 +149,12 @@ func _clear_children() -> void:
 	if is_instance_valid(collision_root):
 		for child in collision_root.get_children():
 			child.queue_free()
+
+	multimesh_bucket_instances.clear()
+	tile_instance_map.clear()
+	mesh_instances.clear()
+	hover_axial = Vector2i(-1, -1)
+	selection_axial = Vector2i(-1, -1)
 
 
 func _build_hex_mesh() -> Mesh:
@@ -143,9 +177,11 @@ func _build_multimesh() -> void:
 	var mat := StandardMaterial3D.new()
 	mat.vertex_color_use_as_albedo = true
 	hex_mesh.surface_set_material(0, mat)
+	_ensure_mesh_highlight(hex_mesh)
 
 	var multimesh := MultiMesh.new()
 	multimesh.set_use_colors(true)
+	multimesh.set_use_custom_data(true)
 	multimesh.transform_format = MultiMesh.TRANSFORM_3D
 	multimesh.mesh = hex_mesh
 	multimesh.instance_count = map_width * map_height
@@ -156,6 +192,7 @@ func _build_multimesh() -> void:
 			var t := _tile_transform(q, r)
 			multimesh.set_instance_transform(idx, t)
 			multimesh.set_instance_color(idx, _tile_color(q, r))
+			multimesh.set_instance_custom_data(idx, Color(0.0, 0.0, 0.0, 0.0))
 			idx += 1
 
 	multimesh_instance = MultiMeshInstance3D.new()
@@ -167,48 +204,251 @@ func _build_multimesh() -> void:
 
 func _build_multimesh_per_biome() -> void:
 	var mesh_water := _load_tile_mesh(tile_mesh_water_path)
-	var mesh_shore := _load_tile_mesh(tile_mesh_shore_path)
 	var mesh_sand := _load_tile_mesh(tile_mesh_sand_path)
 	var mesh_grass := _load_tile_mesh(tile_mesh_grass_path)
 	var mesh_rock := _load_tile_mesh(tile_mesh_rock_path)
+	tile_instance_map.resize(map_width * map_height)
+	for i in range(tile_instance_map.size()):
+		tile_instance_map[i] = null
+	multimesh_bucket_instances.clear()
 
-	var buckets := {
-		"water": [],
-		"shore": [],
-		"sand": [],
-		"grass": [],
-		"rock": [],
+	var sand_water_meshes := {
+		"A": _load_tile_mesh(tile_mesh_sand_water_a_path),
+		"B": _load_tile_mesh(tile_mesh_sand_water_b_path),
+		"C": _load_tile_mesh(tile_mesh_sand_water_c_path),
+		"D": _load_tile_mesh(tile_mesh_sand_water_d_path),
+	}
+	var grass_water_meshes := {
+		"A": _load_tile_mesh(tile_mesh_grass_water_a_path),
+		"B": _load_tile_mesh(tile_mesh_grass_water_b_path),
+		"C": _load_tile_mesh(tile_mesh_grass_water_c_path),
+		"D": _load_tile_mesh(tile_mesh_grass_water_d_path),
+	}
+	var rock_water_meshes := {
+		"A": _load_tile_mesh(tile_mesh_rock_water_a_path),
+		"B": _load_tile_mesh(tile_mesh_rock_water_b_path),
+		"C": _load_tile_mesh(tile_mesh_rock_water_c_path),
+		"D": _load_tile_mesh(tile_mesh_rock_water_d_path),
 	}
 
+	var buckets: Dictionary = {}
 	for r in range(map_height):
 		for q in range(map_width):
-			var t := _tile_transform(q, r)
-			var biome := _biome_for_height(_get_height(q, r))
-			if buckets.has(biome):
-				buckets[biome].append(t)
+			var tile_idx := r * map_width + q
+			var biome := _tile_biome(q, r)
+			var rotation_steps := 0
+			var mesh: Mesh = mesh_water
+			var tint := color_water
+			var scale := tile_mesh_scale_water
+			var key := "water"
 
-	var total: int = buckets["water"].size() + buckets["shore"].size() + buckets["sand"].size() + buckets["grass"].size() + buckets["rock"].size()
+			if biome == WorldGeneratorScript.Biome.SAND:
+				mesh = mesh_sand
+				tint = color_sand
+				scale = tile_mesh_scale_sand
+				key = "sand"
+				var transition := _water_transition_info(q, r)
+				if not transition.is_empty():
+					var variant: String = transition["variant"]
+					var candidate: Mesh = sand_water_meshes.get(variant, null)
+					if candidate != null:
+						mesh = candidate
+						key = "sand_water" + variant
+						rotation_steps = int(transition["rotation"])
+			elif biome == WorldGeneratorScript.Biome.PLAINS:
+				mesh = mesh_grass
+				tint = color_grass
+				scale = tile_mesh_scale_grass
+				key = "plains"
+				var transition := _water_transition_info(q, r)
+				if not transition.is_empty():
+					var variant: String = transition["variant"]
+					var candidate: Mesh = grass_water_meshes.get(variant, null)
+					if candidate != null:
+						mesh = candidate
+						key = "plains_water" + variant
+						rotation_steps = int(transition["rotation"])
+			elif biome == WorldGeneratorScript.Biome.MOUNTAIN:
+				mesh = mesh_rock
+				tint = color_rock
+				scale = tile_mesh_scale_rock
+				key = "mountain"
+				var transition := _water_transition_info(q, r)
+				if not transition.is_empty():
+					var variant: String = transition["variant"]
+					var candidate: Mesh = rock_water_meshes.get(variant, null)
+					if candidate != null:
+						mesh = candidate
+						key = "mountain_water" + variant
+						rotation_steps = int(transition["rotation"])
+
+			var t := _tile_transform(q, r, rotation_steps)
+			_append_bucket(buckets, key, mesh, t, tint, scale, tile_idx)
+
+	var total := 0
+	for key in buckets.keys():
+		total += buckets[key]["transforms"].size()
 	if total != map_width * map_height:
 		push_warning("Tile distribution mismatch: %d vs %d" % [total, map_width * map_height])
 
-	_add_multimesh_bucket("WaterMultiMesh", mesh_water, buckets["water"], color_water, tile_mesh_scale_water)
-	_add_multimesh_bucket("ShoreMultiMesh", mesh_shore, buckets["shore"], color_shore, tile_mesh_scale_shore)
-	_add_multimesh_bucket("SandMultiMesh", mesh_sand, buckets["sand"], color_sand, tile_mesh_scale_sand)
-	_add_multimesh_bucket("GrassMultiMesh", mesh_grass, buckets["grass"], color_grass, tile_mesh_scale_grass)
-	_add_multimesh_bucket("RockMultiMesh", mesh_rock, buckets["rock"], color_rock, tile_mesh_scale_rock)
+	for key in buckets.keys():
+		var entry: Dictionary = buckets[key]
+		var bucket_name := "%sMultiMesh" % key
+		var inst := _add_multimesh_bucket(bucket_name, entry["mesh"], entry["transforms"], entry["tint"], entry["scale"])
+		if inst:
+			multimesh_bucket_instances[key] = inst
+
+
+func _append_bucket(buckets: Dictionary, key: String, mesh: Mesh, t: Transform3D, tint: Color, scale: Vector3, tile_idx: int) -> void:
+	if not buckets.has(key):
+		buckets[key] = {
+			"mesh": mesh,
+			"transforms": [],
+			"tint": tint,
+			"scale": scale,
+		}
+	var entry: Dictionary = buckets[key]
+	var transforms: Array = entry["transforms"]
+	var index: int = transforms.size()
+	transforms.append(t)
+	tile_instance_map[tile_idx] = {
+		"key": key,
+		"index": index,
+	}
+	entry["transforms"] = transforms
+
+
+func _water_transition_info(q: int, r: int) -> Dictionary:
+	var biome := _tile_biome(q, r)
+	if biome == WorldGeneratorScript.Biome.WATER:
+		return {}
+	if not _has_water_neighbor(q, r):
+		return {}
+	if not _has_same_biome_neighbor(q, r, biome):
+		return {}
+	var land_dirs := _land_neighbor_dirs(q, r)
+	if land_dirs.size() == 0 or land_dirs.size() == 6:
+		return {}
+	return _pick_transition_and_rotation(land_dirs)
+
+
+func _land_neighbor_dirs(q: int, r: int) -> Array[int]:
+	var land_dirs: Array[int] = []
+	for i in range(HEX_DIRS.size()):
+		var nq := q + HEX_DIRS[i].x
+		var nr := r + HEX_DIRS[i].y
+		var is_land := false
+		if nq >= 0 and nq < map_width and nr >= 0 and nr < map_height:
+			is_land = _tile_biome(nq, nr) != WorldGeneratorScript.Biome.WATER
+		if is_land:
+			land_dirs.append(i)
+	return land_dirs
+
+
+func _has_water_neighbor(q: int, r: int) -> bool:
+	for i in range(HEX_DIRS.size()):
+		var nq := q + HEX_DIRS[i].x
+		var nr := r + HEX_DIRS[i].y
+		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
+			continue
+		if _tile_biome(nq, nr) == WorldGeneratorScript.Biome.WATER:
+			return true
+	return false
+
+
+func _has_same_biome_neighbor(q: int, r: int, biome: int) -> bool:
+	for i in range(HEX_DIRS.size()):
+		var nq := q + HEX_DIRS[i].x
+		var nr := r + HEX_DIRS[i].y
+		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
+			continue
+		if _tile_biome(nq, nr) == biome:
+			return true
+	return false
+
+
+func _pick_transition_and_rotation(land_dirs: Array[int]) -> Dictionary:
+	var count := land_dirs.size()
+	if count == 0:
+		return {}
+	if count == 1:
+		return {"variant": "A", "rotation": land_dirs[0]}
+	if count == 2:
+		var a := land_dirs[0]
+		var b := land_dirs[1]
+		if _is_adjacent_dir(a, b):
+			var start := a if (a + 1) % 6 == b else b
+			return {"variant": "B", "rotation": start}
+		return {"variant": "A", "rotation": land_dirs[0]}
+	if count == 3:
+		var land := [false, false, false, false, false, false]
+		for d in land_dirs:
+			land[d] = true
+		for s in range(6):
+			if land[s] and land[(s + 1) % 6] and land[(s + 2) % 6]:
+				return {"variant": "C", "rotation": s}
+		return {"variant": "A", "rotation": land_dirs[0]}
+	var land2 := [false, false, false, false, false, false]
+	for d in land_dirs:
+		land2[d] = true
+	for gap in range(6):
+		if not land2[gap]:
+			return {"variant": "D", "rotation": gap}
+	return {"variant": "D", "rotation": 0}
+
+
+func _is_adjacent_dir(a: int, b: int) -> bool:
+	return (a + 1) % 6 == b or (b + 1) % 6 == a
+
+
+func _tile_mesh_key_and_rotation(q: int, r: int) -> Dictionary:
+	var biome := _tile_biome(q, r)
+	var rotation_steps := 0
+	var key := "water"
+
+	if biome == WorldGeneratorScript.Biome.SAND:
+		key = "sand"
+		var transition := _water_transition_info(q, r)
+		if not transition.is_empty():
+			var variant: String = transition["variant"]
+			rotation_steps = int(transition["rotation"])
+			key = "sand_water" + variant
+	elif biome == WorldGeneratorScript.Biome.PLAINS:
+		key = "plains"
+		var transition := _water_transition_info(q, r)
+		if not transition.is_empty():
+			var variant: String = transition["variant"]
+			rotation_steps = int(transition["rotation"])
+			key = "plains_water" + variant
+	elif biome == WorldGeneratorScript.Biome.MOUNTAIN:
+		key = "mountain"
+		var transition := _water_transition_info(q, r)
+		if not transition.is_empty():
+			var variant: String = transition["variant"]
+			rotation_steps = int(transition["rotation"])
+			key = "mountain_water" + variant
+
+	return {
+		"key": key,
+		"rotation_steps": rotation_steps,
+		"rotation_deg": float(rotation_steps) * rad_to_deg(ROT_STEP),
+	}
 
 
 func _build_mesh_instances() -> void:
 	# Slower than MultiMesh, but useful for debugging.
 	var mesh := _build_hex_mesh()
+	mesh_instances.resize(map_width * map_height)
 	for r in range(map_height):
 		for q in range(map_width):
+			var idx := r * map_width + q
 			var mesh_instance := MeshInstance3D.new()
 			mesh_instance.mesh = mesh
 			mesh_instance.transform = _tile_transform(q, r)
 			mesh_instance.modulate = _tile_color(q, r)
 			mesh_instance.name = "Hex_%s_%s" % [q, r]
 			add_child(mesh_instance)
+			mesh_instances[idx] = mesh_instance
 
 
 func _build_colliders() -> void:
@@ -233,6 +473,8 @@ func _build_colliders() -> void:
 func _unhandled_input(event: InputEvent) -> void:
 	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
 		_pick_tile(event.position)
+	elif event is InputEventMouseMotion:
+		_update_hover(event.position)
 
 
 func _pick_tile(screen_pos: Vector2) -> void:
@@ -257,6 +499,70 @@ func _pick_tile(screen_pos: Vector2) -> void:
 		var axial: Vector2i = collider.get_meta("axial")
 		_show_selection(axial)
 		print("Clicked hex q=%d r=%d" % [axial.x, axial.y])
+	else:
+		_hide_hover()
+
+
+func _update_hover(screen_pos: Vector2) -> void:
+	var camera := get_viewport().get_camera_3d()
+	if camera == null:
+		_hide_hover()
+		return
+	var origin := camera.project_ray_origin(screen_pos)
+	var direction := camera.project_ray_normal(screen_pos)
+	var params: PhysicsRayQueryParameters3D = PhysicsRayQueryParameters3D.create(origin, origin + direction * RAY_LENGTH)
+	params.collide_with_areas = false
+	params.collide_with_bodies = true
+	params.collision_mask = 1
+	var hit: Dictionary = get_world_3d().direct_space_state.intersect_ray(params)
+	if hit.is_empty():
+		_hide_hover()
+		return
+	var collider: Object = hit.get("collider")
+	if collider and collider.has_meta("axial"):
+		var axial: Vector2i = collider.get_meta("axial")
+		_show_hover(axial)
+	else:
+		_hide_hover()
+
+
+func _log_tile_debug(axial: Vector2i) -> void:
+	if world_gen == null:
+		return
+	var biome := _tile_biome(axial.x, axial.y)
+	var biome_name := _biome_name_runtime(biome)
+	var h_norm := _get_height(axial.x, axial.y)
+	var h_raw := h_norm
+	if world_gen != null and world_gen.raw_heights.size() > 0:
+		var idx := axial.y * map_width + axial.x
+		if idx >= 0 and idx < world_gen.raw_heights.size():
+			h_raw = world_gen.raw_heights[idx]
+	var h_world := _tile_height(axial.x, axial.y)
+	var info := "Tile q=%d r=%d | biome=%s | h_norm=%.4f | h_raw=%.4f | h_world=%.4f | levels (water=%.4f sand=%.4f mountain=%.4f)" \
+		% [
+			axial.x,
+			axial.y,
+			biome_name,
+			h_norm,
+			h_raw,
+			h_world,
+			water_level_runtime,
+			sand_level_runtime,
+			mountain_level_runtime,
+		]
+	print(info)
+
+
+func _biome_name_runtime(biome: int) -> String:
+	match biome:
+		WorldGeneratorScript.Biome.WATER:
+			return "water"
+		WorldGeneratorScript.Biome.SAND:
+			return "sand"
+		WorldGeneratorScript.Biome.MOUNTAIN:
+			return "mountain"
+		_:
+			return "plains"
 
 
 func get_bounds_rect() -> Rect2:
@@ -282,100 +588,226 @@ func _build_hex_shape() -> ConvexPolygonShape3D:
 	return shape
 
 
-func _create_selection_indicator() -> void:
-	selection_indicator = MeshInstance3D.new()
-	selection_indicator.name = "Selection"
-	var mesh := CylinderMesh.new()
-	mesh.top_radius = hex_radius * selection_scale
-	mesh.bottom_radius = hex_radius * selection_scale
-	mesh.height = selection_height
-	mesh.radial_segments = 6
-	mesh.rings = 1
-
-	var mat := StandardMaterial3D.new()
-	mat.albedo_color = selection_color
-	mat.emission_enabled = true
-	mat.emission = selection_color
-	mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
-	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	mesh.surface_set_material(0, mat)
-
-	selection_indicator.mesh = mesh
-	selection_indicator.visible = false
-	add_child(selection_indicator)
-
-
 func _show_selection(axial: Vector2i) -> void:
-	if selection_indicator == null:
+	if axial == selection_axial:
 		return
-	var pos := HexUtil.axial_to_world(axial.x, axial.y, hex_radius)
-	var y := _tile_height(axial.x, axial.y) + hex_height * 0.5 + selection_height * 0.5 + 0.01
-	selection_indicator.transform = Transform3D(hex_basis, Vector3(pos.x, y, pos.z))
-	selection_indicator.visible = true
+	var prev := selection_axial
+	selection_axial = axial
+	_refresh_highlight(prev)
+	_refresh_highlight(selection_axial)
+	_log_tile_debug(axial)
+
+
+func _show_hover(axial: Vector2i) -> void:
+	if axial == hover_axial:
+		return
+	var prev := hover_axial
+	hover_axial = axial
+	_refresh_highlight(prev)
+	_refresh_highlight(hover_axial)
+
+
+func _hide_hover() -> void:
+	if hover_axial == Vector2i(-1, -1):
+		return
+	var prev := hover_axial
+	hover_axial = Vector2i(-1, -1)
+	_refresh_highlight(prev)
+
+
+func _refresh_highlight(axial: Vector2i) -> void:
+	if axial.x < 0 or axial.y < 0:
+		return
+	var is_selected := axial == selection_axial
+	var is_hover := axial == hover_axial
+	if not is_selected and not is_hover:
+		_apply_highlight(axial, Color(0.0, 0.0, 0.0, 0.0), 0.0, false)
+		return
+	var color := selection_color if is_selected else hover_color
+	var energy := selection_emission_energy if is_selected else hover_emission_energy
+	var use_rim := use_rim_highlight
+	_apply_highlight(axial, color, energy, use_rim)
+
+
+func _apply_highlight(axial: Vector2i, color: Color, energy: float, use_rim: bool) -> void:
+	if use_multimesh:
+		_set_multimesh_highlight(axial, color, energy, use_rim)
+	else:
+		_set_mesh_instance_highlight(axial, color, energy, use_rim)
+
+
+func _set_multimesh_highlight(axial: Vector2i, color: Color, energy: float, use_rim: bool) -> void:
+	_ensure_highlight_material()
+	_sync_highlight_shader_params()
+	var data := Color(color.r, color.g, color.b, max(energy, 0.0))
+	var idx := axial.y * map_width + axial.x
+	if use_tile_meshes:
+		if idx < 0 or idx >= tile_instance_map.size():
+			return
+		var entry = tile_instance_map[idx]
+		if entry == null:
+			return
+		var key: String = entry["key"]
+		var inst_idx: int = int(entry["index"])
+		var inst: MultiMeshInstance3D = multimesh_bucket_instances.get(key, null)
+		if inst and inst.multimesh:
+			inst.multimesh.set_instance_custom_data(inst_idx, data)
+	else:
+		if multimesh_instance and multimesh_instance.multimesh:
+			if idx < 0 or idx >= multimesh_instance.multimesh.instance_count:
+				return
+			multimesh_instance.multimesh.set_instance_custom_data(idx, data)
+
+
+func _set_mesh_instance_highlight(axial: Vector2i, color: Color, energy: float, use_rim: bool) -> void:
+	var idx := axial.y * map_width + axial.x
+	if idx < 0 or idx >= mesh_instances.size():
+		return
+	var inst: MeshInstance3D = mesh_instances[idx]
+	if inst == null or inst.mesh == null:
+		return
+	var surface_count := inst.mesh.get_surface_count()
+	if energy <= 0.0:
+		for surface_idx in range(surface_count):
+			inst.set_surface_override_material(surface_idx, null)
+		return
+	for surface_idx in range(surface_count):
+		var src_mat: Material = inst.mesh.surface_get_material(surface_idx)
+		var dup := src_mat.duplicate() if src_mat != null else StandardMaterial3D.new()
+		_apply_emission(dup, color, energy, use_rim)
+		inst.set_surface_override_material(surface_idx, dup)
+
+
+func _ensure_highlight_material() -> void:
+	if highlight_material != null:
+		return
+	var shader := Shader.new()
+	shader.code = """
+shader_type spatial;
+render_mode unshaded, depth_draw_never, depth_test_disabled, blend_add;
+
+uniform vec3 rim_color = vec3(1.0, 1.0, 0.2);
+uniform float rim_power = 2.0;
+uniform float use_rim = 1.0;
+
+varying vec4 instance_custom;
+
+void vertex() {
+	instance_custom = INSTANCE_CUSTOM;
+}
+
+void fragment() {
+	vec4 data = instance_custom;
+	float strength = data.a;
+	if (strength <= 0.0) {
+		ALBEDO = vec3(0.0);
+		EMISSION = vec3(0.0);
+		ALPHA = 0.0;
+		return;
+	}
+	float rim = 1.0;
+	if (use_rim > 0.5) {
+		float ndv = clamp(dot(normalize(NORMAL), normalize(VIEW)), 0.0, 1.0);
+		rim = pow(1.0 - ndv, rim_power);
+	}
+	EMISSION = data.rgb * strength * rim;
+	ALBEDO = vec3(0.0);
+	ALPHA = 1.0;
+}
+"""
+	highlight_material = ShaderMaterial.new()
+	highlight_material.shader = shader
+	_sync_highlight_shader_params()
+
+
+func _sync_highlight_shader_params() -> void:
+	if highlight_material == null:
+		return
+	highlight_material.set_shader_parameter("rim_color", rim_color)
+	highlight_material.set_shader_parameter("rim_power", rim_power)
+	highlight_material.set_shader_parameter("use_rim", 1.0 if use_rim_highlight else 0.0)
+
+
+func _ensure_mesh_highlight(mesh: Mesh) -> void:
+	if mesh == null:
+		return
+	_ensure_highlight_material()
+	for surface_idx in range(mesh.get_surface_count()):
+		var mat: Material = mesh.surface_get_material(surface_idx)
+		if mat == null:
+			mat = StandardMaterial3D.new()
+			mesh.surface_set_material(surface_idx, mat)
+		if mat is BaseMaterial3D:
+			var base := mat as BaseMaterial3D
+			if base.next_pass != highlight_material:
+				base.next_pass = highlight_material
+
+
+func _apply_emission(mat: Material, color: Color, energy: float, use_rim: bool) -> void:
+	if not (mat is StandardMaterial3D):
+		return
+	var m: StandardMaterial3D = mat
+	m.emission_enabled = energy > 0.0
+	m.emission = color
+	m.set("emission_energy_multiplier", energy)
+	if use_rim:
+		m.rim_enabled = true
+		m.rim = 1.0
+		m.set("rim_tint", rim_color)
+		m.rim_power = rim_power
+	else:
+		m.rim_enabled = false
 
 
 func _get_height(q: int, r: int) -> float:
 	var idx := r * map_width + q
 	if idx >= 0 and idx < height_cache.size():
 		return height_cache[idx]
-	if height_gen == null:
+	if world_gen != null and idx >= 0 and idx < world_gen.heights.size():
+		return world_gen.heights[idx]
+	if world_gen == null or world_gen.height_gen == null:
 		return 0.0
-	return height_gen.get_height(q, r, map_width, map_height)
+	return world_gen.height_gen.get_height(q, r, map_width, map_height)
+
+
+func _tile_biome(q: int, r: int) -> int:
+	var idx := r * map_width + q
+	if idx < 0 or idx >= tile_data.size():
+		return WorldGeneratorScript.Biome.PLAINS
+	var tile = tile_data[idx]
+	if tile == null:
+		return WorldGeneratorScript.Biome.PLAINS
+	return tile.biome
 
 
 func _tile_color(q: int, r: int) -> Color:
-	if use_height_color and height_gen:
-		var h := _get_height(q, r)
-		return _color_from_height(h)
+	if use_height_color and world_gen:
+		return _color_from_biome(_tile_biome(q, r))
 	return color_even if ((q + r) % 2 == 0) else color_odd
 
 
-func _biome_for_height(h: float) -> String:
-	if h <= water_level_runtime:
-		return "water"
-	if h <= min(sand_level_runtime, water_level_runtime + shoreline_band):
-		return "shore"
-	if h <= sand_level_runtime:
-		return "sand"
-	if h >= mountain_level_runtime:
-		return "rock"
-	return "grass"
+func _color_from_biome(biome: int) -> Color:
+	match biome:
+		WorldGeneratorScript.Biome.WATER:
+			return color_water
+		WorldGeneratorScript.Biome.SAND:
+			return color_sand
+		WorldGeneratorScript.Biome.MOUNTAIN:
+			return color_rock
+		_:
+			return color_grass
 
 
-func _color_from_height(h: float) -> Color:
-	var hw: float = water_level_runtime
-	var shore_hi: float = min(sand_level_runtime, water_level_runtime + shoreline_band)
-	var hs: float = sand_level_runtime
-	var hg: float = mountain_level_runtime
-
-	if h <= hw:
-		return color_water
-	if h <= shore_hi:
-		return color_shore
-	if h <= hs:
-		return _lerp_color(color_shore, color_sand, _lerp01(h, hw, hs))
-	if h <= hg:
-		return _lerp_color(color_sand, color_grass, _lerp01(h, hs, hg))
-	return color_rock
-
-
-func _lerp01(v: float, a: float, b: float) -> float:
-	if is_equal_approx(a, b):
-		return 0.0
-	return clampf((v - a) / (b - a), 0.0, 1.0)
-
-
-func _lerp_color(c1: Color, c2: Color, t: float) -> Color:
-	return c1.lerp(c2, clampf(t, 0.0, 1.0))
-
-
-func _init_height_generator() -> void:
-	height_gen = HeightGenerator.new()
+func _init_world_generator() -> void:
+	world_gen = WorldGeneratorScript.new()
 	var seed_to_use := height_seed
-	if randomize_height_seed:
+	if debug_lock_height_seed:
+		seed_to_use = debug_seed_value
+	elif randomize_height_seed:
 		var rng := RandomNumberGenerator.new()
 		rng.randomize()
 		seed_to_use = int(rng.randi())
+	var height_gen = world_gen.height_gen
 	height_gen.seed = seed_to_use
 	height_gen.frequency = height_frequency
 	height_gen.octaves = height_octaves
@@ -402,6 +834,10 @@ func _init_height_generator() -> void:
 	height_gen.plate_velocity_scale = height_plate_velocity_scale
 	height_gen.plate_edge_sharpness = height_plate_edge_sharpness
 	height_gen.plate_jitter = height_plate_jitter
+
+	world_gen.water_pct = water_pct
+	world_gen.sand_pct = sand_pct
+	world_gen.mountain_pct = mountain_pct
 
 
 func _load_tile_mesh(path: String) -> Mesh:
@@ -436,15 +872,17 @@ func _load_tile_mesh(path: String) -> Mesh:
 	return _hex_mesh_singleton() if fallback_to_hex_mesh else null
 
 
-func _add_multimesh_bucket(bucket_name: String, mesh: Mesh, transforms: Array, tint: Color, bucket_scale: Vector3) -> void:
+func _add_multimesh_bucket(bucket_name: String, mesh: Mesh, transforms: Array, tint: Color, bucket_scale: Vector3) -> MultiMeshInstance3D:
 	if transforms.is_empty():
-		return
+		return null
 	var use_mesh := mesh if mesh != null else _hex_mesh_singleton()
 	var mm := MultiMesh.new()
 	mm.transform_format = MultiMesh.TRANSFORM_3D
 	mm.mesh = use_mesh
 	mm.instance_count = transforms.size()
 	mm.set_use_colors(true)
+	mm.set_use_custom_data(true)
+	var mesh_scale := _mesh_scale_factor(use_mesh)
 	for i in mm.instance_count:
 		var t: Transform3D = transforms[i]
 		var final_scale := Vector3(
@@ -452,20 +890,24 @@ func _add_multimesh_bucket(bucket_name: String, mesh: Mesh, transforms: Array, t
 			bucket_scale.y * tile_mesh_scale_uniform.y,
 			bucket_scale.z * tile_mesh_scale_uniform.z
 		)
+		final_scale *= mesh_scale
 		mm.set_instance_transform(i, t.scaled(final_scale))
 		mm.set_instance_color(i, tint)
+		mm.set_instance_custom_data(i, Color(0.0, 0.0, 0.0, 0.0))
 
 	# Если это наш внутренний хекс-меш, зададим материал с vertex color.
 	if use_mesh == _hex_mesh_singleton():
 		var mat := StandardMaterial3D.new()
 		mat.vertex_color_use_as_albedo = true
 		use_mesh.surface_set_material(0, mat)
+	_ensure_mesh_highlight(use_mesh)
 
 	var inst := MultiMeshInstance3D.new()
 	inst.name = bucket_name
 	inst.multimesh = mm
 	inst.cast_shadow = GeometryInstance3D.SHADOW_CASTING_SETTING_ON
 	add_child(inst)
+	return inst
 
 # Храним один общий хекс-меш для fallback, чтобы не плодить копии.
 var __hex_mesh_cache: Mesh
@@ -475,75 +917,92 @@ func _hex_mesh_singleton() -> Mesh:
 	return __hex_mesh_cache
 
 
-func _precompute_heights() -> void:
-	var count := map_width * map_height
-	height_cache.resize(count)
-	var idx := 0
-	for r in range(map_height):
-		for q in range(map_width):
-			# Используем сырую высоту без террасирования для корректного распределения и биомов.
-			height_cache[idx] = height_gen.get_height_raw(q, r, map_width, map_height)
-			idx += 1
+func _mesh_scale_factor(mesh: Mesh) -> float:
+	var radius := _mesh_circumradius(mesh)
+	if radius <= 0.0:
+		return 1.0
+	return hex_radius / radius
 
-	if height_cache.size() == 0:
-		water_level_runtime = height_water_level
-		sand_level_runtime = height_sand_level
-		mountain_level_runtime = height_grass_level
+
+func _mesh_circumradius(mesh: Mesh) -> float:
+	if mesh == null:
+		return 1.0
+	if mesh_radius_cache.has(mesh):
+		return float(mesh_radius_cache[mesh])
+	var max_r := 0.0
+	for surface_idx in range(mesh.get_surface_count()):
+		var arrays := mesh.surface_get_arrays(surface_idx)
+		var verts: PackedVector3Array = arrays[Mesh.ARRAY_VERTEX]
+		for v in verts:
+			var r := Vector2(v.x, v.z).length()
+			if r > max_r:
+				max_r = r
+	if max_r <= 0.0:
+		max_r = 1.0
+	mesh_radius_cache[mesh] = max_r
+	return max_r
+
+
+func _precompute_heights() -> void:
+	if world_gen == null:
+		height_cache = PackedFloat32Array()
+		tile_data = []
 		return
 
-	if use_quantiles:
-		var sorted := height_cache.duplicate()
-		sorted.sort()
-		var sz := sorted.size()
-		var wi := int(clamp(floor((sz - 1) * water_pct), 0.0, float(sz - 1)))
-		var si := int(clamp(floor((sz - 1) * (water_pct + sand_pct)), 0.0, float(sz - 1)))
-		var mi := int(clamp(floor((sz - 1) * (1.0 - mountain_pct)), 0.0, float(sz - 1)))
-		water_level_runtime = sorted[wi]
-		sand_level_runtime = sorted[si]
-		mountain_level_runtime = sorted[mi]
-	else:
-		water_level_runtime = height_water_level
-		sand_level_runtime = height_sand_level
-		mountain_level_runtime = height_grass_level
+	world_gen.generate(map_width, map_height)
+	height_cache = world_gen.heights
+	tile_data = world_gen.tiles
+	water_level_runtime = world_gen.water_level
+	sand_level_runtime = world_gen.sand_level
+	mountain_level_runtime = world_gen.mountain_level
+	_maybe_save_map_snapshot()
 
-	# Гарантируем строгий порядок порогов, чтобы диапазоны не схлопывались из-за квантования.
-	var eps := 0.0005
-	var min_sand_gap: float = max(shoreline_band, 0.02)
-	if water_level_runtime + min_sand_gap > sand_level_runtime:
-		sand_level_runtime = water_level_runtime + min_sand_gap
-	if mountain_level_runtime <= sand_level_runtime + eps:
-		mountain_level_runtime = sand_level_runtime + eps
 
-	# Быстрая проверка распределения для отладки: сколько тайлов попало в каждый биом.
-	var water_cnt := 0
-	var shore_cnt := 0
-	var sand_cnt := 0
-	var grass_cnt := 0
-	var rock_cnt := 0
-	for h in height_cache:
-		if h <= water_level_runtime:
-			water_cnt += 1
-		elif h <= min(sand_level_runtime, water_level_runtime + shoreline_band):
-			shore_cnt += 1
-		elif h <= sand_level_runtime:
-			sand_cnt += 1
-		elif h >= mountain_level_runtime:
-			rock_cnt += 1
-		else:
-			grass_cnt += 1
-	var total: float = float(max(1, height_cache.size()))
-	print("Biome counts: water=%.2f%% shore=%.2f%% sand=%.2f%% grass=%.2f%% rock=%.2f%%" % [
-		100.0 * float(water_cnt) / total,
-		100.0 * float(shore_cnt) / total,
-		100.0 * float(sand_cnt) / total,
-		100.0 * float(grass_cnt) / total,
-		100.0 * float(rock_cnt) / total
-	])
+func _maybe_save_map_snapshot() -> void:
+	if not save_map_snapshot:
+		return
+	if world_gen == null:
+		return
+	if map_snapshot_path.is_empty():
+		push_warning("Map snapshot path is empty, skipping save.")
+		return
+	var snapshot: Dictionary = world_gen.to_serializable_dict()
+	_enrich_snapshot_with_mesh_info(snapshot)
+	var json := JSON.stringify(snapshot, "\t")
+	var file_path := map_snapshot_path
+	var file := FileAccess.open(file_path, FileAccess.WRITE)
+	if file == null:
+		push_warning("Failed to open map snapshot file: %s" % file_path)
+		return
+	file.store_string(json)
+	file.close()
+	var global_path := ProjectSettings.globalize_path(file_path)
+	print("Saved map snapshot to %s" % global_path)
+
+
+func _enrich_snapshot_with_mesh_info(snapshot: Dictionary) -> void:
+	if snapshot == null:
+		return
+	if not snapshot.has("tiles"):
+		return
+	var tiles: Array = snapshot["tiles"]
+	for i in range(tiles.size()):
+		var t = tiles[i]
+		var q := int(t.get("q", -1))
+		var r := int(t.get("r", -1))
+		if q < 0 or r < 0:
+			continue
+		var mesh_info := _tile_mesh_key_and_rotation(q, r)
+		t["mesh_key"] = mesh_info.get("key", "")
+		t["rotation_steps"] = mesh_info.get("rotation_steps", 0)
+		t["rotation_deg"] = mesh_info.get("rotation_deg", 0.0)
+		tiles[i] = t
+	snapshot["tiles"] = tiles
 
 
 func _tile_height(q: int, r: int) -> float:
 	var h := _get_height(q, r)
-	if _biome_for_height(h) == "water":
+	if _tile_biome(q, r) == WorldGeneratorScript.Biome.WATER:
 		return y_offset + water_plane_height
 	return y_offset + height_vertical_offset + h * height_vertical_scale
 
@@ -559,7 +1018,10 @@ func _tile_offset(q: int, r: int) -> Vector3:
 	return Vector3(cos(ang), 0.0, sin(ang)) * dist
 
 
-func _tile_transform(q: int, r: int) -> Transform3D:
+func _tile_transform(q: int, r: int, rotation_steps: int = 0) -> Transform3D:
 	var pos := HexUtil.axial_to_world(q, r, hex_radius) + _tile_offset(q, r)
 	var y := _tile_height(q, r)
-	return Transform3D(hex_basis, Vector3(pos.x, y, pos.z))
+	var basis := hex_basis
+	if rotation_steps != 0:
+		basis = hex_basis.rotated(Vector3.UP, ROT_STEP * float(rotation_steps))
+	return Transform3D(basis, Vector3(pos.x, y, pos.z))

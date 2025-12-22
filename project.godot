@@ -95,3 +95,10 @@ zoom_out={
 "unicode": 0
 }]
 }
+
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/test_width=1600
+window/size/test_height=900

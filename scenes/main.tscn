@@ -7,8 +7,8 @@
 
 [node name="HexGrid" type="Node3D" parent="."]
 script = ExtResource("1")
-map_width = 80
-map_height = 52
+map_width = 2
+map_height = 2
 hex_radius = 1.0
 hex_height = 0.25
 use_multimesh = true
@@ -23,4 +23,3 @@ current = true
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 light_energy = 1.5
 transform = Transform3D(0.612372, 0.353553, -0.707107, 0.0, 0.894427, 0.447214, 0.790569, -0.276026, 0.547723, 0, 0, 0)
-

@@ -1,0 +1,71 @@
+{
+	"height": 2,
+	"height_max": -0.00668184272944927,
+	"height_min": -0.125620558857918,
+	"heights": [
+		0.630053639411926,
+		1.0,
+		0.638806343078613,
+		0.0
+	],
+	"mountain_level": 0.638806343078613,
+	"mountain_pct": 0.1,
+	"raw_heights": [
+		-0.0506827905774117,
+		-0.00668184272944927,
+		-0.0496417507529259,
+		-0.125620558857918
+	],
+	"sand_level": 0.630553639411926,
+	"sand_pct": 0.1,
+	"seed": 12345,
+	"tiles": [
+		{
+			"biome": 1,
+			"biome_name": "sand",
+			"height": 0.630053639411926,
+			"height_raw": -0.0506827905774117,
+			"mesh_key": "sand",
+			"q": 0,
+			"r": 0,
+			"rotation_deg": 0.0,
+			"rotation_steps": 0
+		},
+		{
+			"biome": 3,
+			"biome_name": "mountain",
+			"height": 1.0,
+			"height_raw": -0.00668184272944927,
+			"mesh_key": "mountain",
+			"q": 1,
+			"r": 0,
+			"rotation_deg": 0.0,
+			"rotation_steps": 0
+		},
+		{
+			"biome": 2,
+			"biome_name": "plains",
+			"height": 0.638806343078613,
+			"height_raw": -0.0496417507529259,
+			"mesh_key": "plains",
+			"q": 0,
+			"r": 1,
+			"rotation_deg": 0.0,
+			"rotation_steps": 0
+		},
+		{
+			"biome": 0,
+			"biome_name": "water",
+			"height": 0.0,
+			"height_raw": -0.125620558857918,
+			"mesh_key": "water",
+			"q": 1,
+			"r": 1,
+			"rotation_deg": 0.0,
+			"rotation_steps": 0
+		}
+	],
+	"water_level": 0.630053639411926,
+	"water_pct": 0.45,
+	"width": 2
+}

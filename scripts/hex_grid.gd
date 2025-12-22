@@ -193,7 +193,6 @@ func regenerate_grid() -> void:
 		_build_mesh_instances()
 
 	_build_colliders()
-	_scatter_forest()
 
 
 func _process(_delta: float) -> void:
@@ -884,7 +883,7 @@ func _init_forest_rng() -> void:
 		forest_rng.seed = height_seed
 
 
-func _scatter_forest() -> void:
+func scatter_forest(blocked_tiles: Array[Vector2i] = []) -> void:
 	if not forest_enabled:
 		return
 	_ensure_forest_scenes()
@@ -893,12 +892,21 @@ func _scatter_forest() -> void:
 	_ensure_forest_root()
 	_init_forest_rng()
 	forest_positions.clear()
+	if is_instance_valid(forest_root):
+		for child in forest_root.get_children():
+			child.queue_free()
+
+	var blocked: Dictionary = {}
+	for tile: Vector2i in blocked_tiles:
+		blocked[tile] = true
 
 	var min_count: int = max(forest_min_trees, 0)
 	var max_count: int = max(forest_max_trees, min_count)
 
 	for r in range(map_height):
 		for q in range(map_width):
+			if blocked.has(Vector2i(q, r)):
+				continue
 			if not _is_forest_biome(q, r):
 				continue
 			if forest_rng.randf() > forest_spawn_chance:

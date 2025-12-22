@@ -6,10 +6,12 @@ signal build_requested(resource: GameResource)
 
 @export var resource_card_scene: PackedScene
 @export var resources: Array[GameResource] = []
+@export var buildings: Array[GameResource] = []
 @export var resources_yaml_path: String = "res://resources.yaml"
 @export var use_yaml_resources: bool = true
 
 @onready var resources_grid: GridContainer = %ResourcesGrid
+@onready var buildings_grid: GridContainer = %BuildingsGrid
 
 
 func _ready() -> void:
@@ -17,29 +19,34 @@ func _ready() -> void:
 		var yaml_resources := _load_resources_from_yaml()
 		if not yaml_resources.is_empty():
 			_merge_resources(yaml_resources)
-	_rebuild_resource_cards()
+	_rebuild_cards()
 
 
-func _rebuild_resource_cards() -> void:
-	if resources_grid == null:
+func _rebuild_cards() -> void:
+	_rebuild_cards_for_grid(resources_grid, resources, "resources")
+	_rebuild_cards_for_grid(buildings_grid, buildings, "buildings")
+
+
+func _rebuild_cards_for_grid(grid: GridContainer, list: Array[GameResource], label: String) -> void:
+	if grid == null:
 		return
-	for child in resources_grid.get_children():
+	for child in grid.get_children():
 		child.queue_free()
 	if resource_card_scene == null:
 		push_warning("Resource card scene is not set.")
 		return
-	for res in resources:
+	for res in list:
 		if res == null:
 			continue
 		var card := resource_card_scene.instantiate() as ResourceCard
 		if card == null:
 			continue
-		resources_grid.add_child(card)
+		grid.add_child(card)
 		card.setup(res)
 		card.resource_selected.connect(_on_card_selected)
 		card.build_pressed.connect(_on_build_pressed)
-	if resources_grid.get_child_count() == 0:
-		push_warning("Build menu has no resources to display.")
+	if grid.get_child_count() == 0:
+		push_warning("Build menu has no %s to display." % label)
 
 
 func _on_card_selected(resource: GameResource) -> void:
@@ -93,6 +100,7 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 		if entry.has("buildable_tiles"):
 			res.buildable_tiles = entry["buildable_tiles"]
 
+		res.category = String(entry.get("category", "resource")).to_lower()
 		parsed.append(res)
 	return parsed
 
@@ -105,6 +113,12 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 		var res_id := String(res.id)
 		if not res_id.is_empty():
 			seen[res_id] = true
+	for res in buildings:
+		if res == null:
+			continue
+		var res_id := String(res.id)
+		if not res_id.is_empty():
+			seen[res_id] = true
 
 	for res in additional:
 		if res == null:
@@ -112,8 +126,34 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 		var res_id := String(res.id)
 		if res_id.is_empty() or seen.has(res_id):
 			continue
-		resources.append(res)
+		if res.category == "building":
+			buildings.append(res)
+		else:
+			resources.append(res)
 		seen[res_id] = true
+
+
+func set_tile_context(biome_name: String, has_selection: bool) -> void:
+	_update_card_states(resources_grid, biome_name, has_selection)
+	_update_card_states(buildings_grid, biome_name, has_selection)
+
+
+func _update_card_states(grid: GridContainer, biome_name: String, has_selection: bool) -> void:
+	if grid == null:
+		return
+	for child in grid.get_children():
+		var card := child as ResourceCard
+		if card == null or card.resource == null:
+			continue
+		var can_build := card.resource.can_build_on(biome_name)
+		card.set_buildable_state(can_build, has_selection)
+
+
+func get_all_resources() -> Array[GameResource]:
+	var combined: Array[GameResource] = []
+	combined.append_array(resources)
+	combined.append_array(buildings)
+	return combined
 
 
 func _parse_resources_yaml(text: String) -> Array:

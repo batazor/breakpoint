@@ -10,3 +10,4 @@ title = "Well"
 icon = ExtResource("2")
 scene = ExtResource("3")
 buildable_tiles = ["plains", "sand"]
+category = "resource"

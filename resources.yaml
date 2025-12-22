@@ -5,6 +5,7 @@ resources:
     description: "Fresh water source for nearby tiles."
     icon: res://icon.svg
     scene: res://assets/resources/well.gltf.glb
+    category: resource
     buildable_tiles:
       - plains
       - sand
@@ -14,6 +15,7 @@ resources:
     description: "Extracts ore from mountain tiles."
     icon: res://icon.svg
     scene: res://assets/resources/mine.gltf.glb
+    category: resource
     buildable_tiles:
       - mountain
   lumbermill:
@@ -22,6 +24,17 @@ resources:
     description: "Processes timber from nearby areas."
     icon: res://icon.svg
     scene: res://assets/resources/lumbermill.gltf.glb
+    category: resource
     buildable_tiles:
       - plains
       - sand
+  fortress:
+    id: fortress
+    title: Fortress
+    description: "Defensive stronghold for controlling nearby tiles."
+    icon: res://icon.svg
+    scene: res://assets/castle/castle.gltf.glb
+    category: building
+    buildable_tiles:
+      - plains
+      - mountain

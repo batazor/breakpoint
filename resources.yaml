@@ -8,3 +8,20 @@ resources:
     buildable_tiles:
       - plains
       - sand
+  mine:
+    id: mine
+    title: Mine
+    description: "Extracts ore from mountain tiles."
+    icon: res://icon.svg
+    scene: res://assets/resources/mine.gltf.glb
+    buildable_tiles:
+      - mountain
+  lumbermill:
+    id: lumbermill
+    title: Lumber Mill
+    description: "Processes timber from nearby areas."
+    icon: res://icon.svg
+    scene: res://assets/resources/lumbermill.gltf.glb
+    buildable_tiles:
+      - plains
+      - sand

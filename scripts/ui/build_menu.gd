@@ -7,13 +7,16 @@ signal build_requested(resource: GameResource)
 @export var resource_card_scene: PackedScene
 @export var resources: Array[GameResource] = []
 @export var resources_yaml_path: String = "res://resources.yaml"
+@export var use_yaml_resources: bool = true
 
 @onready var resources_grid: GridContainer = %ResourcesGrid
 
 
 func _ready() -> void:
-	if _resources_are_empty():
-		_load_resources_from_yaml()
+	if use_yaml_resources:
+		var yaml_resources := _load_resources_from_yaml()
+		if not yaml_resources.is_empty():
+			_merge_resources(yaml_resources)
 	_rebuild_resource_cards()
 
 
@@ -47,31 +50,22 @@ func _on_build_pressed(resource: GameResource) -> void:
 	emit_signal("build_requested", resource)
 
 
-func _resources_are_empty() -> bool:
-	if resources.is_empty():
-		return true
-	for res in resources:
-		if res != null:
-			return false
-	return true
-
-
-func _load_resources_from_yaml() -> void:
+func _load_resources_from_yaml() -> Array[GameResource]:
+	var parsed: Array[GameResource] = []
 	if resources_yaml_path.is_empty():
-		return
+		return parsed
 	var file := FileAccess.open(resources_yaml_path, FileAccess.READ)
 	if file == null:
 		push_warning("Resources yaml not found: %s" % resources_yaml_path)
-		return
+		return parsed
 	var text := file.get_as_text()
 	file.close()
 
 	var entries := _parse_resources_yaml(text)
 	if entries.is_empty():
 		push_warning("No resources found in yaml: %s" % resources_yaml_path)
-		return
+		return parsed
 
-	resources.clear()
 	for entry in entries:
 		var res := GameResource.new()
 		var id_val := String(entry.get("id", entry.get("key", "")))
@@ -97,9 +91,29 @@ func _load_resources_from_yaml() -> void:
 				push_warning("Scene is not a PackedScene: %s" % scene_path)
 
 		if entry.has("buildable_tiles"):
-			res.set_meta("buildable_tiles", entry["buildable_tiles"])
+			res.buildable_tiles = entry["buildable_tiles"]
 
+		parsed.append(res)
+	return parsed
+
+
+func _merge_resources(additional: Array[GameResource]) -> void:
+	var seen: Dictionary = {}
+	for res in resources:
+		if res == null:
+			continue
+		var res_id := String(res.id)
+		if not res_id.is_empty():
+			seen[res_id] = true
+
+	for res in additional:
+		if res == null:
+			continue
+		var res_id := String(res.id)
+		if res_id.is_empty() or seen.has(res_id):
+			continue
 		resources.append(res)
+		seen[res_id] = true
 
 
 func _parse_resources_yaml(text: String) -> Array:

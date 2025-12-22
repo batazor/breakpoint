@@ -12,12 +12,19 @@ signal resource_selected(resource: GameResource)
 @export var ghost_alpha: float = 0.4
 @export var ghost_height_offset: float = 0.02
 @export var snap_to_hex: bool = true
+@export var placement_height_offset: float = 0.0
+@export var place_on_tile_select: bool = false
+@export var clear_selection_after_build: bool = true
 
 var build_menu: BuildMenu
 var selected_resource: GameResource
 var ghost_instance: Node3D
 var hex_radius: float = 1.0
 var placement_root: Node3D
+var grid: Node
+var selected_tile_axial: Vector2i = Vector2i(-1, -1)
+var selected_tile_biome: String = ""
+var selected_tile_surface: Vector3 = Vector3.ZERO
 
 
 func _ready() -> void:
@@ -26,11 +33,13 @@ func _ready() -> void:
 		build_menu.resource_selected.connect(_on_resource_selected)
 		build_menu.build_requested.connect(_on_build_requested)
 
-	var grid := get_node_or_null(grid_path)
+	grid = get_node_or_null(grid_path)
 	if grid != null and grid.has_method("get"):
 		var value: Variant = grid.get("hex_radius")
 		if typeof(value) == TYPE_FLOAT:
 			hex_radius = value
+	if grid != null and grid.has_signal("tile_selected"):
+		grid.connect("tile_selected", _on_tile_selected)
 
 	placement_root = get_node_or_null(placement_root_path)
 	if placement_root == null:
@@ -60,6 +69,7 @@ func _on_build_requested(resource: GameResource) -> void:
 	emit_signal("resource_selected", resource)
 	if enable_ghost_preview:
 		_spawn_ghost()
+	_try_place_selected_resource()
 
 
 func _spawn_ghost() -> void:
@@ -107,6 +117,10 @@ func _update_ghost_position() -> void:
 func _snap_to_hex(pos: Vector3) -> Vector3:
 	var axial := _world_to_axial(pos)
 	var rounded := _axial_round(axial)
+	if grid != null and grid.has_method("get_tile_surface_position"):
+		var surface: Variant = grid.call("get_tile_surface_position", rounded)
+		if surface is Vector3:
+			return surface
 	return HexUtil.axial_to_world(rounded.x, rounded.y, hex_radius)
 
 
@@ -164,3 +178,37 @@ func place_selected_at_world(pos: Vector3) -> void:
 		var node := inst as Node3D
 		node.global_position = pos
 		placement_root.add_child(node)
+
+
+func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3) -> void:
+	selected_tile_axial = axial
+	selected_tile_biome = biome_name
+	selected_tile_surface = surface_pos
+	if place_on_tile_select:
+		_try_place_selected_resource()
+
+
+func _try_place_selected_resource() -> bool:
+	if selected_resource == null or selected_resource.scene == null:
+		return false
+	if selected_tile_axial.x < 0 or selected_tile_axial.y < 0:
+		return false
+	if not _is_tile_allowed(selected_resource, selected_tile_biome):
+		return false
+	var pos := selected_tile_surface + Vector3(0.0, placement_height_offset, 0.0)
+	place_selected_at_world(pos)
+	if clear_selection_after_build:
+		selected_resource = null
+		_clear_ghost()
+	return true
+
+
+func _is_tile_allowed(resource: GameResource, biome_name: String) -> bool:
+	if resource == null:
+		return false
+	if resource.buildable_tiles.is_empty():
+		return true
+	for tile in resource.buildable_tiles:
+		if String(tile) == biome_name:
+			return true
+	return false

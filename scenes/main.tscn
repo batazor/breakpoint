@@ -1,9 +1,13 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=7 format=3]
 
 [ext_resource type="Script" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/build_menu.tscn" id="3"]
 [ext_resource type="Script" path="res://scripts/build_controller.gd" id="4"]
+[ext_resource type="Script" path="res://scripts/day_night_cycle.gd" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/ui/time_controls.tscn" id="6"]
+
+[sub_resource type="Environment" id="1"]
 
 [node name="World" type="Node3D"]
 
@@ -26,9 +30,20 @@ current = true
 light_energy = 1.5
 transform = Transform3D(0.612372, 0.353553, -0.707107, 0.0, 0.894427, 0.447214, 0.790569, -0.276026, 0.547723, 0, 0, 0)
 
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("1")
+
+[node name="DayNightCycle" type="Node3D" parent="."]
+script = ExtResource("5")
+sun_path = NodePath("../DirectionalLight3D")
+environment_path = NodePath("../WorldEnvironment")
+time_ui_path = NodePath("../TimeControls")
+
 [node name="BuildController" type="Node3D" parent="."]
 script = ExtResource("4")
 build_menu_path = NodePath("../BuildMenu")
 grid_path = NodePath("../HexGrid")
 
 [node name="BuildMenu" parent="." instance=ExtResource("3")]
+
+[node name="TimeControls" parent="." instance=ExtResource("6")]

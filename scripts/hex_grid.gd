@@ -14,6 +14,8 @@ const HEX_DIRS: Array[Vector2i] = [
 const ROT_STEP := deg_to_rad(60.0)
 const TILE_SIDES_PATH := "res://tile_sides.yaml"
 
+signal tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3)
+
 @export var map_width: int = 3
 @export var map_height: int = 3
 @export var hex_radius: float = 1.0
@@ -811,6 +813,30 @@ func get_map_center() -> Vector3:
 	return HexUtil.center_of_rect(map_width, map_height, hex_radius) + Vector3(0.0, y_offset, 0.0)
 
 
+func get_selected_axial() -> Vector2i:
+	return selection_axial
+
+
+func get_tile_biome_name(axial: Vector2i) -> String:
+	if axial.x < 0 or axial.y < 0 or axial.x >= map_width or axial.y >= map_height:
+		return ""
+	return _biome_name_runtime(_tile_biome(axial.x, axial.y))
+
+
+func get_tile_surface_position(axial: Vector2i) -> Vector3:
+	if axial.x < 0 or axial.y < 0 or axial.x >= map_width or axial.y >= map_height:
+		return Vector3.ZERO
+	var info := _tile_render_info(axial.x, axial.y)
+	if info.is_empty():
+		var fallback := _tile_transform(axial.x, axial.y)
+		return fallback.origin + Vector3(0.0, hex_height * 0.5, 0.0)
+	var t: Transform3D = info["transform"]
+	var mesh: Mesh = info["mesh"]
+	var scale := t.basis.get_scale()
+	var top_offset := _mesh_top_offset(mesh) * scale.y
+	return Vector3(t.origin.x, t.origin.y + top_offset, t.origin.z)
+
+
 func _build_hex_shape() -> ConvexPolygonShape3D:
 	var corners := HexUtil.hex_corners(hex_radius)
 	var verts := PackedVector3Array()
@@ -835,6 +861,9 @@ func _show_selection(axial: Vector2i) -> void:
 	_refresh_highlight(selection_axial)
 	_update_overlay_indicator(selection_indicator, selection_axial, selection_color, selection_emission_energy)
 	_log_tile_debug(axial)
+	var biome_name := _biome_name_runtime(_tile_biome(axial.x, axial.y))
+	var surface_pos := get_tile_surface_position(axial)
+	emit_signal("tile_selected", axial, biome_name, surface_pos)
 
 
 func _show_hover(axial: Vector2i) -> void:

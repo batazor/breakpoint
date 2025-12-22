@@ -34,5 +34,5 @@ func _gui_input(event: InputEvent) -> void:
 func _on_build_pressed() -> void:
 	if resource == null:
 		return
-	emit_signal("build_pressed", resource)
 	emit_signal("resource_selected", resource)
+	emit_signal("build_pressed", resource)

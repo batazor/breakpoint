@@ -1,0 +1,47 @@
+; Engine configuration file.
+; It's best edited using the editor UI and not directly,
+; since the parameters that go here are not all obvious.
+;
+; Format:
+;   [section] ; section goes between []
+;   param=value ; assign values to parameters
+
+config_version=5
+
+[application]
+
+config/name="Breakpoint"
+config/features=PackedStringArray("4.5", "Forward Plus")
+config/icon="res://icon.svg"
+run/main_scene="res://scenes/main.tscn"
+
+[dotnet]
+
+project/assembly_name="Breakpoint"
+
+[input]
+
+move_forward={
+"deadzone": 0.5,
+"events": [ { "type": "key", "keycode": 87, "physical_keycode": 87, "unicode": 0, "echo": false, "pressed": false } ]
+}
+move_back={
+"deadzone": 0.5,
+"events": [ { "type": "key", "keycode": 83, "physical_keycode": 83, "unicode": 0, "echo": false, "pressed": false } ]
+}
+move_left={
+"deadzone": 0.5,
+"events": [ { "type": "key", "keycode": 65, "physical_keycode": 65, "unicode": 0, "echo": false, "pressed": false } ]
+}
+move_right={
+"deadzone": 0.5,
+"events": [ { "type": "key", "keycode": 68, "physical_keycode": 68, "unicode": 0, "echo": false, "pressed": false } ]
+}
+zoom_in={
+"deadzone": 0.5,
+"events": [ { "type": "mouse_button", "button_index": 4, "pressed": false }, { "type": "key", "keycode": 45, "physical_keycode": 45, "unicode": 0, "echo": false, "pressed": false } ]
+}
+zoom_out={
+"deadzone": 0.5,
+"events": [ { "type": "mouse_button", "button_index": 5, "pressed": false }, { "type": "key", "keycode": 61, "physical_keycode": 61, "unicode": 0, "echo": false, "pressed": false } ]
+}

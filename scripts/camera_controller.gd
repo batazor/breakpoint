@@ -2,18 +2,24 @@ extends Node3D
 
 @export var grid_path: NodePath = NodePath("../HexGrid")
 @export var move_speed: float = 18.0
-@export var zoom_speed: float = 10.0
+@export var zoom_speed: float = 16.0
 @export var min_zoom: float = 10.0
 @export var max_zoom: float = 120.0
 @export var start_zoom: float = 38.0
 @export var camera_rotation_degrees: Vector3 = Vector3(-35.0, 45.0, 0.0)
 @export var clamp_margin: float = 6.0
-@export var rotate_speed: float = 90.0  # degrees per second for Q/E yaw
+@export var rotate_speed: float = 360.0  # degrees per second for Q/E yaw
+@export var distance_lerp_speed: float = 16.0
+@export var yaw_lerp_speed: float = 60.0
+@export var min_pitch_degrees: float = -85.0
+@export var max_pitch_degrees: float = -10.0
 
 var grid: Node
 var camera: Camera3D
 var target_distance: float
-var yaw_degrees: float = 0.0
+var current_distance: float
+var target_yaw: float = 0.0
+var current_yaw: float = 0.0
 
 
 func _ready() -> void:
@@ -26,6 +32,7 @@ func _ready() -> void:
 
 	grid = null if grid_path.is_empty() else get_node_or_null(grid_path)
 	target_distance = clampf(start_zoom, min_zoom, max_zoom)
+	current_distance = target_distance
 
 	_center_on_grid()
 	_apply_camera_pose()
@@ -35,6 +42,7 @@ func _physics_process(delta: float) -> void:
 	_handle_rotate(delta)
 	_handle_move(delta)
 	_handle_zoom(delta)
+	_update_camera_smooth(delta)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -95,25 +103,27 @@ func _handle_zoom(delta: float) -> void:
 
 
 func _handle_rotate(delta: float) -> void:
-	var rot_dir := Input.get_action_strength("rotate_right") - Input.get_action_strength("rotate_left")
+	var rot_dir := Input.get_action_strength("rotate_left") - Input.get_action_strength("rotate_right")
 	if rot_dir == 0.0:
 		return
-	yaw_degrees += rot_dir * rotate_speed * delta
-	_apply_camera_pose()
+	target_yaw += rot_dir * rotate_speed * delta
 
 
 func _zoom_delta(amount: float) -> void:
 	target_distance = clampf(target_distance + amount, min_zoom, max_zoom)
-	_apply_camera_pose()
 
 
 func _apply_camera_pose() -> void:
 	if camera == null:
 		return
 
+	var t := clampf(inverse_lerp(min_zoom, max_zoom, current_distance), 0.0, 1.0)
+	# Ease so that pitch change is stronger when getting higher.
+	t = pow(t, 1.6)
+	var pitch := lerp_angle(max_pitch_degrees, min_pitch_degrees, t)
 	camera.rotation_degrees = Vector3(
-		camera_rotation_degrees.x,
-		camera_rotation_degrees.y + yaw_degrees,
+		pitch,
+		camera_rotation_degrees.y + current_yaw,
 		camera_rotation_degrees.z
 	)
 	var forward := -camera.transform.basis.z
@@ -121,7 +131,7 @@ func _apply_camera_pose() -> void:
 		forward = Vector3.FORWARD
 
 	# Place camera back along its forward vector so it looks toward the grid.
-	camera.position = -forward.normalized() * target_distance
+	camera.position = -forward.normalized() * current_distance
 
 
 func _center_on_grid() -> void:
@@ -170,3 +180,10 @@ func _ensure_input_actions() -> void:
 		if InputMap.action_get_events(action).is_empty():
 			for ev in actions[action]:
 				InputMap.action_add_event(action, ev)
+
+
+func _update_camera_smooth(delta: float) -> void:
+	# Smoothly approach target distance and yaw.
+	current_distance = lerp(current_distance, target_distance, 1.0 - exp(-distance_lerp_speed * delta))
+	current_yaw = lerp_angle(current_yaw, target_yaw, 1.0 - exp(-yaw_lerp_speed * delta))
+	_apply_camera_pose()

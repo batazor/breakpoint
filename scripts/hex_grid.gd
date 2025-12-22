@@ -11,12 +11,16 @@ const RAY_LENGTH := 4000.0
 @export var use_multimesh: bool = true
 @export var color_even: Color = Color(0.76, 0.81, 0.87)
 @export var color_odd: Color = Color(0.70, 0.76, 0.82)
+@export var selection_color: Color = Color(1.0, 0.6, 0.2, 0.6)
+@export var selection_height: float = 0.05
+@export var selection_scale: float = 1.05
 
 var bounds_rect: Rect2
 var multimesh_instance: MultiMeshInstance3D
 var collision_root: Node3D
 var shared_shape: ConvexPolygonShape3D
 var hex_basis: Basis = Basis(Vector3.UP, deg_to_rad(30.0))  # rotate mesh to flat-top
+var selection_indicator: MeshInstance3D
 
 
 func _ready() -> void:
@@ -24,6 +28,7 @@ func _ready() -> void:
 	collision_root = Node3D.new()
 	collision_root.name = "CollisionRoot"
 	add_child(collision_root)
+	_create_selection_indicator()
 	regenerate_grid()
 
 
@@ -148,6 +153,7 @@ func _pick_tile(screen_pos: Vector2) -> void:
 	var collider: Object = hit.get("collider")
 	if collider and collider.has_meta("axial"):
 		var axial: Vector2i = collider.get_meta("axial")
+		_show_selection(axial)
 		print("Clicked hex q=%d r=%d" % [axial.x, axial.y])
 
 
@@ -172,3 +178,35 @@ func _build_hex_shape() -> ConvexPolygonShape3D:
 	var shape := ConvexPolygonShape3D.new()
 	shape.points = verts
 	return shape
+
+
+func _create_selection_indicator() -> void:
+	selection_indicator = MeshInstance3D.new()
+	selection_indicator.name = "Selection"
+	var mesh := CylinderMesh.new()
+	mesh.top_radius = hex_radius * selection_scale
+	mesh.bottom_radius = hex_radius * selection_scale
+	mesh.height = selection_height
+	mesh.radial_segments = 6
+	mesh.rings = 1
+
+	var mat := StandardMaterial3D.new()
+	mat.albedo_color = selection_color
+	mat.emission_enabled = true
+	mat.emission = selection_color
+	mat.shading_mode = StandardMaterial3D.SHADING_MODE_UNSHADED
+	mat.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
+	mesh.surface_set_material(0, mat)
+
+	selection_indicator.mesh = mesh
+	selection_indicator.visible = false
+	add_child(selection_indicator)
+
+
+func _show_selection(axial: Vector2i) -> void:
+	if selection_indicator == null:
+		return
+	var pos := HexUtils.axial_to_world(axial.x, axial.y, hex_radius)
+	var y := y_offset + hex_height * 0.5 + selection_height * 0.5 + 0.01
+	selection_indicator.transform = Transform3D(hex_basis, Vector3(pos.x, y, pos.z))
+	selection_indicator.visible = true

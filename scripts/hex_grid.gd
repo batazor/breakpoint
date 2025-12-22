@@ -81,6 +81,10 @@ const TILE_SIDES_PATH := "res://tile_sides.yaml"
 @export var height_plate_jitter: float = 0.2
 @export var height_vertical_scale: float = 0.6
 @export var height_vertical_offset: float = 0.0
+@export_range(-1.0, 1.0, 0.01) var sand_height_offset: float = 0.04
+@export_range(-1.0, 1.0, 0.01) var plains_height_offset: float = 0.10
+@export_range(-1.0, 2.0, 0.01) var mountain_height_offset: float = 0.20
+@export_range(0.0, 3.0, 0.01) var mountain_height_scale: float = 1.45
 @export var water_plane_height: float = 0.0
 @export var fallback_to_hex_mesh: bool = true
 @export var randomize_height_seed: bool = false
@@ -1390,9 +1394,20 @@ func _enrich_snapshot_with_mesh_info(snapshot: Dictionary) -> void:
 
 func _tile_height(q: int, r: int) -> float:
 	var h := _get_height(q, r)
-	if _tile_biome(q, r) == WorldGeneratorScript.Biome.WATER:
+	var biome := _tile_biome(q, r)
+	if biome == WorldGeneratorScript.Biome.WATER:
 		return y_offset + water_plane_height
-	return y_offset + height_vertical_offset + h * height_vertical_scale
+	var scale := height_vertical_scale
+	var offset := height_vertical_offset
+	match biome:
+		WorldGeneratorScript.Biome.SAND:
+			offset += sand_height_offset
+		WorldGeneratorScript.Biome.PLAINS:
+			offset += plains_height_offset
+		WorldGeneratorScript.Biome.MOUNTAIN:
+			scale *= mountain_height_scale
+			offset += mountain_height_offset
+	return y_offset + offset + h * scale
 
 
 func _tile_offset(q: int, r: int) -> Vector3:

@@ -12,6 +12,7 @@ const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(0, 1),
 ]
 const ROT_STEP := deg_to_rad(60.0)
+const TILE_SIDES_PATH := "res://tile_sides.yaml"
 
 @export var map_width: int = 3
 @export var map_height: int = 3
@@ -117,6 +118,8 @@ var mesh_radius_cache: Dictionary = {}
 var mesh_top_cache: Dictionary = {}
 var mesh_height_cache: Dictionary = {}
 var mesh_center_cache: Dictionary = {}
+var tile_side_patterns: Dictionary = {}
+var tile_sides_loaded: bool = false
 var tile_instance_map: Array = []
 var multimesh_bucket_instances: Dictionary = {}
 var mesh_instances: Array = []
@@ -295,6 +298,14 @@ func _build_multimesh_per_biome() -> void:
 						mesh = candidate
 						key = "sand_water" + variant
 						rotation_steps = int(transition["rotation"])
+						if variant == "D":
+							var neighbor_dir := _d_neighbor_dir(q, r, WorldGeneratorScript.Biome.SAND)
+							if neighbor_dir >= 0:
+								var nq := q + HEX_DIRS[neighbor_dir].x
+								var nr := r + HEX_DIRS[neighbor_dir].y
+								var neighbor_idx := nr * map_width + nq
+								if tile_idx > neighbor_idx:
+									rotation_steps = (rotation_steps + 3) % 6
 			elif biome == WorldGeneratorScript.Biome.PLAINS:
 				mesh = mesh_grass
 				tint = color_grass
@@ -308,6 +319,14 @@ func _build_multimesh_per_biome() -> void:
 						mesh = candidate
 						key = "plains_water" + variant
 						rotation_steps = int(transition["rotation"])
+						if variant == "D":
+							var neighbor_dir := _d_neighbor_dir(q, r, WorldGeneratorScript.Biome.PLAINS)
+							if neighbor_dir >= 0:
+								var nq := q + HEX_DIRS[neighbor_dir].x
+								var nr := r + HEX_DIRS[neighbor_dir].y
+								var neighbor_idx := nr * map_width + nq
+								if tile_idx > neighbor_idx:
+									rotation_steps = (rotation_steps + 3) % 6
 			elif biome == WorldGeneratorScript.Biome.MOUNTAIN:
 				mesh = mesh_rock
 				tint = color_rock
@@ -365,80 +384,120 @@ func _water_transition_info(q: int, r: int) -> Dictionary:
 		return {}
 	if _is_edge_tile(q, r):
 		return {}
-	var land_dirs := _land_neighbor_dirs(q, r)
-	if land_dirs.size() < 2:
+	_load_tile_sides()
+	if tile_side_patterns.is_empty():
 		return {}
-	var water_count := 6 - land_dirs.size()
-	if water_count < 2:
+	var biome_name := _biome_name_runtime(biome)
+	var neighbor_types := _neighbor_types(q, r)
+	var water_count := 0
+	var same_count := 0
+	for t in neighbor_types:
+		if t == "water":
+			water_count += 1
+		elif t == biome_name:
+			same_count += 1
+	var land_count := 6 - water_count
+	if land_count < 2 or water_count < 2:
 		return {}
-	if _same_biome_neighbor_count(q, r, biome) < 2:
+	if same_count < 2:
 		return {}
-	if land_dirs.size() == 0 or land_dirs.size() == 6:
-		return {}
-	return _pick_transition_and_rotation(land_dirs)
+	for variant in ["A", "B", "C", "D"]:
+		var key := "%s_water%s" % [biome_name, variant]
+		if not tile_side_patterns.has(key):
+			continue
+		var pattern: Array = tile_side_patterns[key]
+		var rot := _match_tile_pattern(pattern, neighbor_types)
+		if rot >= 0:
+			return {"variant": variant, "rotation": rot}
+	return {}
 
 
-func _land_neighbor_dirs(q: int, r: int) -> Array[int]:
-	var land_dirs: Array[int] = []
+func _d_neighbor_dir(q: int, r: int, biome: int) -> int:
 	for i in range(HEX_DIRS.size()):
 		var nq := q + HEX_DIRS[i].x
 		var nr := r + HEX_DIRS[i].y
-		var is_land := false
-		if nq >= 0 and nq < map_width and nr >= 0 and nr < map_height:
-			is_land = _tile_biome(nq, nr) != WorldGeneratorScript.Biome.WATER
-		if is_land:
-			land_dirs.append(i)
-	return land_dirs
+		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
+			continue
+		if _tile_biome(nq, nr) != biome:
+			continue
+		var transition := _water_transition_info(nq, nr)
+		if not transition.is_empty() and transition.get("variant", "") == "D":
+			return i
+	return -1
 
 
 func _is_edge_tile(q: int, r: int) -> bool:
 	return q == 0 or r == 0 or q == map_width - 1 or r == map_height - 1
 
 
-func _same_biome_neighbor_count(q: int, r: int, biome: int) -> int:
-	var count := 0
+func _load_tile_sides() -> void:
+	if tile_sides_loaded:
+		return
+	tile_sides_loaded = true
+	tile_side_patterns.clear()
+	var file := FileAccess.open(TILE_SIDES_PATH, FileAccess.READ)
+	if file == null:
+		push_warning("Tile sides file not found: %s" % TILE_SIDES_PATH)
+		return
+	var current_key := ""
+	var reading_sides := false
+	var sides: Array[String] = []
+	while not file.eof_reached():
+		var line := file.get_line()
+		var trimmed := line.strip_edges()
+		if trimmed.is_empty() or trimmed.begins_with("#"):
+			continue
+		if trimmed.begins_with("side:"):
+			reading_sides = true
+			sides.clear()
+			continue
+		if trimmed.ends_with(":") and not trimmed.begins_with("-"):
+			var key := trimmed.substr(0, trimmed.length() - 1)
+			if key == "tiles":
+				current_key = ""
+				reading_sides = false
+				sides.clear()
+				continue
+			current_key = key
+			reading_sides = false
+			sides.clear()
+			continue
+		if reading_sides and trimmed.begins_with("-"):
+			var value := trimmed.substr(1, trimmed.length() - 1).strip_edges()
+			sides.append(value)
+			if current_key != "" and sides.size() == 6:
+				tile_side_patterns[current_key] = sides.duplicate()
+				reading_sides = false
+	file.close()
+
+
+func _neighbor_types(q: int, r: int) -> Array[String]:
+	var types: Array[String] = []
+	types.resize(HEX_DIRS.size())
 	for i in range(HEX_DIRS.size()):
 		var nq := q + HEX_DIRS[i].x
 		var nr := r + HEX_DIRS[i].y
 		if nq < 0 or nq >= map_width or nr < 0 or nr >= map_height:
+			types[i] = "water"
 			continue
-		if _tile_biome(nq, nr) == biome:
-			count += 1
-	return count
+		var nb := _tile_biome(nq, nr)
+		types[i] = _biome_name_runtime(nb)
+	return types
 
 
-func _pick_transition_and_rotation(land_dirs: Array[int]) -> Dictionary:
-	var count := land_dirs.size()
-	if count == 0:
-		return {}
-	if count == 1:
-		return {"variant": "A", "rotation": land_dirs[0]}
-	if count == 2:
-		var a := land_dirs[0]
-		var b := land_dirs[1]
-		if _is_adjacent_dir(a, b):
-			var start := a if (a + 1) % 6 == b else b
-			return {"variant": "B", "rotation": start}
-		return {"variant": "A", "rotation": land_dirs[0]}
-	if count == 3:
-		var land := [false, false, false, false, false, false]
-		for d in land_dirs:
-			land[d] = true
-		for s in range(6):
-			if land[s] and land[(s + 1) % 6] and land[(s + 2) % 6]:
-				return {"variant": "C", "rotation": s}
-		return {"variant": "A", "rotation": land_dirs[0]}
-	var land2 := [false, false, false, false, false, false]
-	for d in land_dirs:
-		land2[d] = true
-	for gap in range(6):
-		if not land2[gap]:
-			return {"variant": "D", "rotation": gap}
-	return {"variant": "D", "rotation": 0}
-
-
-func _is_adjacent_dir(a: int, b: int) -> bool:
-	return (a + 1) % 6 == b or (b + 1) % 6 == a
+func _match_tile_pattern(pattern: Array, neighbor_types: Array[String]) -> int:
+	if pattern.size() != 6 or neighbor_types.size() != 6:
+		return -1
+	for rot in range(6):
+		var ok := true
+		for i in range(6):
+			var expected: String = pattern[(i - rot + 6) % 6]
+			if neighbor_types[i] != expected:
+				ok = false
+				break
+		if ok:
+			return rot
+	return -1
 
 
 func _tile_mesh_key_and_rotation(q: int, r: int) -> Dictionary:

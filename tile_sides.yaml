@@ -29,11 +29,11 @@ tiles:
 
   sand_waterD:
     side: # rotation 0: water gap starts at side 0 (two adjacent water)
+      - sand
+      - sand
+      - sand
+      - sand
       - water
-      - sand
-      - sand
-      - sand
-      - sand
       - water
 
   # Water - Plains transitions (grass)
@@ -68,9 +68,9 @@ tiles:
     side:
       - plains
       - plains
-      - water
-      - water
       - plains
+      - water
+      - water
       - plains
 
   # Water - Mountain transitions (rock)

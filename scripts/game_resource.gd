@@ -8,6 +8,7 @@ class_name GameResource
 @export var buildable_tiles: Array = []
 @export var category: String = "resource"
 @export var description: String = ""
+@export var roles: Array = [] # Array[Dictionary] {role_id, max_slots}
 
 
 func can_build_on(biome_name: String) -> bool:

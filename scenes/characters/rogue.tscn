@@ -13,4 +13,5 @@ prefer_forest = true
 resource_bonus = 0.6
 forest_bonus = 0.5
 attractor_radius = 3
+model_rotation_degrees = Vector3(90, 0, 0)
 

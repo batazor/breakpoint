@@ -135,6 +135,9 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 		if entry.has("buildable_tiles"):
 			res.buildable_tiles = entry["buildable_tiles"]
 
+		if entry.has("roles") and entry["roles"] is Array:
+			res.roles = entry["roles"]
+
 		res.category = String(entry.get("category", "resource")).to_lower()
 		parsed.append(res)
 	return parsed
@@ -283,6 +286,8 @@ func _parse_resources_yaml(text: String) -> Array:
 	var in_resources := false
 	var current: Dictionary = {}
 	var collecting_list := false
+	var collecting_roles := false
+	var current_role: Dictionary = {}
 
 	for line in lines:
 		var trimmed := line.strip_edges()
@@ -295,6 +300,13 @@ func _parse_resources_yaml(text: String) -> Array:
 			continue
 
 		if line.begins_with("  ") and not line.begins_with("    "):
+			if collecting_roles:
+				if not current_role.is_empty():
+					if not current.has("roles"):
+						current["roles"] = []
+					current["roles"].append(current_role.duplicate())
+				collecting_roles = false
+				current_role = {}
 			_commit_resource_entry(entries, current)
 			current = {"key": trimmed.rstrip(":")}
 			collecting_list = false
@@ -306,6 +318,31 @@ func _parse_resources_yaml(text: String) -> Array:
 		if trimmed == "buildable_tiles:":
 			collecting_list = true
 			current["buildable_tiles"] = []
+			continue
+
+		if trimmed == "roles:":
+			collecting_roles = true
+			current_role = {}
+			current["roles"] = []
+			continue
+
+		if collecting_roles:
+			if trimmed.begins_with("-"):
+				if not current_role.is_empty():
+					current["roles"].append(current_role.duplicate())
+				current_role = {}
+				var after := trimmed.substr(1, trimmed.length()).strip_edges()
+				var sep_role := after.find(":")
+				if sep_role >= 0:
+					var k := after.substr(0, sep_role).strip_edges()
+					var v := after.substr(sep_role + 1, after.length()).strip_edges()
+					current_role[k] = _parse_scalar(v)
+				continue
+			var sep_r := trimmed.find(":")
+			if sep_r >= 0:
+				var k2 := trimmed.substr(0, sep_r).strip_edges()
+				var v2 := trimmed.substr(sep_r + 1, trimmed.length()).strip_edges()
+				current_role[k2] = _parse_scalar(v2)
 			continue
 
 		if collecting_list and trimmed.begins_with("-"):
@@ -333,3 +370,19 @@ func _commit_resource_entry(entries: Array, current: Dictionary) -> void:
 	if String(current.get("key", "")).is_empty() and String(current.get("id", "")).is_empty():
 		return
 	entries.append(current.duplicate())
+
+
+func _parse_scalar(raw: String) -> Variant:
+	if raw.is_empty():
+		return ""
+	if raw.begins_with("\"") and raw.ends_with("\""):
+		return raw.substr(1, raw.length() - 2)
+	if raw.is_valid_int():
+		return int(raw)
+	if raw.is_valid_float():
+		return float(raw)
+	if raw == "true":
+		return true
+	if raw == "false":
+		return false
+	return raw

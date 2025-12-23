@@ -1,8 +1,9 @@
-[gd_scene load_steps=4 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/build_menu.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/ui/resource_card.tscn" id="2"]
 [ext_resource type="Resource" path="res://assets/resources/well_resource.tres" id="3"]
+[ext_resource type="Script" path="res://scripts/ui/diplomacy_panel.gd" id="4"]
 
 [node name="BuildMenu" type="CanvasLayer"]
 layer = 2
@@ -110,6 +111,33 @@ unique_name_in_owner = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
+
+[node name="Diplomacy" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
+script = ExtResource("4")
+graph_edit_path = NodePath("DiploVBox/DiploGraph")
+focus_selector_path = NodePath("DiploVBox/DiploFocus")
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DiploVBox" type="VBoxContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DiploTitle" type="Label" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
+text = "Diplomacy"
+
+[node name="DiploFocus" type="OptionButton" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+
+[node name="DiploGraph" type="GraphEdit" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+min_size = Vector2(360, 240)
+right_disconnects = false
+scroll_offset = Vector2(0, 0)
+zoom = 1.0
 
 [node name="HintLabel" type="Label" parent="BuildPanel/PanelMargin/PanelVBox"]
 unique_name_in_owner = true

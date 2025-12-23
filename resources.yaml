@@ -38,6 +38,11 @@ resources:
     buildable_tiles:
       - plains
       - mountain
+    roles:
+      - role_id: guard
+        max_slots: 4
+      - role_id: worker
+        max_slots: 2
   barbarian:
     id: barbarian
     title: Barbarian
@@ -77,6 +82,7 @@ resources:
     category: character
     buildable_tiles:
       - plains
+      - forest
   mage:
     id: mage
     title: Mage

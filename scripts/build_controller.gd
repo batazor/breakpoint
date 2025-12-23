@@ -2,6 +2,8 @@ extends Node3D
 class_name BuildController
 
 const HexUtil = preload("res://scripts/hex.gd")
+const RoleSlotRes = preload("res://scripts/role_slot.gd")
+const FactionSystemRes = preload("res://scripts/faction_system.gd")
 
 signal resource_selected(resource: GameResource)
 
@@ -34,6 +36,10 @@ signal resource_selected(resource: GameResource)
 @export var randomize_building_seed: bool = false
 @export var generation_layers: Array[String] = ["fortresses", "fortress_resources", "fortress_characters", "river_characters", "rogues", "forest"]
 @export var resource_spawn_radius: int = 1
+@export var faction_player: StringName = &"kingdom"
+@export var faction_bandits: StringName = &"bandits"
+@export var faction_neutral: StringName = &"neutral"
+@export var kingdom_factions: Array[StringName] = [&"kingdom_a", &"kingdom_b", &"kingdom_c"]
 
 var build_menu: BuildMenu
 var selected_resource: GameResource
@@ -50,6 +56,11 @@ var building_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var occupied_axials: Array[Vector2i] = []
 var spawned_fortress_axials: Array[Vector2i] = []
 var resource_axials: Array[Vector2i] = []
+var faction_system: Node
+var fortress_owner: Dictionary = {} # axial -> faction_id
+var building_at: Dictionary = {} # axial -> building_id
+var building_counter: Dictionary = {} # res_id -> int
+var _current_owner_override: StringName = StringName("")
 const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),
 	Vector2i(1, -1),
@@ -80,6 +91,8 @@ func _ready() -> void:
 	if placement_root == null:
 		placement_root = self
 	_init_building_rng()
+	_resolve_faction_system()
+	_register_default_factions()
 	call_deferred("_run_generation_layers")
 
 
@@ -256,7 +269,7 @@ func _is_tile_allowed(resource: GameResource, biome_name: String) -> bool:
 	return false
 
 
-func _place_resource_on_tile(resource: GameResource, axial: Vector2i) -> bool:
+func _place_resource_on_tile(resource: GameResource, axial: Vector2i, owner_override: StringName = StringName("")) -> bool:
 	if resource == null or resource.scene == null:
 		return false
 	if _is_tile_occupied(axial):
@@ -268,9 +281,12 @@ func _place_resource_on_tile(resource: GameResource, axial: Vector2i) -> bool:
 		return false
 	var surface_pos: Vector3 = _get_tile_surface(axial)
 	var pos: Vector3 = surface_pos + Vector3(0.0, placement_height_offset, 0.0)
-	_place_resource_instance(resource, pos)
+	_current_owner_override = owner_override
+	var placed_node := _place_resource_instance(resource, pos)
+	_current_owner_override = StringName("")
 	_mark_tile_occupied(axial)
 	_track_resource_location(resource, axial)
+	_register_building_if_needed(resource, axial, pos, placed_node)
 	return true
 
 
@@ -290,21 +306,22 @@ func _get_tile_surface(axial: Vector2i) -> Vector3:
 	return HexUtil.axial_to_world(axial.x, axial.y, hex_radius)
 
 
-func _place_resource_instance(resource: GameResource, pos: Vector3) -> void:
+func _place_resource_instance(resource: GameResource, pos: Vector3) -> Node3D:
 	var inst: Node = resource.scene.instantiate()
 	if inst is Node3D:
 		var node := inst as Node3D
 		node.global_position = pos
-		_configure_character_node(node)
+		_configure_character_node(node, resource)
 		placement_root.add_child(node)
-		return
+		return node
 	var wrapper := Node3D.new()
 	wrapper.global_position = pos
 	wrapper.add_child(inst)
 	placement_root.add_child(wrapper)
+	return wrapper
 
 
-func _configure_character_node(node: Node3D) -> void:
+func _configure_character_node(node: Node3D, resource: GameResource) -> void:
 	if grid != null and node.has_method("set_grid_path"):
 		node.call("set_grid_path", grid.get_path())
 	if node.has_method("set_hex_radius"):
@@ -313,6 +330,61 @@ func _configure_character_node(node: Node3D) -> void:
 		node.call("set_resource_targets", resource_axials)
 	if node.has_method("set_castle_targets"):
 		node.call("set_castle_targets", spawned_fortress_axials)
+	if faction_system != null and node.has_method("set_faction_system_path"):
+		node.call("set_faction_system_path", faction_system.get_path())
+	var faction_id := _current_owner_override
+	if faction_id == StringName(""):
+		faction_id = _faction_for_resource(resource.id)
+	if node.has_method("set_faction_id"):
+		node.call("set_faction_id", faction_id)
+	node.set_meta("faction_id", faction_id)
+
+
+func _faction_for_resource(res_id: StringName) -> StringName:
+	if res_id == auto_spawn_rogue_id or res_id == StringName("rogue"):
+		return faction_bandits
+	if res_id == auto_spawn_ranger_id or res_id == StringName("ranger"):
+		return faction_neutral
+	return faction_player
+
+
+func _register_building_if_needed(resource: GameResource, axial: Vector2i, pos: Vector3, node: Node3D) -> void:
+	if faction_system == null:
+		return
+	if resource.category != "building":
+		return
+	var roles_arr: Array = []
+	for entry in resource.roles:
+		if entry is Dictionary:
+			var slot := RoleSlotRes.new()
+			slot.role_id = StringName(entry.get("role_id", ""))
+			slot.max_slots = int(entry.get("max_slots", 1))
+			roles_arr.append(slot)
+	var count: int = int(building_counter.get(resource.id, 0)) + 1
+	building_counter[resource.id] = count
+	var building_id: StringName = StringName("%s_%d" % [resource.id, count])
+	building_at[axial] = building_id
+	var owner_id: StringName = _current_owner_override
+	if owner_id == StringName(""):
+		owner_id = _faction_for_resource(resource.id)
+	faction_system.call_deferred("register_building", building_id, owner_id, resource.id, roles_arr, axial, pos)
+	if node != null:
+		node.set_meta("building_id", building_id)
+
+
+func _register_default_factions() -> void:
+	if faction_system == null:
+		return
+	var ids: Array[StringName] = []
+	ids.append_array(kingdom_factions)
+	ids.append(faction_bandits)
+	ids.append(faction_neutral)
+	for fid in ids:
+		if String(fid).is_empty():
+			continue
+		var f := Faction.new()
+		f.id = fid
+		faction_system.register_faction(f)
 
 
 func _track_resource_location(resource: GameResource, axial: Vector2i) -> void:
@@ -357,6 +429,14 @@ func _init_building_rng() -> void:
 	building_rng.seed = 1
 
 
+func _resolve_faction_system() -> void:
+	if faction_system != null:
+		return
+	faction_system = get_tree().get_first_node_in_group("faction_system")
+	if faction_system == null:
+		faction_system = get_node_or_null("FactionSystem")
+
+
 func _spawn_forest_after_buildings() -> void:
 	if grid == null:
 		return
@@ -391,6 +471,13 @@ func _spawn_fortresses() -> Array[Vector2i]:
 		push_warning("Fortress resource not found: %s" % auto_spawn_fortress_id)
 		return result
 	result = _spawn_random_resource(fortress, auto_spawn_fortress_count, auto_spawn_fortress_min_distance)
+	for i in range(result.size()):
+		var axial := result[i]
+		var fid := kingdom_factions[min(i, kingdom_factions.size() - 1)] if kingdom_factions.size() > 0 else faction_player
+		fortress_owner[axial] = fid
+		if faction_system != null and building_at.has(axial):
+			var bid: StringName = building_at[axial]
+			faction_system.call_deferred("transfer_building", bid, fid)
 	return result
 
 
@@ -409,18 +496,18 @@ func _spawn_resource_near_fortress(fortress_axial: Vector2i) -> void:
 	for axial: Vector2i in candidates:
 		if _is_tile_occupied(axial):
 			continue
-		var biome_name: String = _get_tile_biome_name(axial)
-		if biome_name.is_empty():
+		var biome_name_candidate: String = _get_tile_biome_name(axial)
+		if biome_name_candidate.is_empty():
 			continue
-		if _get_resource_candidates_for_biome(biome_name).is_empty():
+		if _get_resource_candidates_for_biome(biome_name_candidate).is_empty():
 			continue
 		scored.append(axial)
 	if scored.is_empty():
 		return
 	var idx: int = building_rng.randi_range(0, scored.size() - 1)
 	var target: Vector2i = scored[idx]
-	var biome_name: String = _get_tile_biome_name(target)
-	var resources: Array[GameResource] = _get_resource_candidates_for_biome(biome_name)
+	var target_biome: String = _get_tile_biome_name(target)
+	var resources: Array[GameResource] = _get_resource_candidates_for_biome(target_biome)
 	if resources.is_empty():
 		return
 	var res_idx: int = building_rng.randi_range(0, resources.size() - 1)
@@ -451,7 +538,7 @@ func _spawn_character_near_fortress(knight: GameResource, fortress_axial: Vector
 	for axial in candidates:
 		if _is_tile_occupied(axial):
 			continue
-		var biome_name := _get_tile_biome_name(axial)
+		var biome_name: String = _get_tile_biome_name(axial)
 		if biome_name.is_empty():
 			continue
 		if not _is_tile_allowed(knight, biome_name):
@@ -461,7 +548,8 @@ func _spawn_character_near_fortress(knight: GameResource, fortress_axial: Vector
 		return
 	var idx := building_rng.randi_range(0, valid.size() - 1)
 	var target: Vector2i = valid[idx]
-	_place_resource_on_tile(knight, target)
+	var owner_id: StringName = fortress_owner.get(fortress_axial, _faction_for_resource(knight.id))
+	_place_resource_on_tile(knight, target, owner_id)
 
 
 func _spawn_rangers_near_rivers() -> void:
@@ -597,7 +685,7 @@ func _spawn_rogues_on_forest() -> void:
 			if _is_tile_occupied(axial):
 				continue
 			var biome := _get_tile_biome_name(axial)
-			if biome != "plains":
+			if biome != "plains" and biome != "forest":
 				continue
 			if not _is_tile_allowed(rogue, biome):
 				continue

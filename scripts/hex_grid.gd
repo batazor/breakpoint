@@ -179,6 +179,7 @@ var water_level_runtime: float
 var sand_level_runtime: float
 var mountain_level_runtime: float
 var forest_tiles: Dictionary = {}
+var character_tiles: Dictionary = {} # axial -> int (character id)
 var mesh_radius_cache: Dictionary = {}
 var mesh_top_cache: Dictionary = {}
 var mesh_height_cache: Dictionary = {}
@@ -807,6 +808,29 @@ func set_forest_tile(axial: Vector2i, has_forest: bool) -> void:
 		forest_tiles[axial] = true
 	else:
 		forest_tiles.erase(axial)
+
+
+func is_character_tile_occupied(axial: Vector2i) -> bool:
+	return character_tiles.has(axial)
+
+
+func request_character_occupy(axial: Vector2i, occupant_id: int) -> bool:
+	if axial.x < 0 or axial.y < 0 or axial.x >= map_width or axial.y >= map_height:
+		return false
+	if character_tiles.has(axial):
+		var existing := int(character_tiles[axial])
+		if existing != occupant_id:
+			return false
+	character_tiles[axial] = occupant_id
+	return true
+
+
+func vacate_character_tile(axial: Vector2i, occupant_id: int) -> void:
+	if not character_tiles.has(axial):
+		return
+	var existing := int(character_tiles[axial])
+	if existing == occupant_id:
+		character_tiles.erase(axial)
 
 
 func get_tile_surface_position(axial: Vector2i) -> Vector3:

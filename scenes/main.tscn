@@ -54,3 +54,4 @@ selection_badge_path = NodePath("../SelectionBadge")
 [node name="SelectionBadge" parent="." instance=ExtResource("7")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("8")]
+

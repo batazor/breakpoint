@@ -18,6 +18,7 @@ const InterestNavigation = preload("res://scripts/ai/interest_navigation.gd")
 @export var forest_bonus: float = 0.4
 @export var attractor_radius: int = 3
 @export var attractor_decay: float = 0.2
+@export var faction_id: StringName = &""
 
 var _grid: Node
 var _nav: InterestNavigation
@@ -27,11 +28,13 @@ var _target_pos: Vector3 = Vector3.ZERO
 var _time_accum: float = 0.0
 var _resource_targets: Array[Vector2i] = []
 var _castle_targets: Array[Vector2i] = []
+var _occupant_id: int = 0
 
 
 func _ready() -> void:
 	super._ready()
 	_grid = get_node_or_null(grid_path)
+	_occupant_id = get_instance_id()
 	_init_hex_radius_from_grid()
 	_setup_navigation()
 	_set_initial_cell()
@@ -65,6 +68,11 @@ func set_goal(axial: Vector2i) -> void:
 		_nav.set_goal(axial)
 
 
+func set_faction_id(id: StringName) -> void:
+	faction_id = id
+	set_meta("faction_id", id)
+
+
 func set_resource_targets(targets: Array[Vector2i]) -> void:
 	_resource_targets = targets.duplicate()
 
@@ -86,6 +94,7 @@ func _set_initial_cell() -> void:
 		_nav.set_current_cell(_current_axial)
 	_target_pos = _axial_to_world(_current_axial)
 	global_position = _target_pos
+	_occupy(_current_axial)
 
 
 func _pick_next() -> void:
@@ -93,7 +102,12 @@ func _pick_next() -> void:
 		return
 	var neighbors: Array[Dictionary] = _nav.neighbor_context_from_grid(_current_axial)
 	neighbors = neighbors.filter(func(ctx: Dictionary) -> bool:
-		return ctx.get("biome", "") != "water")
+		var ax: Vector2i = ctx.get("axial", _current_axial)
+		if ctx.get("biome", "") == "water":
+			return false
+		if _is_occupied(ax) and ax != _current_axial:
+			return false
+		return true)
 	for ctx in neighbors:
 		var axial: Vector2i = ctx.get("axial", _current_axial)
 		var biome: String = ctx.get("biome", "")
@@ -121,9 +135,12 @@ func _move_toward_target(delta: float) -> void:
 
 func _on_reached_target() -> void:
 	global_position = _target_pos
-	_current_axial = _target_axial
-	if _nav != null:
-		_nav.set_current_cell(_current_axial)
+	if _current_axial != _target_axial:
+		_vacate(_current_axial)
+		_current_axial = _target_axial
+		_occupy(_current_axial)
+		if _nav != null:
+			_nav.set_current_cell(_current_axial)
 
 
 func _axial_to_world(axial: Vector2i) -> Vector3:
@@ -214,4 +231,24 @@ func _hex_distance(a: Vector2i, b: Vector2i) -> int:
 	var dr: int = abs(a.y - b.y)
 	var ds: int = abs((-a.x - a.y) - (-b.x - b.y))
 	return max(dq, max(dr, ds))
+
+
+func _is_occupied(axial: Vector2i) -> bool:
+	if _grid != null and _grid.has_method("is_character_tile_occupied"):
+		return _grid.call("is_character_tile_occupied", axial)
+	return false
+
+
+func _occupy(axial: Vector2i) -> void:
+	if _grid != null and _grid.has_method("request_character_occupy"):
+		_grid.call("request_character_occupy", axial, _occupant_id)
+
+
+func _vacate(axial: Vector2i) -> void:
+	if _grid != null and _grid.has_method("vacate_character_tile"):
+		_grid.call("vacate_character_tile", axial, _occupant_id)
+
+
+func _exit_tree() -> void:
+	_vacate(_current_axial)
 

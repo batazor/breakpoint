@@ -9,6 +9,8 @@ class_name CharacterAnimator
 @export var animation_sources: Array[String] = []
 @export var default_animation: StringName = "Idle"
 @export var play_on_ready: bool = true
+@export var model_rotation_degrees: Vector3 = Vector3.ZERO
+@export var model_scale: Vector3 = Vector3.ONE
 
 var model: Node = null
 var animation_player: AnimationPlayer = null
@@ -20,6 +22,7 @@ func _ready() -> void:
 	if model == null:
 		push_warning("CharacterAnimator: model not found; set model_scene or model_path.")
 		return
+	_apply_model_transform()
 
 	animation_player = _find_animation_player(model)
 	if animation_player == null:
@@ -103,6 +106,13 @@ func _library_name(path: String) -> StringName:
 	if parts.size() > 0:
 		return StringName(parts[0])
 	return StringName(path)
+
+
+func _apply_model_transform() -> void:
+	if model is Node3D:
+		var n := model as Node3D
+		n.rotation_degrees = model_rotation_degrees
+		n.scale = model_scale
 
 
 func _play_default() -> void:

@@ -10,3 +10,6 @@ class_name NPC
 @export var move_speed: float = 4.0
 @export var icon: Texture2D
 @export var scene: PackedScene
+@export var role: StringName = &""
+@export var home_building: StringName = &""
+@export var workplace: StringName = &""

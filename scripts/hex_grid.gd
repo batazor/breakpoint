@@ -178,6 +178,7 @@ var tile_data: Array = []
 var water_level_runtime: float
 var sand_level_runtime: float
 var mountain_level_runtime: float
+var forest_tiles: Dictionary = {}
 var mesh_radius_cache: Dictionary = {}
 var mesh_top_cache: Dictionary = {}
 var mesh_height_cache: Dictionary = {}
@@ -795,6 +796,17 @@ func get_tile_biome_name(axial: Vector2i) -> String:
 	if axial.x < 0 or axial.y < 0 or axial.x >= map_width or axial.y >= map_height:
 		return ""
 	return _biome_name_runtime(_tile_biome(axial.x, axial.y))
+
+
+func is_forest_tile(axial: Vector2i) -> bool:
+	return forest_tiles.has(axial)
+
+
+func set_forest_tile(axial: Vector2i, has_forest: bool) -> void:
+	if has_forest:
+		forest_tiles[axial] = true
+	else:
+		forest_tiles.erase(axial)
 
 
 func get_tile_surface_position(axial: Vector2i) -> Vector3:

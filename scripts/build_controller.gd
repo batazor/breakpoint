@@ -49,6 +49,7 @@ var occupied_tiles: Dictionary = {}
 var building_rng: RandomNumberGenerator = RandomNumberGenerator.new()
 var occupied_axials: Array[Vector2i] = []
 var spawned_fortress_axials: Array[Vector2i] = []
+var resource_axials: Array[Vector2i] = []
 const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),
 	Vector2i(1, -1),
@@ -269,6 +270,7 @@ func _place_resource_on_tile(resource: GameResource, axial: Vector2i) -> bool:
 	var pos: Vector3 = surface_pos + Vector3(0.0, placement_height_offset, 0.0)
 	_place_resource_instance(resource, pos)
 	_mark_tile_occupied(axial)
+	_track_resource_location(resource, axial)
 	return true
 
 
@@ -293,12 +295,34 @@ func _place_resource_instance(resource: GameResource, pos: Vector3) -> void:
 	if inst is Node3D:
 		var node := inst as Node3D
 		node.global_position = pos
+		_configure_character_node(node)
 		placement_root.add_child(node)
 		return
 	var wrapper := Node3D.new()
 	wrapper.global_position = pos
 	wrapper.add_child(inst)
 	placement_root.add_child(wrapper)
+
+
+func _configure_character_node(node: Node3D) -> void:
+	if grid != null and node.has_method("set_grid_path"):
+		node.call("set_grid_path", grid.get_path())
+	if node.has_method("set_hex_radius"):
+		node.call("set_hex_radius", hex_radius)
+	if node.has_method("set_resource_targets"):
+		node.call("set_resource_targets", resource_axials)
+	if node.has_method("set_castle_targets"):
+		node.call("set_castle_targets", spawned_fortress_axials)
+
+
+func _track_resource_location(resource: GameResource, axial: Vector2i) -> void:
+	if resource == null:
+		return
+	if resource.category == "resource":
+		resource_axials.append(axial)
+	if resource.id == auto_spawn_fortress_id or resource.id == StringName("fortress"):
+		if not spawned_fortress_axials.has(axial):
+			spawned_fortress_axials.append(axial)
 
 
 func _axial_key(axial: Vector2i) -> String:

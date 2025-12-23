@@ -27,6 +27,8 @@ func scatter(blocked_tiles: Array[Vector2i] = []) -> void:
 	_ensure_root()
 	_init_rng()
 	positions.clear()
+	if "forest_tiles" in grid:
+		grid.forest_tiles.clear()
 	if is_instance_valid(root):
 		for child in root.get_children():
 			child.queue_free()
@@ -46,6 +48,8 @@ func scatter(blocked_tiles: Array[Vector2i] = []) -> void:
 				continue
 			if rng.randf() > grid.forest_spawn_chance:
 				continue
+			if grid.has_method("set_forest_tile"):
+				grid.set_forest_tile(Vector2i(q, r), true)
 			var tile_pos: Vector3 = grid.get_tile_surface_position(Vector2i(q, r))
 			var count: int = rng.randi_range(min_count, max_count)
 			for i in range(count):

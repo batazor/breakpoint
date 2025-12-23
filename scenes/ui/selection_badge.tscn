@@ -1,0 +1,30 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/selection_badge.gd" id="1"]
+
+[node name="SelectionBadge" type="CanvasLayer"]
+layer = 4
+script = ExtResource("1")
+
+[node name="Panel" type="PanelContainer" parent="."]
+anchor_left = 0.5
+anchor_top = 0.0
+anchor_right = 0.5
+anchor_bottom = 0.0
+offset_left = -210.0
+offset_top = 12.0
+offset_right = 210.0
+offset_bottom = 64.0
+
+[node name="Margin" type="MarginContainer" parent="Panel"]
+theme_override_constants/margin_left = 10
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 10
+theme_override_constants/margin_bottom = 8
+
+[node name="InfoLabel" type="Label" parent="Panel/Margin"]
+unique_name_in_owner = true
+text = "Tile: —"
+horizontal_alignment = 1
+autowrap_mode = 3
+visible = false

@@ -1,0 +1,2663 @@
+{
+	"count": 166,
+	"generated_at": "2025-12-23T13:45:53",
+	"models": [
+		{
+			"bounds": {
+				"sx": 1.80483758449554,
+				"sy": 2.53276300430298,
+				"sz": 1.8523473739624,
+				"x": -0.902418792247772,
+				"y": -0.0256850030273199,
+				"z": -0.94992858171463
+			},
+			"height": 2.53276300430298,
+			"max_y": 2.50707800127566,
+			"mesh_count": 1,
+			"min_y": -0.0256850030273199,
+			"node_count": 2,
+			"path": "res://assets/castle/castle.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.8406617641449,
+				"sy": 0.733797669410706,
+				"sz": 1.18327558040619,
+				"x": -0.922148525714874,
+				"y": -0.00138242356479168,
+				"z": -0.78391295671463
+			},
+			"height": 0.733797669410706,
+			"max_y": 0.732415245845914,
+			"mesh_count": 1,
+			"min_y": -0.00138242356479168,
+			"node_count": 2,
+			"path": "res://assets/resources/forest/detail_forestA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.85339987277985,
+				"sy": 0.738799452781677,
+				"sz": 1.35932421684265,
+				"x": -0.962561130523682,
+				"y": -0.00638415664434433,
+				"z": -0.6439129114151
+			},
+			"height": 0.738799452781677,
+			"max_y": 0.732415296137333,
+			"mesh_count": 1,
+			"min_y": -0.00638415664434433,
+			"node_count": 2,
+			"path": "res://assets/resources/forest/detail_forestB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.81875836849213,
+				"sy": 1.10083103179932,
+				"sz": 1.58878839015961,
+				"x": -0.954274773597717,
+				"y": -0.00238847732543945,
+				"z": -0.81588214635849
+			},
+			"height": 1.10083103179932,
+			"max_y": 1.09844255447388,
+			"mesh_count": 1,
+			"min_y": -0.00238847732543945,
+			"node_count": 2,
+			"path": "res://assets/resources/forest/detail_hill.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.93047046661377,
+				"sy": 1.36016201972961,
+				"sz": 1.89614450931549,
+				"x": -0.97770768404007,
+				"y": -0.01863694190979,
+				"z": -0.973746299743652
+			},
+			"height": 1.36016201972961,
+			"max_y": 1.34152507781982,
+			"mesh_count": 1,
+			"min_y": -0.01863694190979,
+			"node_count": 2,
+			"path": "res://assets/resources/forest/forest.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.8240385055542,
+				"sy": 1.46953725814819,
+				"sz": 1.65748429298401,
+				"x": -0.916554689407349,
+				"y": -0.0157050341367722,
+				"z": -0.806615591049194
+			},
+			"height": 1.46953725814819,
+			"max_y": 1.45383222401142,
+			"mesh_count": 1,
+			"min_y": -0.0157050341367722,
+			"node_count": 2,
+			"path": "res://assets/resources/lumbermill.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.61463189125061,
+				"sy": 0.82942008972168,
+				"sz": 1.88292360305786,
+				"x": -0.858662307262421,
+				"y": -0.0101118199527264,
+				"z": -0.904272377490997
+			},
+			"height": 0.82942008972168,
+			"max_y": 0.819308269768953,
+			"mesh_count": 1,
+			"min_y": -0.0101118199527264,
+			"node_count": 2,
+			"path": "res://assets/resources/mine.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.01795721054077,
+				"sy": 0.736628234386444,
+				"sz": 1.01795721054077,
+				"x": -0.508978664875031,
+				"y": -0.00179562089033425,
+				"z": -0.508978605270386
+			},
+			"height": 0.736628234386444,
+			"max_y": 0.73483261349611,
+			"mesh_count": 1,
+			"min_y": -0.00179562089033425,
+			"node_count": 2,
+			"path": "res://assets/resources/well.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000286102295,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadE.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadE_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadF.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadF_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadG.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadG_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadH.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadH_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadI.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadI_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadJ.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadJ_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadK.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadK_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadL.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadL_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadM.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_roadM_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_transitionA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_transitionB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.0,
+				"sy": 1.0,
+				"sz": 1.7320499420166,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterA_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.00000011920929,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -0.000000100947126213669,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterB_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.02194631099701,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -0.0219463333487511,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterC_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_forest_waterD_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000286102295,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadE.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadE_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadF.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadF_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadG.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadG_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadH.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadH_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadI.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadI_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadJ.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadJ_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadK.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadK_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadL.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadL_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadM.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_roadM_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_transitionA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_transitionB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.0,
+				"sy": 1.0,
+				"sz": 1.7320499420166,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterA_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.00000011920929,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -0.000000100947126213669,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterB_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.02194631099701,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -0.0219463333487511,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterC_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_rock_waterD_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30939984321594,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469741821289
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469884872437
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000381469727,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000286102295,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15469598770142
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000143051147,
+				"y": 0.0,
+				"z": -1.15470433235168
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadE.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15469932556152
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadE_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadF.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15470218658447
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadF_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadG.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000095367432,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000095367432,
+				"y": 0.0,
+				"z": -1.15469706058502
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadG_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadH.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadH_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadI.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000286102295,
+				"y": 0.0,
+				"z": -1.15470373630524
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadI_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadJ.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0000057220459,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000476837158,
+				"y": 0.0,
+				"z": -1.15470027923584
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadJ_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadK.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470123291016
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadK_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadL.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000381469727,
+				"y": 0.0,
+				"z": -1.15469789505005
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadL_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadM.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000190734863,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000190734863,
+				"y": 0.0,
+				"z": -1.15470600128174
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_roadM_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_transitionA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.06882727146149,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.06882727146149,
+			"max_y": 1.06882727146149,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_transitionB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterA.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterA_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.0,
+				"sy": 1.0,
+				"sz": 1.7320499420166,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterA_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterB.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterB_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.00000011920929,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -0.000000100947126213669,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterB_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterC.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterC_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 1.02194631099701,
+				"sy": 1.00118410587311,
+				"sz": 2.30940008163452,
+				"x": -0.0219463333487511,
+				"y": -0.000000119209289550781,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118410587311,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": -0.000000119209289550781,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterC_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterD.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterD_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00118398666382,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00118398666382,
+			"max_y": 1.00118398666382,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_sand_waterD_empty.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 1.0,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_water.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 0.900000035762787,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": 0.0,
+				"z": -1.15470004081726
+			},
+			"height": 0.900000035762787,
+			"max_y": 0.900000035762787,
+			"mesh_count": 1,
+			"min_y": 0.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/hex_water_detail.gltf.glb"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_A.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_A_curvy.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 1.99999964237213,
+				"sy": 1.0,
+				"sz": 2.30940079689026,
+				"x": -0.99999988079071,
+				"y": -1.0,
+				"z": -1.15470039844513
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_B.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00000023841858,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00000023841858,
+			"max_y": 0.000000238418579101562,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_C.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_D.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_E.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_F.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_G.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_H.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 1.99999976158142,
+				"sy": 1.0,
+				"sz": 2.30940079689026,
+				"x": -0.99999988079071,
+				"y": -1.0,
+				"z": -1.15470039844513
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_I.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_J.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_K.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_L.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000023841858,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000011920929,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_crossing_A.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000023841858,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000011920929,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/hex_river_crossing_B.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_A_curvy_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_A_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 1.99999964237213,
+				"sy": 1.0,
+				"sz": 2.30940079689026,
+				"x": -0.99999988079071,
+				"y": -1.0,
+				"z": -1.15470039844513
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_B_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.00000023841858,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.00000023841858,
+			"max_y": 0.000000238418579101562,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_C_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_D_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_E_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_F_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_G_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_H_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 1.99999976158142,
+				"sy": 1.0,
+				"sz": 2.30940079689026,
+				"x": -0.99999988079071,
+				"y": -1.0,
+				"z": -1.15470039844513
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_I_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_J_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_K_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.0,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.0,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_L_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000023841858,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000011920929,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_crossing_A_waterless.gltf"
+		},
+		{
+			"bounds": {
+				"sx": 2.00000023841858,
+				"sy": 1.0,
+				"sz": 2.30940008163452,
+				"x": -1.00000011920929,
+				"y": -1.0,
+				"z": -1.15470004081726
+			},
+			"height": 1.0,
+			"max_y": 0.0,
+			"mesh_count": 1,
+			"min_y": -1.0,
+			"node_count": 2,
+			"path": "res://assets/tiles/rivers/waterless/hex_river_crossing_B_waterless.gltf"
+		}
+	],
+	"root_dir": "res://assets"
+}

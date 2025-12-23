@@ -8,6 +8,7 @@ signal resource_selected(resource: GameResource)
 @export var build_menu_path: NodePath
 @export var grid_path: NodePath
 @export var placement_root_path: NodePath
+@export var selection_badge_path: NodePath
 @export var enable_ghost_preview: bool = true
 @export var ghost_alpha: float = 0.4
 @export var ghost_height_offset: float = 0.02
@@ -19,9 +20,19 @@ signal resource_selected(resource: GameResource)
 @export var auto_spawn_fortress_count: int = 3
 @export var auto_spawn_fortress_id: StringName = &"fortress"
 @export var auto_spawn_fortress_min_distance: int = 4
+@export var auto_spawn_knights: bool = true
+@export var auto_spawn_knight_id: StringName = &"knight"
+@export var knight_spawn_radius: int = 1
+@export var auto_spawn_rangers: bool = true
+@export var auto_spawn_ranger_id: StringName = &"ranger"
+@export var ranger_spawn_radius: int = 0
+@export var auto_spawn_rogues: bool = true
+@export var auto_spawn_rogue_id: StringName = &"rogue"
+@export var rogue_spawn_count: int = 2
+@export var rogue_min_distance: int = 2
 @export var building_seed: int = 0
 @export var randomize_building_seed: bool = false
-@export var generation_layers: Array[String] = ["fortresses", "fortress_resources", "forest"]
+@export var generation_layers: Array[String] = ["fortresses", "fortress_resources", "fortress_characters", "river_characters", "rogues", "forest"]
 @export var resource_spawn_radius: int = 1
 
 var build_menu: BuildMenu
@@ -30,6 +41,7 @@ var ghost_instance: Node3D
 var hex_radius: float = 1.0
 var placement_root: Node3D
 var grid: Node
+var selection_badge
 var selected_tile_axial: Vector2i = Vector2i(-1, -1)
 var selected_tile_biome: String = ""
 var selected_tile_surface: Vector3 = Vector3.ZERO
@@ -60,6 +72,8 @@ func _ready() -> void:
 			hex_radius = value
 	if grid != null and grid.has_signal("tile_selected"):
 		grid.connect("tile_selected", _on_tile_selected)
+
+	selection_badge = get_node_or_null(selection_badge_path)
 
 	placement_root = get_node_or_null(placement_root_path)
 	if placement_root == null:
@@ -208,6 +222,10 @@ func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3
 	selected_tile_surface = surface_pos
 	if build_menu != null and build_menu.has_method("set_tile_context"):
 		build_menu.set_tile_context(biome_name, true)
+	if build_menu != null and build_menu.has_method("clear_hint"):
+		build_menu.clear_hint()
+	if selection_badge != null and selection_badge.has_method("update_tile"):
+		selection_badge.update_tile(axial, biome_name, surface_pos)
 	if place_on_tile_select:
 		_try_place_selected_resource()
 
@@ -216,6 +234,8 @@ func _try_place_selected_resource() -> bool:
 	if selected_resource == null or selected_resource.scene == null:
 		return false
 	if selected_tile_axial.x < 0 or selected_tile_axial.y < 0:
+		if build_menu != null and build_menu.has_method("show_hint"):
+			build_menu.show_hint("Выберите клетку для размещения.")
 		return false
 	var placed: bool = _place_resource_on_tile(selected_resource, selected_tile_axial)
 	if placed and clear_selection_after_build:
@@ -328,6 +348,12 @@ func _run_generation_layers() -> void:
 			spawned_fortress_axials = _spawn_fortresses()
 		elif layer == "fortress_resources":
 			_spawn_resources_near_fortresses(spawned_fortress_axials)
+		elif layer == "fortress_characters":
+			_spawn_characters_near_fortresses(spawned_fortress_axials)
+		elif layer == "river_characters":
+			_spawn_rangers_near_rivers()
+		elif layer == "rogues":
+			_spawn_rogues_on_forest()
 		elif layer == "forest":
 			_spawn_forest_after_buildings()
 
@@ -376,6 +402,195 @@ func _spawn_resource_near_fortress(fortress_axial: Vector2i) -> void:
 	var res_idx: int = building_rng.randi_range(0, resources.size() - 1)
 	var resource: GameResource = resources[res_idx]
 	_place_resource_on_tile(resource, target)
+
+
+func _spawn_characters_near_fortresses(fortresses: Array[Vector2i]) -> void:
+	if not auto_spawn_knights:
+		return
+	if fortresses.is_empty():
+		return
+	var knight: GameResource = _find_resource_by_id(auto_spawn_knight_id)
+	if knight == null:
+		push_warning("Knight resource not found: %s" % auto_spawn_knight_id)
+		return
+	for fortress_axial: Vector2i in fortresses:
+		_spawn_character_near_fortress(knight, fortress_axial)
+
+
+func _spawn_character_near_fortress(knight: GameResource, fortress_axial: Vector2i) -> void:
+	if knight == null:
+		return
+	var candidates: Array[Vector2i] = _neighbor_candidates(fortress_axial, max(knight_spawn_radius, 1))
+	if candidates.is_empty():
+		return
+	var valid: Array[Vector2i] = []
+	for axial in candidates:
+		if _is_tile_occupied(axial):
+			continue
+		var biome_name := _get_tile_biome_name(axial)
+		if biome_name.is_empty():
+			continue
+		if not _is_tile_allowed(knight, biome_name):
+			continue
+		valid.append(axial)
+	if valid.is_empty():
+		return
+	var idx := building_rng.randi_range(0, valid.size() - 1)
+	var target: Vector2i = valid[idx]
+	_place_resource_on_tile(knight, target)
+
+
+func _spawn_rangers_near_rivers() -> void:
+	if not auto_spawn_rangers:
+		return
+	var ranger: GameResource = _find_resource_by_id(auto_spawn_ranger_id)
+	if ranger == null:
+		push_warning("Ranger resource not found: %s" % auto_spawn_ranger_id)
+		return
+	var river_components := _river_components()
+	if river_components.is_empty():
+		return
+	for axial in river_components:
+		_spawn_character_at_or_near(ranger, axial, max(ranger_spawn_radius, 0))
+
+
+func _spawn_character_at_or_near(character: GameResource, axial: Vector2i, radius: int) -> void:
+	if character == null:
+		return
+	var biome := _get_tile_biome_name(axial)
+	if radius == 0 and not _is_tile_occupied(axial) and not biome.is_empty() and _is_tile_allowed(character, biome):
+		_place_resource_on_tile(character, axial)
+		return
+	var candidates := _neighbor_candidates(axial, max(radius, 1))
+	var valid: Array[Vector2i] = []
+	for pos in candidates:
+		if _is_tile_occupied(pos):
+			continue
+		var b := _get_tile_biome_name(pos)
+		if b.is_empty():
+			continue
+		if not _is_tile_allowed(character, b):
+			continue
+		valid.append(pos)
+	if valid.is_empty():
+		return
+	var idx := building_rng.randi_range(0, valid.size() - 1)
+	var target: Vector2i = valid[idx]
+	_place_resource_on_tile(character, target)
+
+
+func _river_components() -> Array[Vector2i]:
+	var result: Array[Vector2i] = []
+	if grid == null or not grid.has_method("get"):
+		return result
+	var mask_var: Variant = grid.get("river_mask")
+	if typeof(mask_var) != TYPE_PACKED_INT32_ARRAY:
+		return result
+	var river_mask: PackedInt32Array = mask_var
+	if river_mask.is_empty():
+		return result
+	var width: int = 0
+	var height: int = 0
+	var w_val: Variant = grid.get("map_width")
+	var h_val: Variant = grid.get("map_height")
+	if typeof(w_val) == TYPE_INT:
+		width = int(w_val)
+	if typeof(h_val) == TYPE_INT:
+		height = int(h_val)
+	if width <= 0 or height <= 0:
+		return result
+
+	var visited: Dictionary = {}
+	for r in range(height):
+		for q in range(width):
+			var idx := r * width + q
+			if idx < 0 or idx >= river_mask.size():
+				continue
+			if river_mask[idx] == 0:
+				continue
+			var axial := Vector2i(q, r)
+			if visited.has(axial):
+				continue
+			var comp := _flood_fill_river(axial, width, height, river_mask, visited)
+			if comp.is_empty():
+				continue
+			result.append(comp[0])
+	return result
+
+
+func _flood_fill_river(start: Vector2i, width: int, height: int, river_mask: PackedInt32Array, visited: Dictionary) -> Array[Vector2i]:
+	var out: Array[Vector2i] = []
+	var stack: Array[Vector2i] = [start]
+	while not stack.is_empty():
+		var cur: Vector2i = stack.pop_back()
+		if visited.has(cur):
+			continue
+		visited[cur] = true
+		out.append(cur)
+		var idx := cur.y * width + cur.x
+		if idx < 0 or idx >= river_mask.size():
+			continue
+		var mask := river_mask[idx]
+		for dir in range(HEX_DIRS.size()):
+			var nq := cur.x + HEX_DIRS[dir].x
+			var nr := cur.y + HEX_DIRS[dir].y
+			if nq < 0 or nq >= width or nr < 0 or nr >= height:
+				continue
+			var n_idx := nr * width + nq
+			if n_idx < 0 or n_idx >= river_mask.size():
+				continue
+			if river_mask[n_idx] == 0:
+				continue
+			var opposite := (dir + 3) % 6
+			var connected := ((mask & (1 << dir)) != 0) or ((river_mask[n_idx] & (1 << opposite)) != 0)
+			if connected:
+				stack.append(Vector2i(nq, nr))
+	return out
+
+
+func _spawn_rogues_on_forest() -> void:
+	if not auto_spawn_rogues:
+		return
+	var rogue: GameResource = _find_resource_by_id(auto_spawn_rogue_id)
+	if rogue == null:
+		push_warning("Rogue resource not found: %s" % auto_spawn_rogue_id)
+		return
+	var candidates: Array[Vector2i] = []
+	var width: int = 0
+	var height: int = 0
+	if grid != null and grid.has_method("get"):
+		var w_val: Variant = grid.get("map_width")
+		var h_val: Variant = grid.get("map_height")
+		if typeof(w_val) == TYPE_INT:
+			width = int(w_val)
+		if typeof(h_val) == TYPE_INT:
+			height = int(h_val)
+	if width <= 0 or height <= 0:
+		return
+	for r in range(height):
+		for q in range(width):
+			var axial := Vector2i(q, r)
+			if _is_tile_occupied(axial):
+				continue
+			var biome := _get_tile_biome_name(axial)
+			if biome != "plains":
+				continue
+			if not _is_tile_allowed(rogue, biome):
+				continue
+			candidates.append(axial)
+	if candidates.is_empty():
+		return
+	var to_spawn: int = clampi(rogue_spawn_count, 0, candidates.size())
+	var placed: Array[Vector2i] = []
+	var pool := candidates.duplicate()
+	while placed.size() < to_spawn and not pool.is_empty():
+		var idx := building_rng.randi_range(0, pool.size() - 1)
+		var axial: Vector2i = pool[idx]
+		pool.remove_at(idx)
+		if rogue_min_distance > 0 and not _is_far_enough(axial, placed, rogue_min_distance):
+			continue
+		_place_resource_on_tile(rogue, axial)
+		placed.append(axial)
 
 
 func _neighbor_candidates(center: Vector2i, radius: int) -> Array[Vector2i]:

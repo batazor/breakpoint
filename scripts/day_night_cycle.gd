@@ -2,6 +2,7 @@ extends Node3D
 class_name DayNightCycle
 
 signal time_updated(time_normalized: float)
+signal day_changed(day: int)
 
 @export var sun_path: NodePath
 @export var environment_path: NodePath
@@ -11,34 +12,38 @@ signal time_updated(time_normalized: float)
 @export var day_length_seconds: float = 120.0
 @export var time_speed: float = 1.0
 @export var paused: bool = false
+@export var start_day: int = 1
 
 @export var sun_yaw_degrees: float = -45.0
 @export var day_light_color: Color = Color(1.0, 0.98, 0.9)
 @export var sunset_light_color: Color = Color(1.0, 0.6, 0.35)
-@export var night_light_color: Color = Color(0.35, 0.4, 0.55)
+@export var night_light_color: Color = Color(0.55, 0.6, 0.75)
 @export var day_light_energy: float = 1.5
-@export var night_light_energy: float = 0.35
+@export var night_light_energy: float = 0.6
 
 @export var ambient_day_color: Color = Color(0.6, 0.7, 0.8)
-@export var ambient_night_color: Color = Color(0.15, 0.18, 0.25)
+@export var ambient_night_color: Color = Color(0.25, 0.3, 0.4)
 @export var ambient_day_energy: float = 1.0
-@export var ambient_night_energy: float = 0.45
+@export var ambient_night_energy: float = 0.65
 
 var sun: DirectionalLight3D
 var world_environment: WorldEnvironment
 var time_controls: TimeControls
+var current_day: int = 1
 
 
 func _ready() -> void:
 	sun = get_node_or_null(sun_path) as DirectionalLight3D
 	world_environment = get_node_or_null(environment_path) as WorldEnvironment
 	time_controls = get_node_or_null(time_ui_path) as TimeControls
+	current_day = max(start_day, 1)
 	if time_controls != null:
 		time_controls.pause_toggled.connect(_on_pause_toggled)
 		time_controls.speed_selected.connect(_on_speed_selected)
 		time_controls.time_scrubbed.connect(_on_time_scrubbed)
 		time_controls.set_paused(paused)
 		time_controls.set_time_progress(time_normalized)
+		time_controls.set_day(current_day)
 	_apply_lighting()
 
 
@@ -50,7 +55,11 @@ func _process(delta: float) -> void:
 	if time_speed <= 0.0:
 		return
 	var step: float = (delta / day_length_seconds) * time_speed
-	time_normalized = fposmod(time_normalized + step, 1.0)
+	var raw_time: float = time_normalized + step
+	var days_passed: int = int(floor(raw_time))
+	time_normalized = fposmod(raw_time, 1.0)
+	if days_passed > 0:
+		_advance_days(days_passed)
 	_apply_lighting()
 	emit_signal("time_updated", time_normalized)
 
@@ -75,6 +84,15 @@ func set_time_normalized(value: float) -> void:
 	if time_controls != null:
 		time_controls.set_paused(paused)
 		time_controls.set_time_progress(time_normalized)
+
+
+func _advance_days(count: int) -> void:
+	if count <= 0:
+		return
+	current_day += count
+	if time_controls != null:
+		time_controls.set_day(current_day)
+	emit_signal("day_changed", current_day)
 
 
 func _on_pause_toggled(value: bool) -> void:

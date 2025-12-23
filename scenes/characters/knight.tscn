@@ -1,0 +1,11 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/characters/character_animator.gd" id="1"]
+[ext_resource type="PackedScene" path="res://assets/characters/Knight.glb" id="2"]
+
+[node name="KnightAnimated" type="Node3D"]
+script = ExtResource("1")
+model_scene = ExtResource("2")
+animation_sources = ["res://assets/animations/Rig_Medium_MovementBasic.glb", "res://assets/animations/Rig_Medium_MovementAdvanced.glb", "res://assets/animations/Rig_Medium_General.glb", "res://assets/animations/Rig_Medium_CombatMelee.glb"]
+default_animation = "Idle"
+

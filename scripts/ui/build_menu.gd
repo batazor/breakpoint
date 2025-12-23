@@ -7,11 +7,25 @@ signal build_requested(resource: GameResource)
 @export var resource_card_scene: PackedScene
 @export var resources: Array[GameResource] = []
 @export var buildings: Array[GameResource] = []
+@export var characters: Array[GameResource] = []
 @export var resources_yaml_path: String = "res://resources.yaml"
 @export var use_yaml_resources: bool = true
 
 @onready var resources_grid: GridContainer = %ResourcesGrid
 @onready var buildings_grid: GridContainer = %BuildingsGrid
+@onready var characters_grid: GridContainer = %CharactersGrid
+@onready var tabs: TabContainer = %Tabs
+@onready var resources_scroll: ScrollContainer = %ResourcesScroll
+@onready var buildings_scroll: ScrollContainer = %BuildingsScroll
+@onready var characters_scroll: ScrollContainer = %CharactersScroll
+@onready var hint_label: Label = %HintLabel
+@onready var collapse_button: Button = %ToggleButton
+@onready var build_panel: PanelContainer = $"BuildPanel"
+
+var _selected_card: ResourceCard
+var _scroll_positions: Dictionary = {"resources": 0, "buildings": 0, "characters": 0}
+var _active_tab_key: String = "resources"
+var _collapsed: bool = false
 
 
 func _ready() -> void:
@@ -19,12 +33,26 @@ func _ready() -> void:
 		var yaml_resources := _load_resources_from_yaml()
 		if not yaml_resources.is_empty():
 			_merge_resources(yaml_resources)
+	if tabs != null:
+		_active_tab_key = _get_tab_key(tabs.current_tab)
+		tabs.tab_changed.connect(_on_tab_changed)
+	if collapse_button != null:
+		collapse_button.pressed.connect(_on_toggle_pressed)
 	_rebuild_cards()
+	_restore_scroll_position(_active_tab_key)
 
 
 func _rebuild_cards() -> void:
+	_store_scroll_position("resources")
+	_store_scroll_position("buildings")
+	_store_scroll_position("characters")
+	_selected_card = null
 	_rebuild_cards_for_grid(resources_grid, resources, "resources")
 	_rebuild_cards_for_grid(buildings_grid, buildings, "buildings")
+	_rebuild_cards_for_grid(characters_grid, characters, "characters")
+	_restore_scroll_position("resources")
+	_restore_scroll_position("buildings")
+	_restore_scroll_position("characters")
 
 
 func _rebuild_cards_for_grid(grid: GridContainer, list: Array[GameResource], label: String) -> void:
@@ -43,13 +71,19 @@ func _rebuild_cards_for_grid(grid: GridContainer, list: Array[GameResource], lab
 			continue
 		grid.add_child(card)
 		card.setup(res)
-		card.resource_selected.connect(_on_card_selected)
-		card.build_pressed.connect(_on_build_pressed)
+		card.resource_selected.connect(func(r: GameResource) -> void:
+			_handle_card_selected(card, r)
+		)
+		card.build_pressed.connect(func(r: GameResource) -> void:
+			_handle_card_selected(card, r)
+			_on_build_pressed(r)
+		)
 	if grid.get_child_count() == 0:
 		push_warning("Build menu has no %s to display." % label)
 
 
-func _on_card_selected(resource: GameResource) -> void:
+func _handle_card_selected(card: ResourceCard, resource: GameResource) -> void:
+	_set_selected_card(card)
 	emit_signal("resource_selected", resource)
 
 
@@ -80,6 +114,7 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 			continue
 		res.id = StringName(id_val)
 		res.title = String(entry.get("title", id_val))
+		res.description = String(entry.get("description", ""))
 
 		var icon_path := String(entry.get("icon", ""))
 		if not icon_path.is_empty():
@@ -119,6 +154,12 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 		var res_id := String(res.id)
 		if not res_id.is_empty():
 			seen[res_id] = true
+	for res in characters:
+		if res == null:
+			continue
+		var res_id := String(res.id)
+		if not res_id.is_empty():
+			seen[res_id] = true
 
 	for res in additional:
 		if res == null:
@@ -128,14 +169,18 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 			continue
 		if res.category == "building":
 			buildings.append(res)
+		elif res.category == "character":
+			characters.append(res)
 		else:
 			resources.append(res)
 		seen[res_id] = true
 
 
 func set_tile_context(biome_name: String, has_selection: bool) -> void:
+	clear_hint()
 	_update_card_states(resources_grid, biome_name, has_selection)
 	_update_card_states(buildings_grid, biome_name, has_selection)
+	_update_card_states(characters_grid, biome_name, has_selection)
 
 
 func _update_card_states(grid: GridContainer, biome_name: String, has_selection: bool) -> void:
@@ -153,7 +198,83 @@ func get_all_resources() -> Array[GameResource]:
 	var combined: Array[GameResource] = []
 	combined.append_array(resources)
 	combined.append_array(buildings)
+	combined.append_array(characters)
 	return combined
+
+
+func show_hint(text: String) -> void:
+	if hint_label == null:
+		return
+	hint_label.text = text
+	hint_label.visible = not text.is_empty()
+
+
+func clear_hint() -> void:
+	if hint_label == null:
+		return
+	hint_label.visible = false
+
+
+func _set_selected_card(card: ResourceCard) -> void:
+	if _selected_card != null and is_instance_valid(_selected_card):
+		_selected_card.set_selected(false)
+	_selected_card = card
+	if _selected_card != null and is_instance_valid(_selected_card):
+		_selected_card.set_selected(true)
+
+
+func _store_scroll_position(key: String) -> void:
+	match key:
+		"resources":
+			if resources_scroll != null:
+				_scroll_positions["resources"] = resources_scroll.scroll_vertical
+		"buildings":
+			if buildings_scroll != null:
+				_scroll_positions["buildings"] = buildings_scroll.scroll_vertical
+		"characters":
+			if characters_scroll != null:
+				_scroll_positions["characters"] = characters_scroll.scroll_vertical
+
+
+func _restore_scroll_position(key: String) -> void:
+	match key:
+		"resources":
+			if resources_scroll != null:
+				resources_scroll.scroll_vertical = int(_scroll_positions.get("resources", 0))
+		"buildings":
+			if buildings_scroll != null:
+				buildings_scroll.scroll_vertical = int(_scroll_positions.get("buildings", 0))
+		"characters":
+			if characters_scroll != null:
+				characters_scroll.scroll_vertical = int(_scroll_positions.get("characters", 0))
+
+
+func _on_tab_changed(tab: int) -> void:
+	_store_scroll_position(_active_tab_key)
+	_active_tab_key = _get_tab_key(tab)
+	_restore_scroll_position(_active_tab_key)
+
+
+func _get_tab_key(tab: int) -> String:
+	match tab:
+		1:
+			return "buildings"
+		2:
+			return "characters"
+		_:
+			return "resources"
+
+
+func _on_toggle_pressed() -> void:
+	_set_collapsed(not _collapsed)
+
+
+func _set_collapsed(value: bool) -> void:
+	_collapsed = value
+	if build_panel != null:
+		build_panel.visible = not _collapsed
+	if collapse_button != null:
+		collapse_button.text = "Show Menu" if _collapsed else "Hide Menu"
 
 
 func _parse_resources_yaml(text: String) -> Array:

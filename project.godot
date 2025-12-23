@@ -15,9 +15,20 @@ run/main_scene="res://scenes/main.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
+[display]
+
+window/size/viewport_width=1600
+window/size/viewport_height=900
+window/size/test_width=1600
+window/size/test_height=900
+
 [dotnet]
 
 project/assembly_name="Breakpoint"
+
+[editor_plugins]
+
+enabled=PackedStringArray("res://addons/tile_sides_editor/plugin.cfg")
 
 [input]
 
@@ -95,10 +106,3 @@ zoom_out={
 "unicode": 0
 }]
 }
-
-[display]
-
-window/size/viewport_width=1600
-window/size/viewport_height=900
-window/size/test_width=1600
-window/size/test_height=900

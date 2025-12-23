@@ -38,3 +38,52 @@ resources:
     buildable_tiles:
       - plains
       - mountain
+  barbarian:
+    id: barbarian
+    title: Barbarian
+    description: "A wandering warrior ready to fight."
+    icon: res://icon.svg
+    scene: res://scenes/characters/barbarian.tscn
+    category: character
+    buildable_tiles:
+      - plains
+      - sand
+  knight:
+    id: knight
+    title: Knight
+    description: "Armored defender stationed near your castles."
+    icon: res://assets/characters/knight_texture.png
+    scene: res://scenes/characters/knight.tscn
+    category: character
+    buildable_tiles:
+      - plains
+      - mountain
+  ranger:
+    id: ranger
+    title: Ranger
+    description: "Silent scout who patrols along rivers."
+    icon: res://assets/characters/ranger_texture.png
+    scene: res://scenes/characters/ranger.tscn
+    category: character
+    buildable_tiles:
+      - plains
+      - sand
+  rogue:
+    id: rogue
+    title: Rogue
+    description: "A stealthy scout lurking in the forests."
+    icon: res://assets/characters/rogue_texture.png
+    scene: res://scenes/characters/rogue.tscn
+    category: character
+    buildable_tiles:
+      - plains
+  mage:
+    id: mage
+    title: Mage
+    description: "A spellcaster attuned to the elements."
+    icon: res://assets/characters/mage_texture.png
+    scene: res://scenes/characters/mage.tscn
+    category: character
+    buildable_tiles:
+      - plains
+      - mountain

@@ -10,14 +10,16 @@ signal time_scrubbed(time_normalized: float)
 @onready var speed_2_button: Button = %Speed2Button
 @onready var speed_5_button: Button = %Speed5Button
 @onready var progress_slider: HSlider = %DayProgress
+@onready var day_label: Label = %DayLabel
 
 var paused: bool = false
 var _updating_slider: bool = false
+var current_day: int = 1
 
 
 func _ready() -> void:
 	_resolve_buttons()
-	if pause_button == null or speed_1_button == null or speed_2_button == null or speed_5_button == null or progress_slider == null:
+	if pause_button == null or speed_1_button == null or speed_2_button == null or speed_5_button == null or progress_slider == null or day_label == null:
 		push_warning("TimeControls: UI controls not found. Check the scene tree paths or unique names.")
 		return
 	pause_button.pressed.connect(_on_pause_pressed)
@@ -25,7 +27,13 @@ func _ready() -> void:
 	speed_2_button.pressed.connect(func() -> void: _emit_speed(2.0))
 	speed_5_button.pressed.connect(func() -> void: _emit_speed(5.0))
 	progress_slider.value_changed.connect(_on_slider_changed)
+	pause_button.tooltip_text = "Pause or resume the day/night cycle."
+	speed_1_button.tooltip_text = "Set simulation speed to 1x."
+	speed_2_button.tooltip_text = "Set simulation speed to 2x."
+	speed_5_button.tooltip_text = "Set simulation speed to 5x."
+	progress_slider.tooltip_text = "Scrub time of day (0 = dawn, 1 = end of day)."
 	_update_pause_label()
+	set_day(current_day)
 
 
 func set_paused(value: bool) -> void:
@@ -39,6 +47,12 @@ func set_time_progress(value: float) -> void:
 	_updating_slider = true
 	progress_slider.value = clampf(value, 0.0, 1.0)
 	_updating_slider = false
+
+
+func set_day(day: int) -> void:
+	current_day = max(1, day)
+	if day_label != null:
+		day_label.text = "Day %d" % current_day
 
 
 func _on_pause_pressed() -> void:
@@ -74,3 +88,5 @@ func _resolve_buttons() -> void:
 		speed_5_button = get_node_or_null("Panel/Margin/VBox/HBox/Speed5Button") as Button
 	if progress_slider == null:
 		progress_slider = get_node_or_null("Panel/Margin/VBox/DayProgress") as HSlider
+	if day_label == null:
+		day_label = get_node_or_null("Panel/Margin/VBox/DayLabel") as Label

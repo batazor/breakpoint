@@ -7,6 +7,7 @@ class_name GameResource
 @export var scene: PackedScene
 @export var buildable_tiles: Array = []
 @export var category: String = "resource"
+@export var description: String = ""
 
 
 func can_build_on(biome_name: String) -> bool:

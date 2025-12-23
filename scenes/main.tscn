@@ -1,4 +1,4 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2"]
@@ -6,6 +6,8 @@
 [ext_resource type="Script" path="res://scripts/build_controller.gd" id="4"]
 [ext_resource type="Script" path="res://scripts/day_night_cycle.gd" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/time_controls.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/ui/selection_badge.tscn" id="7"]
+[ext_resource type="PackedScene" path="res://scenes/ui/help_overlay.tscn" id="8"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -43,7 +45,12 @@ time_ui_path = NodePath("../TimeControls")
 script = ExtResource("4")
 build_menu_path = NodePath("../BuildMenu")
 grid_path = NodePath("../HexGrid")
+selection_badge_path = NodePath("../SelectionBadge")
 
 [node name="BuildMenu" parent="." instance=ExtResource("3")]
 
 [node name="TimeControls" parent="." instance=ExtResource("6")]
+
+[node name="SelectionBadge" parent="." instance=ExtResource("7")]
+
+[node name="HelpOverlay" parent="." instance=ExtResource("8")]

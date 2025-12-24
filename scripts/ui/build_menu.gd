@@ -4,6 +4,8 @@ class_name BuildMenu
 signal resource_selected(resource: GameResource)
 signal build_requested(resource: GameResource)
 
+var _ui_ready: bool = false
+
 @export var resource_card_scene: PackedScene
 @export var resources: Array[GameResource] = []
 @export var buildings: Array[GameResource] = []
@@ -74,7 +76,7 @@ func _rebuild_cards_for_grid(grid: GridContainer, list: Array[GameResource], lab
 		card.resource_selected.connect(func(r: GameResource) -> void:
 			_handle_card_selected(card, r)
 		)
-		card.build_pressed.connect(func(r: GameResource) -> void:
+		card.build_requested.connect(func(r: GameResource) -> void:
 			_handle_card_selected(card, r)
 			_on_build_pressed(r)
 		)
@@ -185,6 +187,10 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 
 
 func set_tile_context(biome_name: String, has_selection: bool) -> void:
+	if not _ui_ready:
+		call_deferred("set_tile_context", biome_name, has_selection)
+		return
+
 	clear_hint()
 	_update_card_states(resources_grid, biome_name, has_selection)
 	_update_card_states(buildings_grid, biome_name, has_selection)
@@ -211,14 +217,16 @@ func get_all_resources() -> Array[GameResource]:
 
 
 func show_hint(text: String) -> void:
-	if hint_label == null:
+	if not _ui_ready:
+		call_deferred("show_hint", text)
 		return
 	hint_label.text = text
 	hint_label.visible = not text.is_empty()
 
 
 func clear_hint() -> void:
-	if hint_label == null:
+	if not _ui_ready:
+		call_deferred("clear_hint")
 		return
 	hint_label.visible = false
 

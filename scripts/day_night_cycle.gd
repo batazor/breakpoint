@@ -36,19 +36,27 @@ var _last_abs_hour: int = -1
 
 func _ready() -> void:
 	add_to_group("day_night_cycle")
+
 	sun = get_node_or_null(sun_path) as DirectionalLight3D
 	world_environment = get_node_or_null(environment_path) as WorldEnvironment
 	time_controls = get_node_or_null(time_ui_path) as TimeControls
+
 	current_day = max(start_day, 1)
 	_last_abs_hour = _absolute_hour()
+
 	if time_controls != null:
+		await time_controls.ready  # ⭐ КЛЮЧЕВАЯ СТРОКА
+
 		time_controls.pause_toggled.connect(_on_pause_toggled)
 		time_controls.speed_selected.connect(_on_speed_selected)
 		time_controls.time_scrubbed.connect(_on_time_scrubbed)
+
 		time_controls.set_paused(paused)
 		time_controls.set_time_progress(time_normalized)
 		time_controls.set_day(current_day)
+
 	_apply_lighting()
+
 
 
 func _process(delta: float) -> void:

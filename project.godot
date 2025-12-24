@@ -30,6 +30,10 @@ project/assembly_name="Breakpoint"
 
 enabled=PackedStringArray("res://addons/tile_sides_editor/plugin.cfg")
 
+[autoload]
+
+GameStore="*res://scripts/game_store.gd"
+
 [input]
 
 move_forward={

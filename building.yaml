@@ -2,13 +2,15 @@ resources:
   well:
     id: well
     title: Well
-    description: "Fresh water source for nearby tiles."
+    description: "Fresh spring for nearby tiles."
     icon: res://icon.svg
     scene: res://assets/resources/well.gltf.glb
     category: resource
     buildable_tiles:
       - plains
       - sand
+    resource_delta_per_hour:
+      food: 10
   mine:
     id: mine
     title: Mine
@@ -18,6 +20,8 @@ resources:
     category: resource
     buildable_tiles:
       - mountain
+    resource_delta_per_hour:
+      coal: 5
   lumbermill:
     id: lumbermill
     title: Lumber Mill
@@ -28,6 +32,8 @@ resources:
     buildable_tiles:
       - plains
       - sand
+    resource_delta_per_hour:
+      coal: 10
   fortress:
     id: fortress
     title: Fortress
@@ -38,6 +44,8 @@ resources:
     buildable_tiles:
       - plains
       - mountain
+    resource_delta_per_hour:
+      gold: 10
     roles:
       - role_id: guard
         max_slots: 4
@@ -63,6 +71,8 @@ resources:
     buildable_tiles:
       - plains
       - mountain
+    resource_delta_per_hour:
+      gold: -1
   ranger:
     id: ranger
     title: Ranger
@@ -73,6 +83,8 @@ resources:
     buildable_tiles:
       - plains
       - sand
+    resource_delta_per_hour:
+      food: -2
   rogue:
     id: rogue
     title: Rogue
@@ -83,6 +95,8 @@ resources:
     buildable_tiles:
       - plains
       - forest
+    resource_delta_per_hour:
+      gold: -1
   mage:
     id: mage
     title: Mage
@@ -93,3 +107,5 @@ resources:
     buildable_tiles:
       - plains
       - mountain
+    resource_delta_per_hour:
+      gold: -1

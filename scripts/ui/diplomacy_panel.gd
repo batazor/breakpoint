@@ -5,22 +5,35 @@ const FactionSystemRes = preload("res://scripts/faction_system.gd")
 const FactionRes = preload("res://scripts/faction.gd")
 
 @export var faction_system_path: NodePath
-@export var graph_edit_path: NodePath
 @export var focus_selector_path: NodePath
+@export var details_label_path: NodePath
 
 var faction_system: FactionSystemRes
-var graph_edit: GraphEdit
+var game_store: Node
 var focus_selector: OptionButton
+var details_label: RichTextLabel
 
 
 func _ready() -> void:
-	graph_edit = get_node_or_null(graph_edit_path) as GraphEdit
 	focus_selector = get_node_or_null(focus_selector_path) as OptionButton
+	details_label = get_node_or_null(details_label_path) as RichTextLabel
+	_resolve_game_store()
 	_resolve_faction_system()
+	if game_store != null:
+		if not game_store.factions_changed.is_connected(_on_factions_changed):
+			game_store.factions_changed.connect(_on_factions_changed)
+		if not game_store.world_ready.is_connected(_on_world_ready):
+			game_store.world_ready.connect(_on_world_ready)
+	if game_store != null and not game_store.factions_changed.is_connected(_on_factions_changed):
+		game_store.factions_changed.connect(_on_factions_changed)
+	if faction_system != null and not faction_system.factions_changed.is_connected(_on_factions_changed):
+		faction_system.factions_changed.connect(_on_factions_changed)
+	if faction_system != null and not faction_system.resources_changed.is_connected(_on_resources_changed):
+		faction_system.resources_changed.connect(_on_resources_changed)
 	_refresh_selector()
 	if focus_selector != null:
 		focus_selector.item_selected.connect(_on_focus_selected)
-	_rebuild_graph()
+	_render_text()
 
 
 func _resolve_faction_system() -> void:
@@ -42,7 +55,7 @@ func _refresh_selector() -> void:
 
 
 func _on_focus_selected(_index: int) -> void:
-	_rebuild_graph()
+	_render_text()
 
 
 func _focus_faction() -> StringName:
@@ -57,60 +70,22 @@ func _focus_faction() -> StringName:
 
 
 func _faction_ids() -> Array[StringName]:
+	if game_store != null:
+		var ids: Array[StringName] = []
+		for k in game_store.factions.keys():
+			if String(k) != "":
+				ids.append(k)
+		ids.sort()
+		if not ids.is_empty():
+			return ids
 	if faction_system == null:
 		return []
-	var ids: Array[StringName] = []
+	var ids_fs: Array[StringName] = []
 	for k in faction_system.factions.keys():
 		if String(k) != "":
-			ids.append(k)
-	ids.sort()
-	return ids
-
-
-func _rebuild_graph() -> void:
-	if graph_edit == null:
-		return
-	graph_edit.clear_connections()
-	for child in graph_edit.get_children():
-		child.queue_free()
-
-	var ids := _faction_ids()
-	if ids.is_empty():
-		return
-	var focus := _focus_faction()
-	if focus == StringName("") and ids.size() > 0:
-		focus = ids[0]
-
-	var radius := 220.0
-	var center := Vector2(300, 220)
-	for i in range(ids.size()):
-		var fid := ids[i]
-		var angle := TAU * float(i) / float(max(ids.size(), 1))
-		var pos := center + Vector2(cos(angle), sin(angle)) * radius
-		_add_node(fid, pos, focus)
-
-	# Connect focus to others to visualize relations
-	for fid in ids:
-		if fid == focus:
-			continue
-		graph_edit.connect_node(str(focus), 0, str(fid), 0)
-
-
-func _add_node(fid: StringName, pos: Vector2, focus: StringName) -> void:
-	var node := GraphNode.new()
-	node.name = str(fid)
-	node.title = str(fid)
-	node.draggable = true
-	node.position_offset = pos
-	var relation := _relation_between(fid, focus)
-	var color := _relation_color(relation)
-	node.set_slot(0, true, 0, color, true, 0, color, null, null)
-	var label := Label.new()
-	label.text = "Relation to %s: %.2f" % [str(focus), relation]
-	label.autowrap_mode = TextServer.AUTOWRAP_WORD
-	label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	node.add_child(label)
-	graph_edit.add_child(node)
+			ids_fs.append(k)
+	ids_fs.sort()
+	return ids_fs
 
 
 func _relation_between(a: StringName, b: StringName) -> float:
@@ -127,3 +102,92 @@ func _relation_color(rel: float) -> Color:
 	# Green positive, red negative
 	var t: float = clamp((rel + 1.0) * 0.5, 0.0, 1.0)
 	return Color(1.0 - t, t, 0.2)
+
+
+func _resources_summary(fid: StringName) -> String:
+	var source_faction: FactionRes = null
+	if game_store != null:
+		source_faction = game_store.factions.get(fid, null)
+	if source_faction == null and faction_system != null:
+		source_faction = faction_system.factions.get(fid, null)
+	if source_faction == null:
+		return "Resources: —"
+	var f: FactionRes = source_faction
+	if f == null or f.resources == null or f.resources.is_empty():
+		return "Resources: —"
+	var parts: Array[String] = []
+	for key in f.resources.keys():
+		var amt: int = int(f.resources[key])
+		parts.append("%s: %s" % [str(key), str(amt)])
+	parts.sort()
+	return "Resources: " + ", ".join(parts)
+
+
+func _faction_by_id(fid: StringName) -> FactionRes:
+	if game_store != null and ("factions" in game_store):
+		var f1: Variant = game_store.factions.get(fid, null)
+		if f1 is FactionRes:
+			return f1
+	if faction_system != null:
+		var f2: Variant = faction_system.factions.get(fid, null)
+		if f2 is FactionRes:
+			return f2
+	return null
+
+
+func _render_text() -> void:
+	if details_label == null:
+		return
+	var ids := _faction_ids()
+	if ids.is_empty():
+		details_label.text = "No factions."
+		return
+	var focus := _focus_faction()
+	if focus == StringName("") and ids.size() > 0:
+		focus = ids[0]
+	var focus_f := _faction_by_id(focus)
+	var lines: Array[String] = []
+	lines.append("Faction: %s" % str(focus))
+	lines.append("")
+	# Resources
+	if focus_f == null or focus_f.resources == null or focus_f.resources.is_empty():
+		lines.append("Resources: —")
+	else:
+		var res_parts: Array[String] = []
+		for k in focus_f.resources.keys():
+			res_parts.append("%s: %d" % [str(k), int(focus_f.resources[k])])
+		res_parts.sort()
+		lines.append("Resources: " + ", ".join(res_parts))
+	lines.append("")
+	# Relations
+	lines.append("Relations:")
+	for other in ids:
+		if other == focus:
+			continue
+		var v: float = 0.0
+		if focus_f != null:
+			v = float(focus_f.relations.get(other, 0.0))
+		lines.append("  - %s: %.2f" % [str(other), v])
+	details_label.text = "\n".join(lines)
+
+
+func _on_resources_changed(_fid: StringName, _res_id: StringName, _amt: int) -> void:
+	_render_text()
+
+
+func _on_factions_changed() -> void:
+	_refresh_selector()
+	_render_text()
+
+
+func _on_world_ready() -> void:
+	_refresh_selector()
+	_render_text()
+
+
+func _resolve_game_store() -> void:
+	if game_store != null:
+		return
+	game_store = get_tree().get_first_node_in_group("game_store")
+	if game_store == null:
+		game_store = get_node_or_null("/root/GameStore")

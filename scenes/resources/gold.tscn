@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="SphereMesh" id="1"]
+radius = 0.25
+rings = 18
+radial_segments = 24
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.9, 0.75, 0.2, 1)
+metallic = 0.85
+roughness = 0.18
+
+[node name="GoldResource" type="Node3D"]
+
+[node name="Nugget" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("1")
+material_override = SubResource("2")
+

@@ -251,4 +251,3 @@ func _vacate(axial: Vector2i) -> void:
 
 func _exit_tree() -> void:
 	_vacate(_current_axial)
-

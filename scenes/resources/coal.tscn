@@ -1,0 +1,19 @@
+[gd_scene load_steps=3 format=3]
+
+[sub_resource type="SphereMesh" id="1"]
+radius = 0.28
+rings = 14
+radial_segments = 18
+
+[sub_resource type="StandardMaterial3D" id="2"]
+albedo_color = Color(0.08, 0.08, 0.1, 1)
+roughness = 0.35
+metallic = 0.05
+
+[node name="CoalResource" type="Node3D"]
+
+[node name="Chunk" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.28, 0)
+mesh = SubResource("1")
+material_override = SubResource("2")
+

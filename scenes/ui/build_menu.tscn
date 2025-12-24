@@ -112,32 +112,31 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 columns = 2
 
-[node name="Diplomacy" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
+[node name="Factions" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
 script = ExtResource("4")
-graph_edit_path = NodePath("DiploVBox/DiploGraph")
 focus_selector_path = NodePath("DiploVBox/DiploFocus")
+details_label_path = NodePath("DiploVBox/DiploDetails")
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="DiploVBox" type="VBoxContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy"]
+[node name="DiploVBox" type="VBoxContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions"]
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
-[node name="DiploTitle" type="Label" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
-text = "Diplomacy"
+[node name="DiploTitle" type="Label" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox"]
+text = "Factions"
 
-[node name="DiploFocus" type="OptionButton" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
+[node name="DiploFocus" type="OptionButton" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 
-[node name="DiploGraph" type="GraphEdit" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Diplomacy/DiploVBox"]
+[node name="DiploDetails" type="RichTextLabel" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
-min_size = Vector2(360, 240)
-right_disconnects = false
-scroll_offset = Vector2(0, 0)
-zoom = 1.0
+fit_content = true
+bbcode_enabled = false
+text = "No factions."
 
 [node name="HintLabel" type="Label" parent="BuildPanel/PanelMargin/PanelVBox"]
 unique_name_in_owner = true

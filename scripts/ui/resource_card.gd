@@ -59,6 +59,14 @@ func _set_tooltip() -> void:
 	var lines: Array[String] = []
 	if not String(resource.description).is_empty():
 		lines.append(resource.description)
+	if resource.resource_delta_per_hour.size() > 0:
+		var parts: Array[String] = []
+		for key in resource.resource_delta_per_hour.keys():
+			var amount: int = int(resource.resource_delta_per_hour[key])
+			var sign := "+" if amount >= 0 else ""
+			parts.append("%s%s/hr %s" % [sign, str(amount), str(key)])
+		parts.sort()
+		lines.append("Per hour: %s" % ", ".join(parts))
 	if resource.buildable_tiles.is_empty():
 		lines.append("Buildable on any tile.")
 	else:

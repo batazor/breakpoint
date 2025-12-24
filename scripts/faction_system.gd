@@ -12,20 +12,36 @@ var building_types: Dictionary = {} # building_id -> StringName
 var building_axial: Dictionary = {} # building_id -> Vector2i
 var building_position: Dictionary = {} # building_id -> Vector3
 var npc_data: Dictionary = {} # npc_id -> NPC
+var game_store: Node
+
+signal resources_changed(faction_id: StringName, resource_id: StringName, amount: int)
 
 signal building_transferred(building_id: StringName, new_owner: StringName)
 signal role_assigned(building_id: StringName, role_id: StringName, npc_id: StringName)
 signal role_vacated(building_id: StringName, role_id: StringName, npc_id: StringName)
+signal factions_changed
+
+
+func _enter_tree() -> void:
+	# Group early so other nodes can find the system during their _ready.
+	add_to_group("faction_system")
 
 
 func _ready() -> void:
-	add_to_group("faction_system")
+	_resolve_game_store()
 
 
 func register_faction(faction: Faction) -> void:
 	if faction == null or faction.id == StringName(""):
 		return
+	if faction.resources == null:
+		faction.resources = {}
 	factions[faction.id] = faction
+	if game_store == null:
+		_resolve_game_store()
+	if game_store != null:
+		game_store.register_faction(faction)
+	emit_signal("factions_changed")
 
 
 func register_npc(npc: NPC) -> void:
@@ -103,6 +119,38 @@ func position_of(building_id: StringName) -> Vector3:
 	return building_position.get(building_id, Vector3.ZERO)
 
 
+func resource_amount(faction_id: StringName, resource_id: StringName) -> int:
+	var f: Faction = factions.get(faction_id, null)
+	if f == null or resource_id == StringName(""):
+		return 0
+	return int(f.resources.get(resource_id, 0))
+
+
+func add_resource(faction_id: StringName, resource_id: StringName, amount: int) -> void:
+	if amount == 0 or faction_id == StringName("") or resource_id == StringName(""):
+		return
+	var f: Faction = factions.get(faction_id, null)
+	if f == null:
+		return
+	var current: int = int(f.resources.get(resource_id, 0))
+	var next: int = current + amount
+	if next < 0:
+		next = 0
+	f.resources[resource_id] = next
+	emit_signal("resources_changed", faction_id, resource_id, next)
+
+
+func set_resource_amount(faction_id: StringName, resource_id: StringName, amount: int) -> void:
+	if faction_id == StringName("") or resource_id == StringName(""):
+		return
+	var f: Faction = factions.get(faction_id, null)
+	if f == null:
+		return
+	var next: int = max(amount, 0)
+	f.resources[resource_id] = next
+	emit_signal("resources_changed", faction_id, resource_id, next)
+
+
 func _add_asset_building(faction_id: StringName, building_id: StringName) -> void:
 	if faction_id == StringName(""):
 		return
@@ -120,4 +168,12 @@ func _remove_asset_building(faction_id: StringName, building_id: StringName) -> 
 	if f == null:
 		return
 	f.assets_buildings.erase(building_id)
+
+
+func _resolve_game_store() -> void:
+	if game_store != null:
+		return
+	game_store = get_tree().get_first_node_in_group("game_store") as GameStore
+	if game_store == null:
+		game_store = get_node_or_null("/root/GameStore") as GameStore
 

@@ -8,7 +8,7 @@ signal build_requested(resource: GameResource)
 @export var resources: Array[GameResource] = []
 @export var buildings: Array[GameResource] = []
 @export var characters: Array[GameResource] = []
-@export var resources_yaml_path: String = "res://resources.yaml"
+@export var resources_yaml_path: String = "res://building.yaml"
 @export var use_yaml_resources: bool = true
 
 @onready var resources_grid: GridContainer = %ResourcesGrid
@@ -137,6 +137,8 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 
 		if entry.has("roles") and entry["roles"] is Array:
 			res.roles = entry["roles"]
+		if entry.has("resource_delta_per_hour") and entry["resource_delta_per_hour"] is Dictionary:
+			res.resource_delta_per_hour = entry["resource_delta_per_hour"]
 
 		res.category = String(entry.get("category", "resource")).to_lower()
 		parsed.append(res)
@@ -288,6 +290,8 @@ func _parse_resources_yaml(text: String) -> Array:
 	var collecting_list := false
 	var collecting_roles := false
 	var current_role: Dictionary = {}
+	var collecting_dict := false
+	var current_dict_key := ""
 
 	for line in lines:
 		var trimmed := line.strip_edges()
@@ -307,6 +311,8 @@ func _parse_resources_yaml(text: String) -> Array:
 					current["roles"].append(current_role.duplicate())
 				collecting_roles = false
 				current_role = {}
+			collecting_dict = false
+			current_dict_key = ""
 			_commit_resource_entry(entries, current)
 			current = {"key": trimmed.rstrip(":")}
 			collecting_list = false
@@ -318,6 +324,12 @@ func _parse_resources_yaml(text: String) -> Array:
 		if trimmed == "buildable_tiles:":
 			collecting_list = true
 			current["buildable_tiles"] = []
+			continue
+
+		if trimmed == "resource_delta_per_hour:":
+			collecting_dict = true
+			current_dict_key = "resource_delta_per_hour"
+			current[current_dict_key] = {}
 			continue
 
 		if trimmed == "roles:":
@@ -349,6 +361,17 @@ func _parse_resources_yaml(text: String) -> Array:
 			var val := trimmed.substr(1, trimmed.length()).strip_edges()
 			current["buildable_tiles"].append(val)
 			continue
+
+		if collecting_dict:
+			if trimmed.find(":") >= 0:
+				var sep_d := trimmed.find(":")
+				var k_d := trimmed.substr(0, sep_d).strip_edges()
+				var v_d := trimmed.substr(sep_d + 1, trimmed.length()).strip_edges()
+				current[current_dict_key][k_d] = _parse_scalar(v_d)
+				continue
+			else:
+				collecting_dict = false
+				current_dict_key = ""
 
 		collecting_list = false
 		var sep := trimmed.find(":")

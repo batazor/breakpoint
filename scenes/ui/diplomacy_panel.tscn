@@ -5,8 +5,8 @@
 [node name="DiplomacyPanel" type="CanvasLayer"]
 layer = 4
 script = ExtResource("1")
-graph_edit_path = NodePath("Panel/Margin/VBox/Graph")
 focus_selector_path = NodePath("Panel/Margin/VBox/FocusSelect")
+details_label_path = NodePath("Panel/Margin/VBox/Details")
 
 [node name="Panel" type="PanelContainer" parent="."]
 anchor_left = 1.0
@@ -31,19 +31,18 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="Title" type="Label" parent="Panel/Margin/VBox"]
-text = "Diplomacy"
+text = "Factions"
 horizontal_alignment = 1
 
 [node name="FocusSelect" type="OptionButton" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 
-[node name="Graph" type="GraphEdit" parent="Panel/Margin/VBox"]
+[node name="Details" type="RichTextLabel" parent="Panel/Margin/VBox"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
-min_size = Vector2(380, 260)
-right_disconnects = false
-scroll_offset = Vector2(0, 0)
-zoom = 1.0
+fit_content = true
+bbcode_enabled = false
+text = "No factions."
 

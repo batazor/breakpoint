@@ -61,6 +61,7 @@ var fortress_owner: Dictionary = {} # axial -> faction_id
 var building_at: Dictionary = {} # axial -> building_id
 var building_counter: Dictionary = {} # res_id -> int
 var _current_owner_override: StringName = StringName("")
+var _default_factions_registered: bool = false
 const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),
 	Vector2i(1, -1),
@@ -69,6 +70,12 @@ const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(-1, 1),
 	Vector2i(0, 1),
 ]
+
+
+func _enter_tree() -> void:
+	# Ensure core game data exists before UI _ready runs (Godot calls _ready bottom-up).
+	_resolve_faction_system()
+	_register_default_factions()
 
 
 func _ready() -> void:
@@ -375,6 +382,9 @@ func _register_building_if_needed(resource: GameResource, axial: Vector2i, pos: 
 func _register_default_factions() -> void:
 	if faction_system == null:
 		return
+	if _default_factions_registered:
+		return
+	_default_factions_registered = true
 	var ids: Array[StringName] = []
 	ids.append_array(kingdom_factions)
 	ids.append(faction_bandits)

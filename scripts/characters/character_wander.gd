@@ -108,12 +108,12 @@ func set_castle_targets(targets: Array[Vector2i]) -> void:
 
 
 func get_current_tile() -> Vector2i:
-	"""Get the current tile position of this character"""
+	## Get the current tile position of this character
 	return _current_axial
 
 
 func set_current_tile(axial: Vector2i) -> void:
-	"""Set the current tile position (used by external controllers)"""
+	## Set the current tile position (used by external controllers)
 	_current_axial = axial
 	if _nav != null:
 		_nav.set_current_cell(axial)

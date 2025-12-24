@@ -21,7 +21,7 @@ func _ready() -> void:
 
 
 func select_unit_at_tile(tile: Vector2i) -> bool:
-	"""Try to select a unit at the given tile position"""
+	## Try to select a unit at the given tile position
 	if hex_grid == null:
 		return false
 	
@@ -36,7 +36,7 @@ func select_unit_at_tile(tile: Vector2i) -> bool:
 
 
 func deselect_unit() -> void:
-	"""Deselect the currently selected unit"""
+	## Deselect the currently selected unit
 	if selected_unit != null:
 		_clear_selection_visual(selected_unit)
 		selected_unit = null
@@ -45,7 +45,7 @@ func deselect_unit() -> void:
 
 
 func command_move_to_tile(target_tile: Vector2i) -> bool:
-	"""Command selected unit to move to target tile"""
+	## Command selected unit to move to target tile
 	if selected_unit == null:
 		return false
 	
@@ -66,17 +66,17 @@ func command_move_to_tile(target_tile: Vector2i) -> bool:
 
 
 func get_selected_unit() -> Node3D:
-	"""Get the currently selected unit"""
+	## Get the currently selected unit
 	return selected_unit
 
 
 func has_selected_unit() -> bool:
-	"""Check if a unit is currently selected"""
+	## Check if a unit is currently selected
 	return selected_unit != null
 
 
 func _set_selected_unit(unit: Node3D, tile: Vector2i) -> void:
-	"""Internal: Set the selected unit"""
+	## Internal: Set the selected unit
 	# Deselect previous unit
 	if selected_unit != null:
 		_clear_selection_visual(selected_unit)
@@ -92,7 +92,7 @@ func _set_selected_unit(unit: Node3D, tile: Vector2i) -> void:
 
 
 func _find_unit_at_tile(tile: Vector2i) -> Node3D:
-	"""Internal: Find a unit/character at the given tile"""
+	## Internal: Find a unit/character at the given tile
 	# Check if hex_grid tracks character occupancy
 	if hex_grid and hex_grid.has_method("is_character_tile_occupied"):
 		if hex_grid.is_character_tile_occupied(tile):
@@ -103,7 +103,7 @@ func _find_unit_at_tile(tile: Vector2i) -> Node3D:
 
 
 func _find_character_node_at_tile(tile: Vector2i) -> Node3D:
-	"""Internal: Find the character Node3D at given tile"""
+	## Internal: Find the character Node3D at given tile
 	# Look for characters in the scene tree
 	var characters_node := get_node_or_null("/root/Main/Characters")
 	if characters_node == null:
@@ -125,7 +125,7 @@ func _find_character_node_at_tile(tile: Vector2i) -> Node3D:
 
 
 func _is_tile_valid_for_movement(tile: Vector2i) -> bool:
-	"""Internal: Check if tile is valid for movement"""
+	## Internal: Check if tile is valid for movement
 	if hex_grid == null:
 		return false
 	
@@ -150,7 +150,7 @@ func _is_tile_valid_for_movement(tile: Vector2i) -> bool:
 
 
 func _execute_movement(unit: Node3D, from_tile: Vector2i, to_tile: Vector2i) -> void:
-	"""Internal: Execute unit movement"""
+	## Internal: Execute unit movement
 	if unit == null or hex_grid == null:
 		return
 	
@@ -185,7 +185,7 @@ func _execute_movement(unit: Node3D, from_tile: Vector2i, to_tile: Vector2i) -> 
 
 
 func _add_selection_visual(unit: Node3D) -> void:
-	"""Internal: Add visual indicator for selected unit"""
+	## Internal: Add visual indicator for selected unit
 	if unit == null:
 		return
 	
@@ -219,7 +219,7 @@ func _add_selection_visual(unit: Node3D) -> void:
 
 
 func _clear_selection_visual(unit: Node3D) -> void:
-	"""Internal: Remove selection visual from unit"""
+	## Internal: Remove selection visual from unit
 	if unit == null:
 		return
 	

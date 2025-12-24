@@ -22,7 +22,7 @@ func _ready() -> void:
 
 
 func show_for_tile(tile: Vector2i, biome: String, has_unit: bool, screen_position: Vector2) -> void:
-	"""Display action menu for the given tile"""
+	## Display action menu for the given tile
 	_current_tile = tile
 	_tile_biome = biome
 	_has_unit = has_unit
@@ -39,7 +39,7 @@ func show_for_tile(tile: Vector2i, biome: String, has_unit: bool, screen_positio
 
 
 func _build_action_list() -> void:
-	"""Build the list of available actions for current tile state"""
+	## Build the list of available actions for current tile state
 	# Clear existing actions
 	if action_list:
 		for child in action_list.get_children():
@@ -71,7 +71,7 @@ func _build_action_list() -> void:
 
 
 func _add_action(label: String, id: String, tooltip: String = "") -> void:
-	"""Add an action to the available actions list"""
+	## Add an action to the available actions list
 	_available_actions.append({
 		"label": label,
 		"id": id,
@@ -80,18 +80,18 @@ func _add_action(label: String, id: String, tooltip: String = "") -> void:
 
 
 func _on_action_pressed(action_id: String) -> void:
-	"""Handle action button press"""
+	## Handle action button press
 	emit_signal("action_selected", action_id)
 	hide()
 
 
 func _on_close_requested() -> void:
-	"""Handle close request"""
+	## Handle close request
 	hide()
 
 
 func _calculate_menu_position(screen_pos: Vector2) -> Vector2:
-	"""Calculate menu position ensuring it stays on screen"""
+	## Calculate menu position ensuring it stays on screen
 	var viewport_size := get_viewport_rect().size
 	var menu_size := size
 	
@@ -113,5 +113,5 @@ func _calculate_menu_position(screen_pos: Vector2) -> Vector2:
 
 
 func get_current_tile() -> Vector2i:
-	"""Get the tile this menu is currently showing for"""
+	## Get the tile this menu is currently showing for
 	return _current_tile

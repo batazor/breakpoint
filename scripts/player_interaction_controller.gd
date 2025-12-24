@@ -44,7 +44,7 @@ func _ready() -> void:
 
 
 func _connect_signals() -> void:
-	"""Connect all necessary signals"""
+	## Connect all necessary signals
 	if hex_grid:
 		hex_grid.tile_selected.connect(_on_tile_selected)
 	
@@ -80,7 +80,7 @@ func _input(event: InputEvent) -> void:
 
 
 func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3) -> void:
-	"""Handle tile selection from hex grid"""
+	## Handle tile selection from hex grid
 	print("Tile selected: q=%d r=%d biome=%s" % [axial.x, axial.y, biome_name])
 	
 	# If awaiting move destination, command unit to move
@@ -103,7 +103,7 @@ func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3
 
 
 func _open_action_menu_at_cursor() -> void:
-	"""Open action menu at current tile under cursor"""
+	## Open action menu at current tile under cursor
 	if tile_action_menu == null or hex_grid == null:
 		return
 	
@@ -121,7 +121,7 @@ func _open_action_menu_at_cursor() -> void:
 
 
 func _on_action_menu_selected(action_id: String) -> void:
-	"""Handle action selection from context menu"""
+	## Handle action selection from context menu
 	print("Action selected: %s" % action_id)
 	
 	match action_id:
@@ -136,7 +136,7 @@ func _on_action_menu_selected(action_id: String) -> void:
 
 
 func _toggle_build_mode() -> void:
-	"""Toggle build mode on/off"""
+	## Toggle build mode on/off
 	_build_mode_active = not _build_mode_active
 	print("Build mode: %s" % ("ON" if _build_mode_active else "OFF"))
 	
@@ -148,7 +148,7 @@ func _toggle_build_mode() -> void:
 
 
 func _show_tile_info() -> void:
-	"""Show information about selected tile"""
+	## Show information about selected tile
 	if hex_grid == null:
 		return
 	
@@ -170,7 +170,7 @@ func _show_tile_info() -> void:
 
 
 func _show_unit_info() -> void:
-	"""Show information about selected unit"""
+	## Show information about selected unit
 	if unit_controller == null or not unit_controller.has_selected_unit():
 		print("No unit selected")
 		return
@@ -189,7 +189,7 @@ func _show_unit_info() -> void:
 
 
 func _start_unit_movement() -> void:
-	"""Start waiting for movement destination"""
+	## Start waiting for movement destination
 	if unit_controller == null or not unit_controller.has_selected_unit():
 		print("No unit selected to move")
 		return
@@ -199,7 +199,7 @@ func _start_unit_movement() -> void:
 
 
 func _toggle_pause() -> void:
-	"""Toggle game pause"""
+	## Toggle game pause
 	_game_paused = not _game_paused
 	get_tree().paused = _game_paused
 	print("Game paused: %s" % _game_paused)
@@ -207,7 +207,7 @@ func _toggle_pause() -> void:
 
 
 func _cancel_current_action() -> void:
-	"""Cancel current action (close menus, deselect, etc.)"""
+	## Cancel current action (close menus, deselect, etc.)
 	print("Cancel action")
 	
 	# Hide action menu
@@ -229,11 +229,11 @@ func _cancel_current_action() -> void:
 
 
 func _on_unit_selected(unit: Node3D, tile: Vector2i) -> void:
-	"""Handle unit selection"""
+	## Handle unit selection
 	print("Unit selected signal received")
 
 
 func _on_unit_deselected() -> void:
-	"""Handle unit deselection"""
+	## Handle unit deselection
 	print("Unit deselected signal received")
 	_awaiting_move_destination = false

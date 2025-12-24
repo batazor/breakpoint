@@ -116,6 +116,10 @@ The project uses Godot's built-in build system. To export the game:
 3. Configure export settings
 4. Click "Export Project"
 
+## Roadmap
+
+See [ROADMAP.md](ROADMAP.md) for the detailed MVP development plan, feature timeline, and future version roadmap.
+
 ## Contributing
 
 Contributions are welcome! To contribute:

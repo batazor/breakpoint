@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=15 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -11,6 +11,8 @@
 [ext_resource type="Script" uid="uid://cvte0ydjna3ub" path="res://scripts/game_resource.gd" id="8_ya4ey"]
 [ext_resource type="Script" uid="uid://c1hyb583bg66m" path="res://scripts/faction_system.gd" id="9"]
 [ext_resource type="Script" uid="uid://dqrsx6ob4ck5x" path="res://scripts/economy_system.gd" id="10"]
+[ext_resource type="PackedScene" uid="uid://bkhj8a0ypvxyw" path="res://scenes/ui/tile_action_menu.tscn" id="11_tile_action"]
+[ext_resource type="Script" path="res://scripts/player_interaction_controller.gd" id="12_interaction"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -62,3 +64,11 @@ resources = Array[ExtResource("8_ya4ey")]([])
 [node name="SelectionBadge" parent="." instance=ExtResource("7")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("8")]
+
+[node name="TileActionMenu" parent="." instance=ExtResource("11_tile_action")]
+
+[node name="PlayerInteractionController" type="Node" parent="."]
+script = ExtResource("12_interaction")
+hex_grid_path = NodePath("../HexGrid")
+tile_action_menu_path = NodePath("../TileActionMenu")
+build_menu_path = NodePath("../BuildMenu")

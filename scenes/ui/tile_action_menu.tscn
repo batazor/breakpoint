@@ -1,0 +1,21 @@
+[gd_scene load_steps=2 format=3 uid="uid://bkhj8a0ypvxyw"]
+
+[ext_resource type="Script" path="res://scripts/ui/tile_action_menu.gd" id="1_tile_action_menu"]
+
+[node name="TileActionMenu" type="PopupPanel"]
+unique_name_in_owner = true
+size = Vector2i(200, 150)
+script = ExtResource("1_tile_action_menu")
+
+[node name="MarginContainer" type="MarginContainer" parent="."]
+offset_right = 200.0
+offset_bottom = 150.0
+theme_override_constants/margin_left = 8
+theme_override_constants/margin_top = 8
+theme_override_constants/margin_right = 8
+theme_override_constants/margin_bottom = 8
+
+[node name="ActionList" type="VBoxContainer" parent="MarginContainer"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_constants/separation = 4

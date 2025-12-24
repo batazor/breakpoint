@@ -110,3 +110,55 @@ zoom_out={
 "unicode": 0
 }]
 }
+toggle_build_mode={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 66,
+"physical_keycode": 66,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+show_tile_info={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 73,
+"physical_keycode": 73,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+toggle_pause={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 32,
+"physical_keycode": 32,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+cancel_action={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 4194305,
+"physical_keycode": 4194305,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+open_action_menu={
+"deadzone": 0.5,
+"events": [{
+"button_index": 2,
+"pressed": false,
+"type": "mouse_button"
+}]
+}

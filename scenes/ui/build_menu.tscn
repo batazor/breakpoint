@@ -115,7 +115,10 @@ columns = 2
 [node name="Factions" type="MarginContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs"]
 script = ExtResource("4")
 focus_selector_path = NodePath("DiploVBox/DiploFocus")
-details_label_path = NodePath("DiploVBox/DiploDetails")
+details_label_path = NodePath("DiploVBox/FactionTabs/Overview/DiploDetails")
+faction_tabs_path = NodePath("DiploVBox/FactionTabs")
+buildings_list_path = NodePath("DiploVBox/FactionTabs/Buildings/BuildingsList")
+units_list_path = NodePath("DiploVBox/FactionTabs/Units/UnitsList")
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
@@ -130,13 +133,46 @@ text = "Factions"
 unique_name_in_owner = true
 size_flags_horizontal = 3
 
-[node name="DiploDetails" type="RichTextLabel" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox"]
+[node name="FactionTabs" type="TabContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="Overview" type="ScrollContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="DiploDetails" type="RichTextLabel" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs/Overview"]
 unique_name_in_owner = true
 size_flags_horizontal = 3
 size_flags_vertical = 3
 fit_content = true
 bbcode_enabled = false
 text = "No factions."
+
+[node name="Buildings" type="ScrollContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="BuildingsList" type="RichTextLabel" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs/Buildings"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+fit_content = true
+bbcode_enabled = false
+text = "No buildings."
+
+[node name="Units" type="ScrollContainer" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs"]
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="UnitsList" type="RichTextLabel" parent="BuildPanel/PanelMargin/PanelVBox/Tabs/Factions/DiploVBox/FactionTabs/Units"]
+unique_name_in_owner = true
+size_flags_horizontal = 3
+size_flags_vertical = 3
+fit_content = true
+bbcode_enabled = false
+text = "No units."
 
 [node name="HintLabel" type="Label" parent="BuildPanel/PanelMargin/PanelVBox"]
 unique_name_in_owner = true

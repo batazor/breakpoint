@@ -2,7 +2,6 @@ extends "res://scripts/characters/character_animator.gd"
 class_name CharacterWander
 
 const HexUtil = preload("res://scripts/hex.gd")
-const InterestNavigation = preload("res://scripts/ai/interest_navigation.gd")
 
 @export var grid_path: NodePath
 @export var move_speed: float = 2.5
@@ -20,8 +19,8 @@ const InterestNavigation = preload("res://scripts/ai/interest_navigation.gd")
 @export var attractor_decay: float = 0.2
 @export var faction_id: StringName = &""
 
-var _grid: Node
-var _nav: InterestNavigation
+var _grid: Node = null
+var _nav: InterestNavigation = null
 var _current_axial: Vector2i = Vector2i(-1, -1)
 var _target_axial: Vector2i = Vector2i(-1, -1)
 var _target_pos: Vector3 = Vector3.ZERO
@@ -29,6 +28,8 @@ var _time_accum: float = 0.0
 var _resource_targets: Array[Vector2i] = []
 var _castle_targets: Array[Vector2i] = []
 var _occupant_id: int = 0
+
+const INVALID_AXIAL: Vector2i = Vector2i(-1, -1)
 
 
 func _ready() -> void:
@@ -41,11 +42,12 @@ func _ready() -> void:
 
 
 func _physics_process(delta: float) -> void:
-	if _target_axial == Vector2i(-1, -1):
+	if _target_axial == INVALID_AXIAL:
 		_target_pos = global_position
 		_target_axial = _current_axial
 
 	_move_toward_target(delta)
+
 	_time_accum += delta
 	if _time_accum >= step_interval:
 		_time_accum = 0.0
@@ -100,37 +102,57 @@ func _set_initial_cell() -> void:
 func _pick_next() -> void:
 	if _nav == null:
 		return
+
 	var neighbors: Array[Dictionary] = _nav.neighbor_context_from_grid(_current_axial)
+
 	neighbors = neighbors.filter(func(ctx: Dictionary) -> bool:
-		var ax: Vector2i = ctx.get("axial", _current_axial)
-		if ctx.get("biome", "") == "water":
+		var ax: Vector2i = ctx.get("axial", _current_axial) as Vector2i
+		var biome: String = str(ctx.get("biome", ""))
+		if biome == "water":
 			return false
 		if _is_occupied(ax) and ax != _current_axial:
 			return false
-		return true)
-	for ctx in neighbors:
-		var axial: Vector2i = ctx.get("axial", _current_axial)
-		var biome: String = ctx.get("biome", "")
-		ctx["utility"] = float(ctx.get("utility", 0.0)) + _preference_utility(axial, biome)
+		return true
+	)
+
+	for ctx: Dictionary in neighbors:
+		var axial: Vector2i = ctx.get("axial", _current_axial) as Vector2i
+		var biome: String = str(ctx.get("biome", ""))
+		var base_u: float = float(ctx.get("utility", 0.0))
+		ctx["utility"] = base_u + _preference_utility(axial, biome)
+
 	if neighbors.is_empty():
 		return
+
 	var choice: Dictionary = _nav.suggest_next(neighbors)
 	if choice.is_empty():
 		return
-	var next_axial: Vector2i = choice.get("axial", _current_axial)
+
+	var next_axial: Vector2i = choice.get("axial", _current_axial) as Vector2i
 	_target_axial = next_axial
 	_target_pos = _axial_to_world(_target_axial)
 
 
 func _move_toward_target(delta: float) -> void:
 	var diff: Vector3 = _target_pos - global_position
-	diff.y = _target_pos.y - global_position.y
 	var dist: float = diff.length()
 	if dist <= arrive_tolerance:
 		_on_reached_target()
 		return
-	var dir: Vector3 = diff.normalized()
+
+	var dir: Vector3 = diff / dist # normalized, but avoids extra alloc
 	global_position += dir * move_speed * delta
+
+	# Rotate character to face movement direction
+	if dist > 0.01:
+		var flat_dir: Vector3 = Vector3(dir.x, 0.0, dir.z).normalized()
+		if flat_dir.length() > 0.01:
+			var target_yaw: float = atan2(flat_dir.x, flat_dir.z)
+			var current_yaw: float = rotation.y
+			var yaw_diff: float = fposmod(target_yaw - current_yaw + PI, TAU) - PI
+			var rotation_speed: float = 5.0
+			var yaw_step: float = clamp(yaw_diff, -rotation_speed * delta, rotation_speed * delta)
+			rotation.y = current_yaw + yaw_step
 
 
 func _on_reached_target() -> void:
@@ -148,12 +170,13 @@ func _axial_to_world(axial: Vector2i) -> Vector3:
 		var value: Variant = _grid.call("get_tile_surface_position", axial)
 		if value is Vector3:
 			return (value as Vector3) + Vector3(0.0, height_offset, 0.0)
-	var pos := HexUtil.axial_to_world(axial.x, axial.y, hex_radius)
+
+	var pos: Vector3 = HexUtil.axial_to_world(axial.x, axial.y, hex_radius)
 	return pos + Vector3(0.0, height_offset, 0.0)
 
 
 func _round_world_to_axial(pos: Vector3) -> Vector2i:
-	var frac := _world_to_axial(pos)
+	var frac: Vector2 = _world_to_axial(pos)
 	return _axial_round(frac)
 
 
@@ -167,47 +190,55 @@ func _axial_round(frac: Vector2) -> Vector2i:
 	var x: float = frac.x
 	var z: float = frac.y
 	var y: float = -x - z
+
 	var rx: float = round(x)
 	var ry: float = round(y)
 	var rz: float = round(z)
+
 	var x_diff: float = absf(rx - x)
 	var y_diff: float = absf(ry - y)
 	var z_diff: float = absf(rz - z)
+
 	if x_diff > y_diff and x_diff > z_diff:
 		rx = -ry - rz
 	elif y_diff > z_diff:
 		ry = -rx - rz
 	else:
 		rz = -rx - ry
+
 	return Vector2i(int(rx), int(rz))
 
 
 func _init_hex_radius_from_grid() -> void:
 	if _grid == null:
 		return
-	if _grid.has_method("get"):
-		var value: Variant = _grid.get("hex_radius")
-		if typeof(value) == TYPE_FLOAT:
-			hex_radius = float(value)
+	# Node.get() returns Variant
+	var value: Variant = _grid.get("hex_radius")
+	if typeof(value) == TYPE_FLOAT or typeof(value) == TYPE_INT:
+		hex_radius = float(value)
 
 
 func _preference_utility(axial: Vector2i, biome: String) -> float:
 	var score: float = 0.0
+
 	if prefer_forest and _is_forest(axial, biome):
 		score += forest_bonus
+
 	if prefer_resources and not _resource_targets.is_empty():
-		var d_res := _closest_distance(axial, _resource_targets)
+		var d_res: int = _closest_distance(axial, _resource_targets)
 		score += _attractor_score(d_res, resource_bonus)
+
 	if prefer_castles and not _castle_targets.is_empty():
-		var d_castle := _closest_distance(axial, _castle_targets)
+		var d_castle: int = _closest_distance(axial, _castle_targets)
 		score += _attractor_score(d_castle, castle_bonus)
+
 	return score
 
 
 func _closest_distance(axial: Vector2i, targets: Array[Vector2i]) -> int:
-	var best := INF
-	for t in targets:
-		var d := _hex_distance(axial, t)
+	var best: int = 1_000_000_000
+	for t: Vector2i in targets:
+		var d: int = _hex_distance(axial, t)
 		if d < best:
 			best = d
 	return best
@@ -221,7 +252,7 @@ func _attractor_score(dist: int, base_bonus: float) -> float:
 
 func _is_forest(axial: Vector2i, biome: String) -> bool:
 	if _grid != null and _grid.has_method("is_forest_tile"):
-		return _grid.call("is_forest_tile", axial)
+		return bool(_grid.call("is_forest_tile", axial))
 	# Fallback: plains as weak forest proxy
 	return biome == "plains"
 
@@ -235,7 +266,7 @@ func _hex_distance(a: Vector2i, b: Vector2i) -> int:
 
 func _is_occupied(axial: Vector2i) -> bool:
 	if _grid != null and _grid.has_method("is_character_tile_occupied"):
-		return _grid.call("is_character_tile_occupied", axial)
+		return bool(_grid.call("is_character_tile_occupied", axial))
 	return false
 
 

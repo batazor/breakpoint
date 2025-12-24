@@ -8,17 +8,26 @@ const BuildControllerRes = preload("res://scripts/build_controller.gd")
 @export var faction_system_path: NodePath
 @export var focus_selector_path: NodePath
 @export var details_label_path: NodePath
+@export var faction_tabs_path: NodePath
+@export var buildings_list_path: NodePath
+@export var units_list_path: NodePath
 
 var faction_system: FactionSystemRes
 var game_store: Node
 var build_controller: BuildControllerRes
 var focus_selector: OptionButton
 var details_label: RichTextLabel
+var faction_tabs: TabContainer
+var buildings_list: RichTextLabel
+var units_list: RichTextLabel
 
 
 func _ready() -> void:
 	focus_selector = get_node_or_null(focus_selector_path) as OptionButton
 	details_label = get_node_or_null(details_label_path) as RichTextLabel
+	faction_tabs = get_node_or_null(faction_tabs_path) as TabContainer
+	buildings_list = get_node_or_null(buildings_list_path) as RichTextLabel
+	units_list = get_node_or_null(units_list_path) as RichTextLabel
 	_resolve_game_store()
 	_resolve_faction_system()
 	_resolve_build_controller()
@@ -33,10 +42,14 @@ func _ready() -> void:
 		faction_system.factions_changed.connect(_on_factions_changed)
 	if faction_system != null and not faction_system.resources_changed.is_connected(_on_resources_changed):
 		faction_system.resources_changed.connect(_on_resources_changed)
+	if faction_system != null and not faction_system.building_transferred.is_connected(_on_buildings_changed):
+		faction_system.building_transferred.connect(_on_buildings_changed)
 	_refresh_selector()
 	if focus_selector != null:
 		focus_selector.item_selected.connect(_on_focus_selected)
-	_render_text()
+	if faction_tabs != null:
+		faction_tabs.tab_changed.connect(_on_tab_changed)
+	_render_all()
 
 
 func _resolve_faction_system() -> void:
@@ -49,18 +62,21 @@ func _resolve_faction_system() -> void:
 func _resolve_build_controller() -> void:
 	build_controller = get_tree().get_first_node_in_group("build_controller") as BuildControllerRes
 	if build_controller == null:
-		var nodes := get_tree().get_nodes_in_group("build_controller")
+		var nodes: Array = get_tree().get_nodes_in_group("build_controller")
 		if nodes.size() > 0:
-			build_controller = nodes[0] as BuildControllerRes
+			var node_val: Variant = nodes[0]
+			build_controller = node_val as BuildControllerRes
 
 
 func _refresh_selector() -> void:
 	if focus_selector == null:
 		return
 	focus_selector.clear()
-	var ids := _faction_ids()
+	var ids: Array[StringName] = _faction_ids()
 	for i in range(ids.size()):
-		focus_selector.add_item(str(ids[i]), i)
+		var id_val_var: Variant = ids[i]
+		var id_val: StringName = id_val_var as StringName
+		focus_selector.add_item(str(id_val), i)
 	if focus_selector.item_count > 0:
 		focus_selector.select(0)
 
@@ -74,27 +90,34 @@ func _focus_faction() -> StringName:
 		return StringName("")
 	if focus_selector.item_count == 0:
 		return StringName("")
-	var idx := focus_selector.get_selected()
+	var idx: int = focus_selector.get_selected()
 	if idx < 0 or idx >= focus_selector.item_count:
 		return StringName("")
-	return StringName(focus_selector.get_item_text(idx))
+	var item_text: String = focus_selector.get_item_text(idx)
+	return StringName(item_text)
 
 
 func _faction_ids() -> Array[StringName]:
 	if game_store != null:
 		var ids: Array[StringName] = []
-		for k in game_store.factions.keys():
-			if String(k) != "":
-				ids.append(k)
+		var keys: Array = game_store.factions.keys()
+		for i in range(keys.size()):
+			var k_val: Variant = keys[i]
+			var k_name: StringName = k_val as StringName
+			if String(k_name) != "":
+				ids.append(k_name)
 		ids.sort()
 		if not ids.is_empty():
 			return ids
 	if faction_system == null:
 		return []
 	var ids_fs: Array[StringName] = []
-	for k in faction_system.factions.keys():
-		if String(k) != "":
-			ids_fs.append(k)
+	var keys_fs: Array = faction_system.factions.keys()
+	for i in range(keys_fs.size()):
+		var k_val: Variant = keys_fs[i]
+		var k_name: StringName = k_val as StringName
+		if String(k_name) != "":
+			ids_fs.append(k_name)
 	ids_fs.sort()
 	return ids_fs
 
@@ -102,10 +125,12 @@ func _faction_ids() -> Array[StringName]:
 func _relation_between(a: StringName, b: StringName) -> float:
 	if faction_system == null:
 		return 0.0
-	var fa: FactionRes = faction_system.factions.get(a, null)
+	var fa_val: Variant = faction_system.factions.get(a, null)
+	var fa: FactionRes = fa_val as FactionRes
 	if fa == null:
 		return 0.0
-	var rel_val: float = float(fa.relations.get(b, 0.0))
+	var rel_val_var: Variant = fa.relations.get(b, 0.0)
+	var rel_val: float = float(rel_val_var)
 	return float(rel_val)
 
 
@@ -118,18 +143,24 @@ func _relation_color(rel: float) -> Color:
 func _resources_summary(fid: StringName) -> String:
 	var source_faction: FactionRes = null
 	if game_store != null:
-		source_faction = game_store.factions.get(fid, null)
+		var fa_val: Variant = game_store.factions.get(fid, null)
+		source_faction = fa_val as FactionRes
 	if source_faction == null and faction_system != null:
-		source_faction = faction_system.factions.get(fid, null)
+		var fa_val: Variant = faction_system.factions.get(fid, null)
+		source_faction = fa_val as FactionRes
 	if source_faction == null:
 		return "Resources: —"
 	var f: FactionRes = source_faction
 	if f == null or f.resources == null or f.resources.is_empty():
 		return "Resources: —"
 	var parts: Array[String] = []
-	for key in f.resources.keys():
-		var amt: int = int(f.resources[key])
-		parts.append("%s: %s" % [str(key), str(amt)])
+	var resource_keys: Array = f.resources.keys()
+	for i in range(resource_keys.size()):
+		var key_val: Variant = resource_keys[i]
+		var key_name: StringName = key_val as StringName
+		var amt_val: Variant = f.resources[key_name]
+		var amt: int = int(amt_val)
+		parts.append("%s: %s" % [str(key_name), str(amt)])
 	parts.sort()
 	return "Resources: " + ", ".join(parts)
 
@@ -149,14 +180,15 @@ func _faction_by_id(fid: StringName) -> FactionRes:
 func _render_text() -> void:
 	if details_label == null:
 		return
-	var ids := _faction_ids()
+	var ids: Array[StringName] = _faction_ids()
 	if ids.is_empty():
 		details_label.text = "No factions."
 		return
-	var focus := _focus_faction()
+	var focus: StringName = _focus_faction()
 	if focus == StringName("") and ids.size() > 0:
-		focus = ids[0]
-	var focus_f := _faction_by_id(focus)
+		var first_id_val: Variant = ids[0]
+		focus = first_id_val as StringName
+	var focus_f: FactionRes = _faction_by_id(focus)
 	var lines: Array[String] = []
 	lines.append("Faction: %s" % str(focus))
 	lines.append("")
@@ -165,48 +197,81 @@ func _render_text() -> void:
 		lines.append("Resources: —")
 	else:
 		var res_parts: Array[String] = []
-		for k in focus_f.resources.keys():
-			res_parts.append("%s: %d" % [str(k), int(focus_f.resources[k])])
+		var resource_keys: Array = focus_f.resources.keys()
+		for i in range(resource_keys.size()):
+			var k_val: Variant = resource_keys[i]
+			var k_name: StringName = k_val as StringName
+			var res_val: Variant = focus_f.resources[k_name]
+			res_parts.append("%s: %d" % [str(k_name), int(res_val)])
 		res_parts.sort()
 		lines.append("Resources: " + ", ".join(res_parts))
 	lines.append("")
 	# Build Queue
 	if build_controller != null:
-		var queue: Array = build_controller.get_build_queue_for_faction(focus)
+		var queue: Array[Dictionary] = build_controller.get_build_queue_for_faction(focus)
 		if queue.is_empty():
 			lines.append("Build Queue: —")
 		else:
 			lines.append("Build Queue:")
-			for entry in queue:
-				var res_id: StringName = entry.get("res_id", StringName(""))
-				var axial: Vector2i = entry.get("axial", Vector2i(-1, -1))
-				var hours: int = int(entry.get("remaining_hours", 0))
+			for i in range(queue.size()):
+				var entry_dict_val: Variant = queue[i]
+				var entry: Dictionary = entry_dict_val as Dictionary
+				var res_id_val: Variant = entry.get("res_id", "")
+				var res_id: StringName = StringName(str(res_id_val))
+				var axial_val: Variant = entry.get("axial", Vector2i(-1, -1))
+				var axial: Vector2i
+				if axial_val is Vector2i:
+					axial = axial_val as Vector2i
+				elif axial_val is Vector2:
+					var v2: Vector2 = axial_val as Vector2
+					axial = Vector2i(int(floor(v2.x)), int(floor(v2.y)))
+				else:
+					axial = Vector2i(-1, -1)
+				var hours_val: Variant = entry.get("remaining_hours", 0)
+				var hours: int = int(floor(float(hours_val)))
 				lines.append("  - %s at (%d,%d): %dh remaining" % [str(res_id), axial.x, axial.y, hours])
 	lines.append("")
 	# Relations
 	lines.append("Relations:")
-	for other in ids:
-		if other == focus:
+	for i in range(ids.size()):
+		var other_val: Variant = ids[i]
+		var other_name: StringName = other_val as StringName
+		if other_name == focus:
 			continue
 		var v: float = 0.0
 		if focus_f != null:
-			v = float(focus_f.relations.get(other, 0.0))
-		lines.append("  - %s: %.2f" % [str(other), v])
+			var rel_val_var: Variant = focus_f.relations.get(other_name, 0.0)
+			v = float(rel_val_var)
+		lines.append("  - %s: %.2f" % [str(other_name), v])
 	details_label.text = "\n".join(lines)
 
 
 func _on_resources_changed(_fid: StringName, _res_id: StringName, _amt: int) -> void:
-	_render_text()
+	_render_all()
 
 
 func _on_factions_changed() -> void:
 	_refresh_selector()
-	_render_text()
+	_render_all()
 
 
 func _on_world_ready() -> void:
 	_refresh_selector()
+	_render_all()
+
+
+func _on_buildings_changed(_building_id: StringName, _new_owner: StringName) -> void:
+	_render_all()
+
+
+func _on_tab_changed(_tab: int) -> void:
+	_render_all()
+
+
+func _render_all() -> void:
 	_render_text()
+	_render_buildings()
+	_render_units()
 
 
 func _resolve_game_store() -> void:
@@ -215,3 +280,115 @@ func _resolve_game_store() -> void:
 	game_store = get_tree().get_first_node_in_group("game_store")
 	if game_store == null:
 		game_store = get_node_or_null("/root/GameStore")
+
+
+func _render_buildings() -> void:
+	if buildings_list == null:
+		return
+	var ids: Array[StringName] = _faction_ids()
+	if ids.is_empty():
+		buildings_list.text = "No factions."
+		return
+	var focus: StringName = _focus_faction()
+	if focus == StringName("") and ids.size() > 0:
+		var first_id_val: Variant = ids[0]
+		focus = first_id_val as StringName
+	var lines: Array[String] = []
+	lines.append("Buildings for %s:" % str(focus))
+	lines.append("")
+	if faction_system == null:
+		buildings_list.text = "Faction system not found."
+		return
+	var building_count: int = 0
+	var building_keys: Array = faction_system.building_owner.keys()
+	for i in range(building_keys.size()):
+		var building_id_val: Variant = building_keys[i]
+		var building_id_key: StringName = building_id_val as StringName
+		var owner_val: Variant = faction_system.building_owner.get(building_id_key, StringName(""))
+		var owner: StringName = owner_val as StringName
+		if owner != focus:
+			continue
+		building_count += 1
+		var btype_val: Variant = faction_system.building_types.get(building_id_key, StringName("unknown"))
+		var btype: StringName = btype_val as StringName
+		var axial_val: Variant = faction_system.building_axial.get(building_id_key, Vector2i(-1, -1))
+		var axial: Vector2i
+		if axial_val is Vector2i:
+			axial = axial_val as Vector2i
+		elif axial_val is Vector2:
+			var v2: Vector2 = axial_val as Vector2
+			axial = Vector2i(int(floor(v2.x)), int(floor(v2.y)))
+		else:
+			axial = Vector2i(-1, -1)
+		lines.append("%d. %s (ID: %s)" % [building_count, str(btype), str(building_id_key)])
+		if axial != Vector2i(-1, -1):
+			lines.append("   Location: (%d, %d)" % [axial.x, axial.y])
+		lines.append("")
+	if building_count == 0:
+		lines.append("No buildings.")
+	buildings_list.text = "\n".join(lines)
+
+
+func _render_units() -> void:
+	if units_list == null:
+		return
+	var ids: Array[StringName] = _faction_ids()
+	if ids.is_empty():
+		units_list.text = "No factions."
+		return
+	var focus: StringName = _focus_faction()
+	if focus == StringName("") and ids.size() > 0:
+		var first_id_val: Variant = ids[0]
+		focus = first_id_val as StringName
+	var lines: Array[String] = []
+	lines.append("Units for %s:" % str(focus))
+	lines.append("")
+	if faction_system == null:
+		units_list.text = "Faction system not found."
+		return
+	var unit_count: int = 0
+	var units_by_type: Dictionary = {}
+	var unit_owner_keys: Array = faction_system.unit_owner.keys()
+	for i in range(unit_owner_keys.size()):
+		var unit_id_val: Variant = unit_owner_keys[i]
+		var unit_id_key: StringName = unit_id_val as StringName
+		var owner_val: Variant = faction_system.unit_owner.get(unit_id_key, StringName(""))
+		var owner: StringName = owner_val as StringName
+		if owner != focus:
+			continue
+		var utype_val: Variant = faction_system.unit_types.get(unit_id_key, StringName("unknown"))
+		var utype: StringName = utype_val as StringName
+		var unit_list_val: Variant
+		if not units_by_type.has(utype):
+			var empty_list: Array[StringName] = []
+			units_by_type[utype] = empty_list
+			unit_list_val = empty_list
+		else:
+			var unit_list_get_val: Variant = units_by_type[utype]
+			unit_list_val = unit_list_get_val
+		var unit_list: Array[StringName] = unit_list_val as Array[StringName]
+		unit_list.append(unit_id_key)
+		units_by_type[utype] = unit_list
+		unit_count += 1
+	if unit_count == 0:
+		lines.append("No units.")
+	else:
+		var sorted_types: Array[StringName] = []
+		var type_keys: Array = units_by_type.keys()
+		for i in range(type_keys.size()):
+			var k_val: Variant = type_keys[i]
+			var k_name: StringName = k_val as StringName
+			sorted_types.append(k_name)
+		sorted_types.sort()
+		for i in range(sorted_types.size()):
+			var utype_val: Variant = sorted_types[i]
+			var utype_name: StringName = utype_val as StringName
+			var unit_ids_val: Variant = units_by_type[utype_name]
+			var unit_ids: Array[StringName] = unit_ids_val as Array[StringName]
+			lines.append("%s: %d" % [str(utype_name), unit_ids.size()])
+			for j in range(unit_ids.size()):
+				var uid_val: Variant = unit_ids[j]
+				var uid_name: StringName = uid_val as StringName
+				lines.append("  - %s" % str(uid_name))
+			lines.append("")
+	units_list.text = "\n".join(lines)

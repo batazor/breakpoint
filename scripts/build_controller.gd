@@ -591,14 +591,15 @@ func _process_build_queue() -> void:
 		_build_queue.remove_at(i)
 
 
-func get_build_queue_for_faction(faction_id: StringName) -> Array:
-	var result: Array = []
+func get_build_queue_for_faction(faction_id: StringName) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
 	if _build_queue.is_empty():
 		return result
 	for entry in _build_queue:
-		var owner: StringName = entry.get("owner", faction_player)
+		var entry_dict: Dictionary = entry as Dictionary
+		var owner: StringName = entry_dict.get("owner", faction_player) as StringName
 		if owner == faction_id:
-			result.append(entry.duplicate())
+			result.append(entry_dict.duplicate())
 	return result
 
 

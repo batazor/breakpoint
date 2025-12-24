@@ -1,15 +1,16 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=13 format=3 uid="uid://xl4hksv34nbd"]
 
-[ext_resource type="Script" path="res://scripts/hex_grid.gd" id="1"]
-[ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2"]
+[ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
+[ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ui/build_menu.tscn" id="3"]
-[ext_resource type="Script" path="res://scripts/build_controller.gd" id="4"]
-[ext_resource type="Script" path="res://scripts/day_night_cycle.gd" id="5"]
+[ext_resource type="Script" uid="uid://pa2jar1qc1p3" path="res://scripts/build_controller.gd" id="4"]
+[ext_resource type="Script" uid="uid://dk8b61cxhuawp" path="res://scripts/day_night_cycle.gd" id="5"]
 [ext_resource type="PackedScene" path="res://scenes/ui/time_controls.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_badge.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/help_overlay.tscn" id="8"]
-[ext_resource type="Script" path="res://scripts/faction_system.gd" id="9"]
-[ext_resource type="Script" path="res://scripts/economy_system.gd" id="10"]
+[ext_resource type="Script" uid="uid://cvte0ydjna3ub" path="res://scripts/game_resource.gd" id="8_ya4ey"]
+[ext_resource type="Script" uid="uid://c1hyb583bg66m" path="res://scripts/faction_system.gd" id="9"]
+[ext_resource type="Script" uid="uid://dqrsx6ob4ck5x" path="res://scripts/economy_system.gd" id="10"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -19,20 +20,16 @@
 script = ExtResource("1")
 map_width = 20
 map_height = 20
-hex_radius = 1.0
-hex_height = 0.25
-use_multimesh = true
 
 [node name="CameraRig" type="Node3D" parent="."]
 script = ExtResource("2")
-grid_path = NodePath("../HexGrid")
 
 [node name="Camera3D" type="Camera3D" parent="CameraRig"]
 current = true
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.612372, 0.353553, -0.707107, 0, 0.894427, 0.447214, 0.790569, -0.276026, 0.547723, 0, 0, 0)
 light_energy = 1.5
-transform = Transform3D(0.612372, 0.353553, -0.707107, 0.0, 0.894427, 0.447214, 0.790569, -0.276026, 0.547723, 0, 0, 0)
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("1")
@@ -58,10 +55,10 @@ grid_path = NodePath("../HexGrid")
 selection_badge_path = NodePath("../SelectionBadge")
 
 [node name="BuildMenu" parent="." instance=ExtResource("3")]
+resources = Array[ExtResource("8_ya4ey")]([])
 
 [node name="TimeControls" parent="." instance=ExtResource("6")]
 
 [node name="SelectionBadge" parent="." instance=ExtResource("7")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("8")]
-

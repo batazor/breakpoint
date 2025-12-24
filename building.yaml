@@ -11,6 +11,10 @@ resources:
       - sand
     resource_delta_per_hour:
       food: 10
+    build_cost:
+      coal: 5
+      gold: 5
+    build_time_hours: 2
   mine:
     id: mine
     title: Mine
@@ -22,6 +26,10 @@ resources:
       - mountain
     resource_delta_per_hour:
       coal: 5
+    build_cost:
+      gold: 10
+      food: 5
+    build_time_hours: 3
   lumbermill:
     id: lumbermill
     title: Lumber Mill
@@ -34,6 +42,10 @@ resources:
       - sand
     resource_delta_per_hour:
       coal: 10
+    build_cost:
+      food: 10
+      gold: 5
+    build_time_hours: 2
   fortress:
     id: fortress
     title: Fortress
@@ -46,6 +58,11 @@ resources:
       - mountain
     resource_delta_per_hour:
       gold: 10
+    build_cost:
+      food: 50
+      coal: 50
+      gold: 100
+    build_time_hours: 12
     roles:
       - role_id: guard
         max_slots: 4

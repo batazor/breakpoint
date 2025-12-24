@@ -40,6 +40,9 @@ signal resource_selected(resource: GameResource)
 @export var faction_bandits: StringName = &"bandits"
 @export var faction_neutral: StringName = &"neutral"
 @export var kingdom_factions: Array[StringName] = [&"kingdom_a", &"kingdom_b", &"kingdom_c"]
+@export var starting_resources_kingdom: Dictionary = {"food": 120, "coal": 40, "gold": 60}
+@export var starting_resources_bandits: Dictionary = {"food": 60, "coal": 10, "gold": 20}
+@export var starting_resources_neutral: Dictionary = {"food": 0, "coal": 0, "gold": 0}
 
 var build_menu: BuildMenu
 var selected_resource: GameResource
@@ -60,8 +63,12 @@ var faction_system: Node
 var fortress_owner: Dictionary = {} # axial -> faction_id
 var building_at: Dictionary = {} # axial -> building_id
 var building_counter: Dictionary = {} # res_id -> int
+var unit_counter: Dictionary = {} # unit_type -> int
 var _current_owner_override: StringName = StringName("")
 var _default_factions_registered: bool = false
+var _construction_reserved: Dictionary = {} # axial_key -> true
+var _build_queue: Array = [] # Array[Dictionary] {res_id, axial, remaining_hours, owner}
+var _day_night: DayNightCycle
 const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),
 	Vector2i(1, -1),
@@ -74,6 +81,7 @@ const HEX_DIRS: Array[Vector2i] = [
 
 func _enter_tree() -> void:
 	# Ensure core game data exists before UI _ready runs (Godot calls _ready bottom-up).
+	add_to_group("build_controller")
 	_resolve_faction_system()
 	_register_default_factions()
 
@@ -100,6 +108,7 @@ func _ready() -> void:
 	_init_building_rng()
 	_resolve_faction_system()
 	_register_default_factions()
+	_resolve_day_night()
 	call_deferred("_run_generation_layers")
 
 
@@ -126,7 +135,78 @@ func _on_build_requested(resource: GameResource) -> void:
 	emit_signal("resource_selected", resource)
 	if enable_ghost_preview:
 		_spawn_ghost()
-	_try_place_selected_resource()
+	_try_build_or_queue(resource)
+
+
+func _try_build_or_queue(resource: GameResource) -> void:
+	if resource == null:
+		return
+	var hours := int(resource.build_time_hours)
+	var has_cost := resource.build_cost != null and resource.build_cost.size() > 0
+	if hours <= 0 and not has_cost:
+		_try_place_selected_resource()
+		return
+	# Needs a tile context for queued builds.
+	if selected_tile_axial.x < 0 or selected_tile_axial.y < 0:
+		if build_menu != null and build_menu.has_method("show_hint"):
+			build_menu.show_hint("Выберите клетку для строительства.")
+		return
+	var key := _axial_key(selected_tile_axial)
+	if _construction_reserved.has(key) or _is_tile_occupied(selected_tile_axial):
+		if build_menu != null and build_menu.has_method("show_hint"):
+			build_menu.show_hint("Клетка занята.")
+		return
+	var biome_name: String = _get_tile_biome_name(selected_tile_axial)
+	if biome_name.is_empty() or not _is_tile_allowed(resource, biome_name):
+		if build_menu != null and build_menu.has_method("show_hint"):
+			build_menu.show_hint("Нельзя строить на этой клетке.")
+		return
+	# Charge cost from player faction.
+	var owner_id: StringName = faction_player
+	if not _can_pay_cost(owner_id, resource.build_cost):
+		if build_menu != null and build_menu.has_method("show_hint"):
+			build_menu.show_hint("Недостаточно ресурсов.")
+		return
+	_pay_cost(owner_id, resource.build_cost)
+	# Instant build if no time.
+	if hours <= 0:
+		_try_place_selected_resource()
+		return
+	_construction_reserved[key] = true
+	_build_queue.append({
+		"res_id": resource.id,
+		"axial": selected_tile_axial,
+		"remaining_hours": hours,
+		"owner": owner_id,
+	})
+	if build_menu != null and build_menu.has_method("show_hint"):
+		build_menu.show_hint("Стройка начата (%dч)." % hours)
+	if clear_selection_after_build:
+		selected_resource = null
+		_clear_ghost()
+
+
+func _can_pay_cost(faction_id: StringName, cost: Dictionary) -> bool:
+	if faction_system == null or cost == null:
+		return true
+	for k in cost.keys():
+		var need: int = int(cost[k])
+		if need <= 0:
+			continue
+		var have: int = int(faction_system.call("resource_amount", faction_id, StringName(k)))
+		if have < need:
+			return false
+	return true
+
+
+func _pay_cost(faction_id: StringName, cost: Dictionary) -> void:
+	if faction_system == null or cost == null:
+		return
+	for k in cost.keys():
+		var need: int = int(cost[k])
+		if need <= 0:
+			continue
+		faction_system.call("add_resource", faction_id, StringName(k), -need)
 
 
 func _spawn_ghost() -> void:
@@ -294,6 +374,7 @@ func _place_resource_on_tile(resource: GameResource, axial: Vector2i, owner_over
 	_mark_tile_occupied(axial)
 	_track_resource_location(resource, axial)
 	_register_building_if_needed(resource, axial, pos, placed_node)
+	_register_unit_if_needed(resource, placed_node)
 	return true
 
 
@@ -358,7 +439,7 @@ func _faction_for_resource(res_id: StringName) -> StringName:
 func _register_building_if_needed(resource: GameResource, axial: Vector2i, pos: Vector3, node: Node3D) -> void:
 	if faction_system == null:
 		return
-	if resource.category != "building":
+	if resource.category != "building" and resource.category != "resource":
 		return
 	var roles_arr: Array = []
 	for entry in resource.roles:
@@ -379,6 +460,24 @@ func _register_building_if_needed(resource: GameResource, axial: Vector2i, pos: 
 		node.set_meta("building_id", building_id)
 
 
+func _register_unit_if_needed(resource: GameResource, node: Node3D) -> void:
+	if faction_system == null or resource == null or node == null:
+		return
+	if resource.category != "character":
+		return
+	var fid: StringName = StringName("")
+	if node.has_meta("faction_id"):
+		fid = StringName(node.get_meta("faction_id"))
+	if fid == StringName(""):
+		fid = _faction_for_resource(resource.id)
+	var count: int = int(unit_counter.get(resource.id, 0)) + 1
+	unit_counter[resource.id] = count
+	var unit_id: StringName = StringName("%s_u_%d" % [resource.id, count])
+	if faction_system.has_method("register_unit"):
+		faction_system.call("register_unit", unit_id, fid, resource.id)
+	node.set_meta("unit_id", unit_id)
+
+
 func _register_default_factions() -> void:
 	if faction_system == null:
 		return
@@ -394,7 +493,17 @@ func _register_default_factions() -> void:
 			continue
 		var f := Faction.new()
 		f.id = fid
+		f.resources = _starting_resources_for_faction(fid)
 		faction_system.register_faction(f)
+
+
+func _starting_resources_for_faction(fid: StringName) -> Dictionary:
+	var s := String(fid)
+	if s.begins_with("kingdom"):
+		return starting_resources_kingdom.duplicate(true)
+	if fid == faction_bandits or s == "bandits":
+		return starting_resources_bandits.duplicate(true)
+	return starting_resources_neutral.duplicate(true)
 
 
 func _track_resource_location(resource: GameResource, axial: Vector2i) -> void:
@@ -412,7 +521,8 @@ func _axial_key(axial: Vector2i) -> String:
 
 
 func _is_tile_occupied(axial: Vector2i) -> bool:
-	return occupied_tiles.has(_axial_key(axial))
+	var key := _axial_key(axial)
+	return occupied_tiles.has(key) or _construction_reserved.has(key)
 
 
 func _mark_tile_occupied(axial: Vector2i) -> void:
@@ -445,6 +555,51 @@ func _resolve_faction_system() -> void:
 	faction_system = get_tree().get_first_node_in_group("faction_system")
 	if faction_system == null:
 		faction_system = get_node_or_null("FactionSystem")
+
+
+func _resolve_day_night() -> void:
+	if _day_night != null:
+		return
+	_day_night = get_tree().get_first_node_in_group("day_night_cycle") as DayNightCycle
+	if _day_night == null:
+		_day_night = get_node_or_null("../DayNightCycle") as DayNightCycle
+	if _day_night != null and not _day_night.game_hour_passed.is_connected(_on_game_hour_passed):
+		_day_night.game_hour_passed.connect(_on_game_hour_passed)
+
+
+func _on_game_hour_passed(_day: int, _hour: int) -> void:
+	_process_build_queue()
+
+
+func _process_build_queue() -> void:
+	if _build_queue.is_empty():
+		return
+	for i in range(_build_queue.size() - 1, -1, -1):
+		var entry: Dictionary = _build_queue[i]
+		entry["remaining_hours"] = int(entry.get("remaining_hours", 0)) - 1
+		_build_queue[i] = entry
+		if int(entry["remaining_hours"]) > 0:
+			continue
+		var axial: Vector2i = entry.get("axial", Vector2i(-1, -1))
+		var key := _axial_key(axial)
+		_construction_reserved.erase(key)
+		var res_id: StringName = entry.get("res_id", StringName(""))
+		var owner: StringName = entry.get("owner", faction_player)
+		var res := _find_resource_by_id(res_id)
+		if res != null:
+			_place_resource_on_tile(res, axial, owner)
+		_build_queue.remove_at(i)
+
+
+func get_build_queue_for_faction(faction_id: StringName) -> Array:
+	var result: Array = []
+	if _build_queue.is_empty():
+		return result
+	for entry in _build_queue:
+		var owner: StringName = entry.get("owner", faction_player)
+		if owner == faction_id:
+			result.append(entry.duplicate())
+	return result
 
 
 func _spawn_forest_after_buildings() -> void:

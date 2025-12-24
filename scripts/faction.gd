@@ -8,5 +8,7 @@ class_name Faction
 @export var assets_cells: Array[Vector2i] = []
 @export var resources: Dictionary = {
 	"food": 0,
+	"coal": 0,
+	"gold": 0,
 } # resource_id -> int amount
 

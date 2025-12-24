@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=3]
+[gd_scene load_steps=11 format=3]
 
 [ext_resource type="Script" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" path="res://scripts/camera_controller.gd" id="2"]
@@ -9,6 +9,7 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/selection_badge.tscn" id="7"]
 [ext_resource type="PackedScene" path="res://scenes/ui/help_overlay.tscn" id="8"]
 [ext_resource type="Script" path="res://scripts/faction_system.gd" id="9"]
+[ext_resource type="Script" path="res://scripts/economy_system.gd" id="10"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -38,6 +39,11 @@ environment = SubResource("1")
 
 [node name="FactionSystem" type="Node" parent="."]
 script = ExtResource("9")
+
+[node name="EconomySystem" type="Node" parent="."]
+script = ExtResource("10")
+day_night_cycle_path = NodePath("../DayNightCycle")
+faction_system_path = NodePath("../FactionSystem")
 
 [node name="DayNightCycle" type="Node3D" parent="."]
 script = ExtResource("5")

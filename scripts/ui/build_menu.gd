@@ -139,6 +139,9 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 			res.roles = entry["roles"]
 		if entry.has("resource_delta_per_hour") and entry["resource_delta_per_hour"] is Dictionary:
 			res.resource_delta_per_hour = entry["resource_delta_per_hour"]
+		if entry.has("build_cost") and entry["build_cost"] is Dictionary:
+			res.build_cost = entry["build_cost"]
+		res.build_time_hours = int(entry.get("build_time_hours", 0))
 
 		res.category = String(entry.get("category", "resource")).to_lower()
 		parsed.append(res)
@@ -326,9 +329,9 @@ func _parse_resources_yaml(text: String) -> Array:
 			current["buildable_tiles"] = []
 			continue
 
-		if trimmed == "resource_delta_per_hour:":
+		if trimmed == "resource_delta_per_hour:" or trimmed == "build_cost:":
 			collecting_dict = true
-			current_dict_key = "resource_delta_per_hour"
+			current_dict_key = trimmed.rstrip(":")
 			current[current_dict_key] = {}
 			continue
 

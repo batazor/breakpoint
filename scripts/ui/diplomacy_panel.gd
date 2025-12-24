@@ -3,6 +3,7 @@ class_name DiplomacyPanel
 
 const FactionSystemRes = preload("res://scripts/faction_system.gd")
 const FactionRes = preload("res://scripts/faction.gd")
+const BuildControllerRes = preload("res://scripts/build_controller.gd")
 
 @export var faction_system_path: NodePath
 @export var focus_selector_path: NodePath
@@ -10,6 +11,7 @@ const FactionRes = preload("res://scripts/faction.gd")
 
 var faction_system: FactionSystemRes
 var game_store: Node
+var build_controller: BuildControllerRes
 var focus_selector: OptionButton
 var details_label: RichTextLabel
 
@@ -19,6 +21,7 @@ func _ready() -> void:
 	details_label = get_node_or_null(details_label_path) as RichTextLabel
 	_resolve_game_store()
 	_resolve_faction_system()
+	_resolve_build_controller()
 	if game_store != null:
 		if not game_store.factions_changed.is_connected(_on_factions_changed):
 			game_store.factions_changed.connect(_on_factions_changed)
@@ -41,6 +44,14 @@ func _resolve_faction_system() -> void:
 		faction_system = get_node_or_null(faction_system_path) as FactionSystem
 	else:
 		faction_system = get_tree().get_first_node_in_group("faction_system") as FactionSystem
+
+
+func _resolve_build_controller() -> void:
+	build_controller = get_tree().get_first_node_in_group("build_controller") as BuildControllerRes
+	if build_controller == null:
+		var nodes := get_tree().get_nodes_in_group("build_controller")
+		if nodes.size() > 0:
+			build_controller = nodes[0] as BuildControllerRes
 
 
 func _refresh_selector() -> void:
@@ -158,6 +169,19 @@ func _render_text() -> void:
 			res_parts.append("%s: %d" % [str(k), int(focus_f.resources[k])])
 		res_parts.sort()
 		lines.append("Resources: " + ", ".join(res_parts))
+	lines.append("")
+	# Build Queue
+	if build_controller != null:
+		var queue: Array = build_controller.get_build_queue_for_faction(focus)
+		if queue.is_empty():
+			lines.append("Build Queue: —")
+		else:
+			lines.append("Build Queue:")
+			for entry in queue:
+				var res_id: StringName = entry.get("res_id", StringName(""))
+				var axial: Vector2i = entry.get("axial", Vector2i(-1, -1))
+				var hours: int = int(entry.get("remaining_hours", 0))
+				lines.append("  - %s at (%d,%d): %dh remaining" % [str(res_id), axial.x, axial.y, hours])
 	lines.append("")
 	# Relations
 	lines.append("Relations:")

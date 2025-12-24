@@ -13,6 +13,8 @@ var building_axial: Dictionary = {} # building_id -> Vector2i
 var building_position: Dictionary = {} # building_id -> Vector3
 var npc_data: Dictionary = {} # npc_id -> NPC
 var game_store: Node
+var unit_owner: Dictionary = {} # unit_id -> faction_id
+var unit_types: Dictionary = {} # unit_id -> StringName (resource id)
 
 signal resources_changed(faction_id: StringName, resource_id: StringName, amount: int)
 
@@ -36,12 +38,32 @@ func register_faction(faction: Faction) -> void:
 		return
 	if faction.resources == null:
 		faction.resources = {}
+	if not faction.resources.has("food"):
+		faction.resources["food"] = 0
+	if not faction.resources.has("coal"):
+		faction.resources["coal"] = 0
+	if not faction.resources.has("gold"):
+		faction.resources["gold"] = 0
 	factions[faction.id] = faction
 	if game_store == null:
 		_resolve_game_store()
 	if game_store != null:
 		game_store.register_faction(faction)
 	emit_signal("factions_changed")
+
+
+func register_unit(unit_id: StringName, owner_faction: StringName, unit_type: StringName) -> void:
+	if unit_id == StringName("") or owner_faction == StringName("") or unit_type == StringName(""):
+		return
+	unit_owner[unit_id] = owner_faction
+	unit_types[unit_id] = unit_type
+
+
+func deregister_unit(unit_id: StringName) -> void:
+	if unit_id == StringName(""):
+		return
+	unit_owner.erase(unit_id)
+	unit_types.erase(unit_id)
 
 
 func register_npc(npc: NPC) -> void:

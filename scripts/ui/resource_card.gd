@@ -67,6 +67,15 @@ func _set_tooltip() -> void:
 			parts.append("%s%s/hr %s" % [sign, str(amount), str(key)])
 		parts.sort()
 		lines.append("Per hour: %s" % ", ".join(parts))
+	if resource.build_cost.size() > 0:
+		var cost_parts: Array[String] = []
+		for key in resource.build_cost.keys():
+			var amount: int = int(resource.build_cost[key])
+			cost_parts.append("%s: %d" % [str(key), amount])
+		cost_parts.sort()
+		lines.append("Cost: %s" % ", ".join(cost_parts))
+	if int(resource.build_time_hours) > 0:
+		lines.append("Build time: %dh" % int(resource.build_time_hours))
 	if resource.buildable_tiles.is_empty():
 		lines.append("Buildable on any tile.")
 	else:

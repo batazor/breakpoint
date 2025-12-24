@@ -3,6 +3,7 @@ class_name DayNightCycle
 
 signal time_updated(time_normalized: float)
 signal day_changed(day: int)
+signal game_hour_passed(day: int, hour: int)
 
 @export var sun_path: NodePath
 @export var environment_path: NodePath
@@ -30,13 +31,16 @@ var sun: DirectionalLight3D
 var world_environment: WorldEnvironment
 var time_controls: TimeControls
 var current_day: int = 1
+var _last_abs_hour: int = -1
 
 
 func _ready() -> void:
+	add_to_group("day_night_cycle")
 	sun = get_node_or_null(sun_path) as DirectionalLight3D
 	world_environment = get_node_or_null(environment_path) as WorldEnvironment
 	time_controls = get_node_or_null(time_ui_path) as TimeControls
 	current_day = max(start_day, 1)
+	_last_abs_hour = _absolute_hour()
 	if time_controls != null:
 		time_controls.pause_toggled.connect(_on_pause_toggled)
 		time_controls.speed_selected.connect(_on_speed_selected)
@@ -62,6 +66,7 @@ func _process(delta: float) -> void:
 		_advance_days(days_passed)
 	_apply_lighting()
 	emit_signal("time_updated", time_normalized)
+	_emit_hour_ticks_if_needed()
 
 
 func set_paused(value: bool) -> void:
@@ -81,6 +86,7 @@ func set_speed_multiplier(multiplier: float) -> void:
 func set_time_normalized(value: float) -> void:
 	time_normalized = fposmod(value, 1.0)
 	_apply_lighting()
+	_last_abs_hour = _absolute_hour()
 	if time_controls != null:
 		time_controls.set_paused(paused)
 		time_controls.set_time_progress(time_normalized)
@@ -134,6 +140,26 @@ func _apply_lighting() -> void:
 
 	if time_controls != null:
 		time_controls.set_time_progress(time_normalized)
+
+
+func _absolute_hour() -> int:
+	var hour_of_day := int(floor(time_normalized * 24.0))
+	hour_of_day = clampi(hour_of_day, 0, 23)
+	return (current_day - 1) * 24 + hour_of_day
+
+
+func _emit_hour_ticks_if_needed() -> void:
+	if _last_abs_hour < 0:
+		_last_abs_hour = _absolute_hour()
+		return
+	var now_abs := _absolute_hour()
+	if now_abs <= _last_abs_hour:
+		return
+	for abs_h in range(_last_abs_hour + 1, now_abs + 1):
+		var day := int(abs_h / 24) + 1
+		var hour := int(abs_h % 24)
+		emit_signal("game_hour_passed", day, hour)
+	_last_abs_hour = now_abs
 
 
 func _smoothstep(edge0: float, edge1: float, x: float) -> float:

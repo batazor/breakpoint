@@ -10,6 +10,8 @@ class_name GameResource
 @export var description: String = ""
 @export var roles: Array = [] # Array[Dictionary] {role_id, max_slots}
 @export var resource_delta_per_hour: Dictionary = {} # resource_id -> int (positive = produce, negative = consume)
+@export var build_cost: Dictionary = {} # resource_id -> int
+@export var build_time_hours: int = 0
 
 
 func can_build_on(biome_name: String) -> bool:

@@ -144,7 +144,7 @@ func _toggle_build_mode() -> void:
 	if build_menu:
 		build_menu.visible = _build_mode_active
 	
-	emit_signal("build_mode_toggled", _build_mode_active)
+	build_mode_toggled.emit(_build_mode_active)
 
 
 func _show_tile_info() -> void:
@@ -166,7 +166,7 @@ func _show_tile_info() -> void:
 	print("World Position: %v" % surface_pos)
 	print("================")
 	
-	emit_signal("tile_info_requested", selected_tile)
+	tile_info_requested.emit(selected_tile)
 
 
 func _show_unit_info() -> void:
@@ -203,7 +203,7 @@ func _toggle_pause() -> void:
 	_game_paused = not _game_paused
 	get_tree().paused = _game_paused
 	print("Game paused: %s" % _game_paused)
-	emit_signal("game_paused_toggled", _game_paused)
+	game_paused_toggled.emit(_game_paused)
 
 
 func _cancel_current_action() -> void:

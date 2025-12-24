@@ -43,6 +43,7 @@ func _build_action_list() -> void:
 	# Clear existing actions
 	if action_list:
 		for child in action_list.get_children():
+			action_list.remove_child(child)
 			child.queue_free()
 	
 	_available_actions.clear()
@@ -81,7 +82,7 @@ func _add_action(label: String, id: String, tooltip: String = "") -> void:
 
 func _on_action_pressed(action_id: String) -> void:
 	## Handle action button press
-	emit_signal("action_selected", action_id)
+	action_selected.emit(action_id)
 	hide()
 
 

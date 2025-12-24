@@ -41,7 +41,7 @@ func deselect_unit() -> void:
 		_clear_selection_visual(selected_unit)
 		selected_unit = null
 		selected_unit_tile = Vector2i(-1, -1)
-		emit_signal("unit_deselected")
+		unit_deselected.emit()
 
 
 func command_move_to_tile(target_tile: Vector2i) -> bool:
@@ -57,7 +57,7 @@ func command_move_to_tile(target_tile: Vector2i) -> bool:
 		return false
 	
 	# Emit signal for movement
-	emit_signal("unit_move_commanded", selected_unit, selected_unit_tile, target_tile)
+	unit_move_commanded.emit(selected_unit, selected_unit_tile, target_tile)
 	
 	# Execute movement
 	_execute_movement(selected_unit, selected_unit_tile, target_tile)
@@ -87,7 +87,7 @@ func _set_selected_unit(unit: Node3D, tile: Vector2i) -> void:
 	# Add selection visual
 	_add_selection_visual(unit)
 	
-	emit_signal("unit_selected", unit, tile)
+	unit_selected.emit(unit, tile)
 	print("Unit selected at tile q=%d r=%d" % [tile.x, tile.y])
 
 
@@ -168,7 +168,14 @@ func _execute_movement(unit: Node3D, from_tile: Vector2i, to_tile: Vector2i) -> 
 	
 	# Move the unit (simple linear movement for now)
 	# TODO: Implement pathfinding for complex paths
+	
+	# Cancel any existing movement tween
+	var existing_tween := unit.get("_movement_tween")
+	if existing_tween and existing_tween is Tween:
+		existing_tween.kill()
+	
 	var tween := create_tween()
+	unit.set("_movement_tween", tween)
 	tween.tween_property(unit, "global_position", target_pos, 1.0).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	
 	# Update wander component if present

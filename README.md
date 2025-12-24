@@ -22,8 +22,8 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **S**: Move backward
 - **A**: Move left
 - **D**: Move right
-- **Mouse Wheel Up / -**: Zoom in
-- **Mouse Wheel Down / =**: Zoom out
+- **Mouse Wheel Up / - (minus)**: Zoom in
+- **Mouse Wheel Down / = (equals)**: Zoom out
 
 ## Requirements
 

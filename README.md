@@ -18,12 +18,26 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 
 ## Controls
 
+### Camera Controls
 - **W**: Move forward
 - **S**: Move backward
 - **A**: Move left
 - **D**: Move right
 - **Mouse Wheel Up / -**: Zoom in
 - **Mouse Wheel Down / =**: Zoom out
+
+### Interaction Controls
+- **Left Click**: Select tile or unit
+- **Right Click**: Open action menu for selected tile
+- **B**: Toggle build mode
+- **I**: Show tile/unit information
+- **Space**: Pause/unpause game
+- **Esc**: Cancel action, close menus, deselect units
+
+### Unit Controls
+1. **Select Unit**: Left-click on a tile containing a unit
+2. **Move Unit**: After selecting, click destination tile or use action menu
+3. **Deselect**: Click on empty tile or press Esc
 
 ## Requirements
 

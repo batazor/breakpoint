@@ -5,6 +5,8 @@ class_name TerritoryOverlay
 ## Similar to Civilization games, shows colored areas for each faction's influence.
 ## Optimized with MultiMesh batching and LOD for performance.
 
+const HexUtils = preload("res://scripts/hex.gd")
+
 signal visibility_toggled(is_visible: bool)
 
 @export var territory_system_path: NodePath
@@ -18,6 +20,10 @@ signal visibility_toggled(is_visible: bool)
 @export var lod_distance_near: float = 20.0
 @export var lod_distance_far: float = 50.0
 @export var update_interval: float = 0.5  # Update overlay every 0.5 seconds
+
+## Default map dimensions (used as fallback if hex_grid doesn't provide them)
+const DEFAULT_MAP_WIDTH: int = 30
+const DEFAULT_MAP_HEIGHT: int = 30
 
 ## Faction colors (default palette)
 var faction_colors: Dictionary = {
@@ -73,7 +79,7 @@ func set_overlay_visible(visible: bool) -> void:
 	else:
 		_clear_overlay()
 	
-	emit_signal("visibility_toggled", _overlay_visible)
+	visibility_toggled.emit(_overlay_visible)
 
 
 ## Check if overlay is currently visible
@@ -197,8 +203,8 @@ func _update_overlay() -> void:
 	var faction_tiles: Dictionary = {}  # faction_id -> Array[Vector2i]
 	
 	# Get map dimensions
-	var map_width := 30  # Default
-	var map_height := 30  # Default
+	var map_width := DEFAULT_MAP_WIDTH
+	var map_height := DEFAULT_MAP_HEIGHT
 	if _hex_grid.has("map_width"):
 		map_width = _hex_grid.map_width
 	if _hex_grid.has("map_height"):
@@ -278,12 +284,8 @@ func _get_tile_world_position(tile_pos: Vector2i) -> Vector3:
 	if _hex_grid.has("hex_radius"):
 		hex_radius = _hex_grid.hex_radius
 	
-	# Use HexUtils for conversion
-	const SQRT3 := 1.7320508075688772
-	var x := hex_radius * (1.5 * float(tile_pos.x))
-	var z := hex_radius * (SQRT3 * (float(tile_pos.y) + 0.5 * float(tile_pos.x)))
-	
-	return Vector3(x, 0, z)
+	# Use HexUtils.axial_to_world to avoid code duplication
+	return HexUtils.axial_to_world(tile_pos.x, tile_pos.y, hex_radius)
 
 
 func _clear_overlay() -> void:

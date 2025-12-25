@@ -41,6 +41,7 @@ func _connect_signals() -> void:
 
 func _input(event: InputEvent) -> void:
 	# Handle hotkey (T) for toggling
+	# Note: Using _input for global hotkey. If conflicts arise, consider _unhandled_input
 	if event.is_action_pressed("toggle_territory_overlay"):
 		if _toggle_button:
 			_toggle_button.button_pressed = not _toggle_button.button_pressed

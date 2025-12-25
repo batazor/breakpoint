@@ -140,7 +140,7 @@ func _test_faction_color_assignment() -> void:
 	# Create test factions
 	for i in range(6):
 		var faction := Faction.new()
-		faction.id = StringName("faction_" + str(i))
+		faction.id = StringName("faction_%d" % i)
 		faction_system.factions[faction.id] = faction
 	
 	overlay._faction_system = faction_system

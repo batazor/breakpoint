@@ -19,6 +19,11 @@ var _tile_influence: Dictionary = {}  # Vector2i -> Dictionary{faction_id: influ
 var _accum: float = 0.0
 
 
+func _enter_tree() -> void:
+	# Add to group early for easy discovery
+	add_to_group("territory_system")
+
+
 func _ready() -> void:
 	_resolve_nodes()
 	_connect_signals()

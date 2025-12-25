@@ -14,6 +14,9 @@
 [ext_resource type="PackedScene" uid="uid://bkhj8a0ypvxyw" path="res://scenes/ui/tile_action_menu.tscn" id="11_tile_action"]
 [ext_resource type="Script" path="res://scripts/player_interaction_controller.gd" id="12_interaction"]
 [ext_resource type="PackedScene" uid="uid://b5p3k7g8xh3ym" path="res://scenes/ui/resource_hud.tscn" id="13_resource_hud"]
+[ext_resource type="Script" path="res://scripts/faction_territory_system.gd" id="14_territory_system"]
+[ext_resource type="Script" path="res://scripts/hex_grid/territory_overlay.gd" id="15_territory_overlay"]
+[ext_resource type="PackedScene" uid="uid://ddoqwmhq4qotm" path="res://scenes/ui/territory_overlay_toggle.tscn" id="16_territory_toggle"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -39,6 +42,17 @@ environment = SubResource("1")
 
 [node name="FactionSystem" type="Node" parent="."]
 script = ExtResource("9")
+
+[node name="FactionTerritorySystem" type="Node" parent="."]
+script = ExtResource("14_territory_system")
+faction_system_path = NodePath("../FactionSystem")
+hex_grid_path = NodePath("../HexGrid")
+
+[node name="TerritoryOverlay" type="Node" parent="."]
+script = ExtResource("15_territory_overlay")
+territory_system_path = NodePath("../FactionTerritorySystem")
+faction_system_path = NodePath("../FactionSystem")
+hex_grid_path = NodePath("../HexGrid")
 
 [node name="EconomySystem" type="Node" parent="."]
 script = ExtResource("10")
@@ -70,6 +84,13 @@ resources = Array[ExtResource("8_ya4ey")]([])
 
 [node name="ResourceHUD" parent="." instance=ExtResource("13_resource_hud")]
 faction_system_path = NodePath("../FactionSystem")
+
+[node name="TerritoryOverlayToggle" parent="." instance=ExtResource("16_territory_toggle")]
+offset_left = 10.0
+offset_top = 70.0
+offset_right = 160.0
+offset_bottom = 110.0
+territory_overlay_path = NodePath("../TerritoryOverlay")
 
 [node name="PlayerInteractionController" type="Node" parent="."]
 script = ExtResource("12_interaction")

@@ -39,6 +39,7 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **Right Click**: Open action menu for selected tile
 - **B**: Toggle build mode
 - **I**: Show tile/unit information
+- **T**: Toggle territory influence overlay
 - **Space**: Pause/unpause game
 - **Esc**: Cancel action, close menus, deselect units
 
@@ -113,6 +114,7 @@ Procedurally generated hexagonal grid world with:
 - Dynamic relationships and interactions
 - **NEW**: Faction relationship system (allied, neutral, hostile states)
 - **NEW**: Territory control with influence mechanics
+- **NEW**: Visual territory influence overlay (toggle with T key)
 - **NEW**: Inter-faction interactions (trade, diplomacy, conflict)
 
 ### Economy System
@@ -136,6 +138,9 @@ The project includes automated tests for core systems:
 # Run Faction & AI System tests
 godot --headless --script scripts/tests/test_faction_ai_systems.gd
 
+# Run Territory Overlay Visualization tests
+godot --headless --script scripts/tests/test_territory_overlay.gd
+
 # Run River Generation tests
 godot --headless --script scripts/tests/river_generation_test.gd
 ```
@@ -148,7 +153,10 @@ Tests are automatically run via GitHub Actions on push and pull requests.
 - ✅ **Phase 2.1**: Player Interaction & Controls (Completed)
 - ✅ **Phase 2.2**: Faction & AI Systems (Completed) - [Details](PHASE_2.2_SUMMARY.md)
 - ✅ **Phase 2.3**: Economy & Resources (Completed) - [Details](PHASE_2.3_SUMMARY.md)
-- 📋 **Phase 2.4**: Building & Development (Planned)
+- 🚧 **Phase 2.4**: Building & Development via City Screen (In Progress) - [Details](PHASE_2.4_SUMMARY.md)
+  - Current buildings managed through hex map placement
+  - Future buildings (Town Hall, etc.) planned for dedicated city screen
+  - Visual territory influence overlay system implemented
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 

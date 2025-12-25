@@ -1,0 +1,14 @@
+[gd_scene load_steps=2 format=3 uid="uid://ddoqwmhq4qotm"]
+
+[ext_resource type="Script" path="res://scripts/ui/territory_overlay_toggle.gd" id="1_territory_toggle"]
+
+[node name="TerritoryOverlayToggle" type="HBoxContainer"]
+anchors_preset = 0
+offset_right = 150.0
+offset_bottom = 40.0
+script = ExtResource("1_territory_toggle")
+
+[node name="Label" type="Label" parent="."]
+layout_mode = 2
+text = "Territory:"
+vertical_alignment = 1

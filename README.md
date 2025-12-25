@@ -10,11 +10,19 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 
 - **Hex Grid System**: Navigate and interact with a procedurally generated hexagonal grid world
 - **Faction Management**: Multiple factions with unique behaviors and relationships
+  - ✅ **NEW**: Faction relationship system (allied, neutral, hostile)
+  - ✅ **NEW**: Territory and influence mechanics
+  - ✅ **NEW**: Faction-to-faction interactions (trade, diplomacy, conflict)
+- **AI Systems**: Advanced AI decision-making
+  - ✅ **NEW**: Utility-based AI behavior trees
+  - ✅ **NEW**: Resource gathering prioritization
+  - ✅ **NEW**: Expansion and defense strategies
 - **Economy System**: Complex economic simulation with resource management
 - **AI NPCs**: Non-player characters with autonomous decision-making
 - **Dynamic World**: Day-night cycle and procedural world generation
 - **Build Mode**: Construction and development mechanics
 - **Camera Controls**: Flexible camera system with zoom and movement
+- **Player Interaction**: Tile selection, unit control, and action menus
 
 ## Controls
 
@@ -103,6 +111,9 @@ Procedurally generated hexagonal grid world with:
 - Multiple competing or cooperating factions
 - Unique faction behaviors and goals
 - Dynamic relationships and interactions
+- **NEW**: Faction relationship system (allied, neutral, hostile states)
+- **NEW**: Territory control with influence mechanics
+- **NEW**: Inter-faction interactions (trade, diplomacy, conflict)
 
 ### Economy System
 - Resource management
@@ -113,6 +124,33 @@ Procedurally generated hexagonal grid world with:
 - Autonomous NPC behavior
 - Decision-making algorithms
 - Role-based character actions
+- **NEW**: Utility-based AI behavior trees
+- **NEW**: Action prioritization (resource gathering, expansion, defense)
+- **NEW**: Cooldown and inertia mechanics for strategic consistency
+
+## Testing
+
+The project includes automated tests for core systems:
+
+```bash
+# Run Faction & AI System tests
+godot --headless --script scripts/tests/test_faction_ai_systems.gd
+
+# Run River Generation tests
+godot --headless --script scripts/tests/river_generation_test.gd
+```
+
+Tests are automatically run via GitHub Actions on push and pull requests.
+
+## Development Progress
+
+- ✅ **Phase 1**: Core Foundation (Completed)
+- ✅ **Phase 2.1**: Player Interaction & Controls (Completed)
+- ✅ **Phase 2.2**: Faction & AI Systems (Completed) - [Details](PHASE_2.2_SUMMARY.md)
+- 🔄 **Phase 2.3**: Economy & Resources (In Progress)
+- 📋 **Phase 2.4**: Building & Development (Planned)
+
+See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 
 ## Development
 

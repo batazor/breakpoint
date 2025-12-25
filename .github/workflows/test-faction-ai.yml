@@ -1,0 +1,78 @@
+name: Faction & AI System Tests
+
+on:
+  push:
+    branches: [ main, develop, 'copilot/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      
+      - name: Setup Godot
+        uses: chickensoft-games/setup-godot@v1
+        with:
+          version: 4.3.0
+          use-dotnet: false
+      
+      - name: Verify Godot installation
+        run: godot --version
+      
+      - name: Import project assets
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --editor --quit-after 10 2>&1 | tee import.log
+        continue-on-error: true
+      
+      - name: Run Faction AI System Tests
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --script scripts/tests/test_faction_ai_systems.gd 2>&1 | tee test_output.log
+          exit_code=${PIPESTATUS[0]}
+          
+          # Display test results
+          cat test_output.log
+          
+          # Check for test failures in output
+          if grep -q "✅ All tests passed!" test_output.log; then
+            echo "Tests passed successfully"
+            exit 0
+          elif grep -q "tests failed" test_output.log; then
+            echo "Tests failed"
+            exit 1
+          else
+            echo "Test execution may have had issues"
+            exit $exit_code
+          fi
+      
+      - name: Run River Generation Tests
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --script scripts/tests/river_generation_test.gd 2>&1 | tee river_test.log
+          exit_code=${PIPESTATUS[0]}
+          
+          cat river_test.log
+          
+          if grep -q "OK: river generation tests passed" river_test.log; then
+            echo "River tests passed"
+            exit 0
+          else
+            echo "River tests may have failed"
+            exit $exit_code
+          fi
+      
+      - name: Upload test logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-logs
+          path: |
+            test_output.log
+            river_test.log
+            import.log
+          retention-days: 7

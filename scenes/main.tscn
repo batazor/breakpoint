@@ -13,6 +13,7 @@
 [ext_resource type="Script" uid="uid://dqrsx6ob4ck5x" path="res://scripts/economy_system.gd" id="10"]
 [ext_resource type="PackedScene" uid="uid://bkhj8a0ypvxyw" path="res://scenes/ui/tile_action_menu.tscn" id="11_tile_action"]
 [ext_resource type="Script" path="res://scripts/player_interaction_controller.gd" id="12_interaction"]
+[ext_resource type="PackedScene" uid="uid://b5p3k7g8xh3ym" path="res://scenes/ui/resource_hud.tscn" id="13_resource_hud"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -66,6 +67,9 @@ resources = Array[ExtResource("8_ya4ey")]([])
 [node name="HelpOverlay" parent="." instance=ExtResource("8")]
 
 [node name="TileActionMenu" parent="." instance=ExtResource("11_tile_action")]
+
+[node name="ResourceHUD" parent="." instance=ExtResource("13_resource_hud")]
+faction_system_path = NodePath("../FactionSystem")
 
 [node name="PlayerInteractionController" type="Node" parent="."]
 script = ExtResource("12_interaction")

@@ -147,7 +147,7 @@ Tests are automatically run via GitHub Actions on push and pull requests.
 - ✅ **Phase 1**: Core Foundation (Completed)
 - ✅ **Phase 2.1**: Player Interaction & Controls (Completed)
 - ✅ **Phase 2.2**: Faction & AI Systems (Completed) - [Details](PHASE_2.2_SUMMARY.md)
-- 🔄 **Phase 2.3**: Economy & Resources (In Progress)
+- ✅ **Phase 2.3**: Economy & Resources (Completed) - [Details](PHASE_2.3_SUMMARY.md)
 - 📋 **Phase 2.4**: Building & Development (Planned)
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.

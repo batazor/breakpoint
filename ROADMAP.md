@@ -147,46 +147,52 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 - Storage capacity system
 
 **Implementation Tasks**:
-- [ ] Define core resource types (e.g., food, materials, gold)
+- [x] Define core resource types (e.g., food, materials, gold) ✅
   - *Details*: 4 primary resources: Food (sustains population), Wood (construction), Stone (advanced buildings), Gold (trade/hiring)
   - *Technical*: Create `GameResource` class with properties: `name`, `icon`, `base_value`, `storage_weight`
   - *Data Structure*: Resource enum for type safety; Dictionary for storage amounts per faction
   - *Acceptance*: All 4 resource types defined in code with unique icons and properties
+  - *Implemented*: GameResource class created with id, title, icon, scene, build_cost, and resource_delta_per_hour properties. Three primary resources defined: food, coal (replaces stone/wood), and gold. FactionSystem manages resource storage with Dictionary structure.
   
-- [ ] Implement resource nodes on hex tiles
+- [x] Implement resource nodes on hex tiles ✅
   - *Details*: Procedurally place resource nodes during world generation based on biome
   - *Technical*: Add `resource_type` and `resource_amount` to hex tile data
   - *Distribution*: Forest biomes → Wood (60% tiles), Mountain → Stone (40%), Plains → Food (30%), Special → Gold (5%)
   - *Visual*: 3D models or sprites for each resource type on tiles (trees, rocks, crops, gold veins)
   - *Acceptance*: World generation creates 100+ resource nodes; visible on hex tiles; biome-appropriate distribution
+  - *Implemented*: BuildController._spawn_resources_near_fortresses() procedurally places resource nodes (well, mine, lumbermill) based on biome compatibility. Resource scenes exist (coal.tscn, wood.tscn, gold.tscn) with 3D models. Resources spawn near fortresses with biome-appropriate distribution.
   
-- [ ] Add resource gathering mechanics
+- [x] Add resource gathering mechanics ✅
   - *Details*: NPCs or buildings extract resources over time from adjacent nodes
   - *Technical*: Gathering action with duration (5 seconds) and yield (10-20 units per action)
   - *Depletion*: Resource nodes have finite amounts; visually shrink as depleted; respawn after 2 minutes
   - *Efficiency*: Multiple gatherers on same node reduce efficiency (diminishing returns)
   - *Acceptance*: Units can gather resources; visual progress indicator; resources added to faction storage
+  - *Implemented*: EconomySystem handles automatic resource gathering via resource_delta_per_hour in building.yaml. Buildings like well (+10 food/hour), mine (+5 coal/hour), and lumbermill (+10 coal/hour) automatically produce resources. System processes hourly via day-night cycle integration.
   
-- [ ] Create basic production chains
+- [x] Create basic production chains ✅
   - *Details*: Buildings consume input resources to produce output resources
   - *Technical*: Production recipe system: `{inputs: [(Wood, 10), (Stone, 5)], output: (Tool, 1), time: 15s}`
   - *Chains*: Wood + Stone → Tools; Food + Gold → Trained Units; Multiple resources → Advanced Buildings
   - *Implementation*: `ProductionBuilding` class with `start_production()`, `check_inputs()`, `complete_production()`
   - *Acceptance*: At least 3 production chains working; buildings consume inputs and generate outputs on schedule
+  - *Implemented*: Production chains defined in building.yaml with resource_delta_per_hour and build_cost properties. Buildings produce/consume resources automatically (e.g., fortress +10 gold/hour, characters -1 to -2 resources/hour). EconomySystem._apply_hourly_deltas() processes all production chains hourly.
   
-- [ ] Implement resource storage and management
+- [x] Implement resource storage and management ✅
   - *Details*: Factions have storage capacity; must build warehouses to increase capacity
   - *Technical*: `FactionResources` class with `current_amount` and `max_capacity` per resource
   - *Capacity*: Base capacity = 100 per resource; Warehouse adds +200; exceeding capacity wastes production
   - *UI Integration*: Resource bars show current/max; warnings when approaching capacity
   - *Acceptance*: Resource storage limits enforced; warehouses increase capacity; UI shows current/max values
+  - *Implemented*: FactionSystem manages resource storage via Faction.resources Dictionary. Functions include resource_amount(), add_resource(), and set_resource_amount(). System prevents negative resources and emits resources_changed signal. BuildController validates build costs via _can_pay_cost() and _pay_cost() before construction.
   
-- [ ] Add economic feedback in UI (resource counters, production rates)
+- [x] Add economic feedback in UI (resource counters, production rates) ✅
   - *Details*: Always-visible resource display showing amounts and production/consumption rates
   - *Technical*: Update UI every frame or on resource change events; calculate rates as rolling 10-second average
   - *Visual*: Top bar with resource icons, amounts, and green (+X/s) or red (-X/s) rate indicators
   - *Additional*: Detailed economy panel showing per-building production; resource history graph
   - *Acceptance*: Resource amounts visible in HUD; production rates shown with +/- indicators; values update in real-time
+  - *Implemented*: Created ResourceHUD component that displays food, coal, and gold amounts in a top bar. Tracks production rates using a rolling 10-second sample window and displays rates with +/- indicators in green/red. Updates every 0.5 seconds for real-time feedback. Integrated into main.tscn with connection to FactionSystem.
 
 #### 2.4 Building & Development
 

@@ -194,80 +194,66 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Acceptance*: Resource amounts visible in HUD; production rates shown with +/- indicators; values update in real-time
   - *Implemented*: Created ResourceHUD component that displays food, coal, and gold amounts in a top bar. Tracks production rates using a rolling 10-second sample window and displays rates with +/- indicators in green/red. Updates every 0.5 seconds for real-time feedback. Integrated into main.tscn with connection to FactionSystem.
 
-#### 2.4 Building & Development
+#### 2.4 Building & Development (City Screen Approach)
 
 **Timeline**: 6-8 days
 
-**Technical Requirements**:
-- Building placement validation system
-- Construction queue manager
-- Building effect/modifier system
-- Upgrade path definitions
+**Status**: Partially implemented. Core building placement exists, expanding to city screen.
 
-**Implementation Tasks**:
-- [ ] Complete build mode functionality
-  - *Details*: Dedicated build mode with ghost preview, placement validation, and confirmation
-  - *Technical*: Toggle build mode with 'B' key; instantiate ghost building that follows cursor
-  - *Validation*: Check terrain type, proximity to other buildings, resource requirements, territory control
-  - *Visual*: Ghost building colored green (valid) or red (invalid); show build radius/area of effect
-  - *Acceptance*: Enter build mode; select building type; place with visual preview; only valid placements allowed
+**Current Implementation**:
+- ✅ Basic build mode functionality with 'B' toggle
+- ✅ Building types: Well, Mine, Lumber Mill, Fortress
+- ✅ Character units: Barbarian, Knight, Ranger, Rogue, Mage
+- ✅ Building placement validation (terrain type, resources)
+- ✅ Construction time/cost system via building.yaml
+- ✅ Building effects on faction resources (resource_delta_per_hour)
+
+**Technical Requirements**:
+- City screen UI for managing buildings within settlements
+- Building placement validation system (existing)
+- Construction queue manager
+- Building effect/modifier system (existing)
+
+**Revised Implementation Tasks**:
+- [ ] Create dedicated City Screen UI
+  - *Details*: Separate screen for managing buildings within faction settlements
+  - *Rationale*: Town Hall and additional buildings will be built through city screen, not directly on hex map
+  - *Technical*: New scene `scenes/ui/city_screen.tscn` with building list, construction queue, upgrade options
+  - *Visual*: Panel showing settlement info, available buildings, construction progress, resource costs
+  - *Acceptance*: City screen accessible from settlements; can queue building construction; shows current buildings
   
-- [ ] Create 3-5 essential building types (e.g., settlement, resource gatherer, defense)
-  - *Details*: 
-    1. **Town Hall** - Main faction building; provides population capacity and resource storage
-    2. **Gatherer Hut** - Auto-gathers resources from adjacent tiles (range: 2 hexes)
-    3. **Warehouse** - Increases resource storage capacity by +200 per resource
-    4. **Workshop** - Enables production chains; converts raw resources to advanced resources
-    5. **Watchtower** - Provides vision; increases territory influence; early warning for threats
-  - *Technical*: Base `Building` class with properties: `cost`, `build_time`, `effects`, `max_health`, `vision_range`
-  - *Stats*: Each building has 100 HP, 10-30s build time, costs 20-50 resources
-  - *Acceptance*: All 5 building types implemented with unique 3D models, stats, and functions
+- [ ] Enhance build mode for current building set only
+  - *Details*: Maintain current building placement for resource buildings (well, mine, lumber mill) and fortress
+  - *Scope*: DO NOT add new buildings - focus on current set defined in building.yaml
+  - *Technical*: Keep existing 'B' toggle; improve ghost preview and placement validation
+  - *Visual*: Enhanced visual feedback for valid/invalid placement
+  - *Acceptance*: Current buildings placeable with clear visual feedback; validation working correctly
   
-- [ ] Implement building placement rules and validation
-  - *Details*: Rules engine that checks multiple conditions before allowing placement
-  - *Technical*: `BuildingPlacer` class with `validate_placement(building_type, hex_position)` method
-  - *Rules*:
-    - Must be on flat or low-slope terrain (slope < 30 degrees)
-    - Must be within faction territory or adjacent to it
-    - Minimum 2-hex spacing between buildings (configurable per building type)
-    - Cannot block critical paths or resource nodes
-    - Requires sufficient resources in faction storage
-  - *Visual*: Show validation errors as floating text or in UI panel
-  - *Acceptance*: Invalid placements prevented with clear feedback; all rules enforced consistently
+- [ ] Add visual highlighting for territory influence areas
+  - *Details*: Similar to Civilization games, show faction influence zones with colored overlays
+  - *Technical*: Create `TerritoryOverlay` system that visualizes FactionTerritorySystem data
+  - *Rendering*: Use transparent overlays on hex tiles; color by faction; alpha based on influence strength
+  - *Optimization*: Batch rendering with MultiMesh; LOD for distant tiles; toggle on/off for performance
+  - *UI Control*: Add button/hotkey to toggle influence visualization
+  - *Acceptance*: Territory influence visible as colored overlay; performance optimized for large maps; toggle works
   
-- [ ] Add building construction time/cost
-  - *Details*: Buildings don't appear instantly; construction phase with progress tracking
-  - *Technical*: `ConstructionSite` placeholder with progress bar; consumes resources on start
-  - *Cost Examples*:
-    - Town Hall: 50 Wood, 30 Stone, 20 Gold, 60s
-    - Gatherer Hut: 20 Wood, 10 Stone, 20s
-    - Warehouse: 30 Wood, 20 Stone, 30s
-    - Workshop: 40 Wood, 30 Stone, 10 Gold, 45s
-    - Watchtower: 25 Stone, 15 Wood, 30s
-  - *Visual*: Construction site model with scaffold; circular progress bar above building
-  - *Acceptance*: Buildings require time to construct; resources deducted immediately; progress visible
+- [ ] Implement building upgrade system (defer to city screen)
+  - *Details*: Buildings upgradeable through city screen interface
+  - *Scope*: Design system for future city screen implementation
+  - *Technical*: Building levels stored in data; upgrade costs scale with level
+  - *Acceptance*: Upgrade system designed and documented for city screen integration
   
-- [ ] Create building upgrade system
-  - *Details*: Buildings can be upgraded to improve efficiency, capacity, or unlock new features
-  - *Technical*: Building levels (1-3); each level multiplies effects by 1.5x and costs 2x previous level
-  - *Upgrade Paths*:
-    - Gatherer Hut: Level 2 (+range, +efficiency), Level 3 (+multi-resource gathering)
-    - Warehouse: Level 2 (+capacity), Level 3 (+resource protection)
-    - Workshop: Level 2 (+production speed), Level 3 (+advanced recipes)
-  - *Implementation*: `upgrade_building(building_id)` method; saves level in building data
-  - *Acceptance*: At least 3 buildings have upgrade paths; upgrades improve stats; costs scale appropriately
+- [ ] Optimize territory and building systems for scaling
+  - *Details*: Ensure systems perform well with many buildings and large maps
+  - *Technical*: Profile rendering and calculation performance; optimize hot paths
+  - *Optimization Strategies*:
+    - Territory calculation: Spatial hashing, dirty region tracking
+    - Rendering: Frustum culling, MultiMesh batching, shader-based effects
+    - Updates: Throttle recalculation frequency, incremental updates
+  - *Target*: 60 FPS with 40x40 map, 50+ buildings, influence overlay active
+  - *Acceptance*: Performance targets met; no frame drops during territory updates
   
-- [ ] Implement building effects on faction resources
-  - *Details*: Buildings provide passive effects to faction economy and capabilities
-  - *Technical*: Effect system with modifiers applied during update loop
-  - *Effect Types*:
-    - Production: +X resource per second (Gatherer Hut: +2 Wood/s)
-    - Storage: +X max capacity (Warehouse: +200 all resources)
-    - Efficiency: +X% to production chains (Workshop: +25% production speed)
-    - Vision: +X hex vision range (Watchtower: +5 range)
-    - Influence: +X territory expansion (Town Hall: +3 influence per hex)
-  - *Stacking*: Multiple buildings of same type stack additively
-  - *Acceptance*: Buildings apply their effects when completed; effects removed when building destroyed; UI shows effect totals
+**Note**: The current building set (well, mine, lumber mill, fortress, and character units) is sufficient for MVP. Town Hall and additional complex buildings will be added through the city screen in a future phase, allowing for better management of settlement development without cluttering the hex map.
 
 ---
 

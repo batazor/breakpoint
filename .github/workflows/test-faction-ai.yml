@@ -66,6 +66,25 @@ jobs:
             exit $exit_code
           fi
       
+      - name: Run Territory Overlay Tests
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --script scripts/tests/test_territory_overlay.gd 2>&1 | tee territory_overlay_test.log
+          exit_code=${PIPESTATUS[0]}
+          
+          cat territory_overlay_test.log
+          
+          if grep -q "✅ All tests passed!" territory_overlay_test.log; then
+            echo "Territory overlay tests passed"
+            exit 0
+          elif grep -q "tests failed" territory_overlay_test.log; then
+            echo "Territory overlay tests failed"
+            exit 1
+          else
+            echo "Territory overlay test execution may have had issues"
+            exit $exit_code
+          fi
+      
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -74,5 +93,6 @@ jobs:
           path: |
             test_output.log
             river_test.log
+            territory_overlay_test.log
             import.log
           retention-days: 7

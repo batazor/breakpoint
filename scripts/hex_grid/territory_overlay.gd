@@ -34,6 +34,11 @@ var _cached_territories: Dictionary = {}  # Vector2i -> StringName
 var _overlay_mesh: Mesh
 
 
+func _enter_tree() -> void:
+	# Add to group early for easy discovery
+	add_to_group("territory_overlay")
+
+
 func _ready() -> void:
 	_resolve_nodes()
 	_setup_overlay_mesh()
@@ -266,17 +271,17 @@ func _get_tile_world_position(tile_pos: Vector2i) -> Vector3:
 	
 	# Try to get position from hex grid
 	if _hex_grid.has_method("axial_to_world"):
-		return _hex_grid.axial_to_world(tile_pos)
+		return _hex_grid.axial_to_world(tile_pos.x, tile_pos.y)
 	
-	# Fallback: calculate position using hex math
+	# Fallback: calculate position using HexUtils
 	var hex_radius := 1.0
 	if _hex_grid.has("hex_radius"):
 		hex_radius = _hex_grid.hex_radius
 	
-	var q := float(tile_pos.x)
-	var r := float(tile_pos.y)
-	var x := hex_radius * (sqrt(3.0) * q + sqrt(3.0) / 2.0 * r)
-	var z := hex_radius * (3.0 / 2.0 * r)
+	# Use HexUtils for conversion
+	const SQRT3 := 1.7320508075688772
+	var x := hex_radius * (1.5 * float(tile_pos.x))
+	var z := hex_radius * (SQRT3 * (float(tile_pos.y) + 0.5 * float(tile_pos.x)))
 	
 	return Vector3(x, 0, z)
 

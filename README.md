@@ -153,10 +153,10 @@ Tests are automatically run via GitHub Actions on push and pull requests.
 - ✅ **Phase 2.1**: Player Interaction & Controls (Completed)
 - ✅ **Phase 2.2**: Faction & AI Systems (Completed) - [Details](PHASE_2.2_SUMMARY.md)
 - ✅ **Phase 2.3**: Economy & Resources (Completed) - [Details](PHASE_2.3_SUMMARY.md)
-- 🚧 **Phase 2.4**: Building & Development via City Screen (In Progress) - [Details](PHASE_2.4_SUMMARY.md)
+- ✅ **Phase 2.4**: Building & Development via City Screen (Completed) - [Details](PHASE_2.4_SUMMARY.md)
   - Current buildings managed through hex map placement
-  - Future buildings (Town Hall, etc.) planned for dedicated city screen
-  - Visual territory influence overlay system implemented
+  - Territory influence visualization system implemented
+  - City screen for complex buildings planned for Phase 3
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 

@@ -21,6 +21,11 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **AI NPCs**: Non-player characters with autonomous decision-making
 - **Dynamic World**: Day-night cycle and procedural world generation
 - **Build Mode**: Construction and development mechanics
+- **City Screen**: Dedicated UI for managing city buildings (Phase 3+)
+  - ✅ **NEW**: City building management interface (C key)
+  - ✅ **NEW**: 8 new city building types: Archery Range, Barracks, Blacksmith, Church, Houses (2 types), Market, Tavern
+  - ✅ **NEW**: Construction queue system for buildings
+  - ✅ **NEW**: Resource cost validation and display
 - **Camera Controls**: Flexible camera system with zoom and movement
 - **Player Interaction**: Tile selection, unit control, and action menus
 - **In-Game UI**: Comprehensive HUD and game interface (Phase 3.2)
@@ -45,6 +50,7 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **Left Click**: Select tile or unit
 - **Right Click**: Open action menu for selected tile
 - **B**: Toggle build mode
+- **C**: Open city screen for building management
 - **I**: Show tile/unit information
 - **F**: Toggle faction status panel
 - **T**: Toggle territory influence overlay

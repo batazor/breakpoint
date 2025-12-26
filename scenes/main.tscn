@@ -22,6 +22,7 @@
 [ext_resource type="PackedScene" uid="uid://beqrjgq2p5a3w" path="res://scenes/ui/faction_status_panel.tscn" id="19_faction_panel"]
 [ext_resource type="PackedScene" uid="uid://cmfkq2yp5x8yx" path="res://scenes/ui/minimap.tscn" id="20_minimap"]
 [ext_resource type="PackedScene" uid="uid://b4dqn7gp5kfw2" path="res://scenes/ui/selection_info_panel.tscn" id="21_selection_info"]
+[ext_resource type="PackedScene" uid="uid://dyr6htbc5u8nx" path="res://scenes/ui/city_screen.tscn" id="22_city_screen"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -126,5 +127,11 @@ territory_system_path = NodePath("../FactionTerritorySystem")
 
 [node name="SelectionInfoPanel" parent="." instance=ExtResource("21_selection_info")]
 faction_system_path = NodePath("../FactionSystem")
+
+[node name="CityScreen" parent="." instance=ExtResource("22_city_screen")]
+visible = false
+faction_system_path = NodePath("../FactionSystem")
+build_controller_path = NodePath("../BuildController")
+economy_system_path = NodePath("../EconomySystem")
 
 [editable path="TimeControls"]

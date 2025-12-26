@@ -184,6 +184,17 @@ toggle_faction_panel={
 "unicode": 0
 }]
 }
+toggle_city_screen={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 67,
+"physical_keycode": 67,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
 speed_1x={
 "deadzone": 0.5,
 "events": [{

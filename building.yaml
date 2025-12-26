@@ -126,3 +126,134 @@ resources:
       - mountain
     resource_delta_per_hour:
       gold: -1
+  archery_range:
+    id: archery_range
+    title: Archery Range
+    description: "Training facility for archers and ranged units."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_archeryrange_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      gold: 5
+    build_cost:
+      food: 30
+      coal: 20
+      gold: 40
+    build_time_hours: 6
+  barracks:
+    id: barracks
+    title: Barracks
+    description: "Military training grounds for recruiting soldiers."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_barracks_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      food: -5
+    build_cost:
+      food: 40
+      coal: 30
+      gold: 50
+    build_time_hours: 8
+  blacksmith:
+    id: blacksmith
+    title: Blacksmith
+    description: "Forge for crafting weapons and tools."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_blacksmith_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      coal: -3
+      gold: 8
+    build_cost:
+      food: 25
+      coal: 40
+      gold: 35
+    build_time_hours: 5
+  church:
+    id: church
+    title: Church
+    description: "Religious building that provides morale boost."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_church_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      gold: 3
+    build_cost:
+      food: 20
+      coal: 25
+      gold: 60
+    build_time_hours: 10
+  home_a:
+    id: home_a
+    title: Small House
+    description: "Basic dwelling for citizens. Increases population capacity."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_home_A_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      food: -2
+    build_cost:
+      food: 15
+      coal: 10
+      gold: 10
+    build_time_hours: 3
+  home_b:
+    id: home_b
+    title: Large House
+    description: "Spacious dwelling for wealthy citizens. Increases population capacity."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_home_B_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      food: -3
+      gold: 2
+    build_cost:
+      food: 25
+      coal: 20
+      gold: 30
+    build_time_hours: 5
+  market:
+    id: market
+    title: Market
+    description: "Trading post that generates gold from commerce."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_market_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      gold: 15
+    build_cost:
+      food: 30
+      coal: 25
+      gold: 45
+    build_time_hours: 7
+  tavern:
+    id: tavern
+    title: Tavern
+    description: "Popular gathering place that attracts travelers and generates income."
+    icon: res://icon.svg
+    scene: res://assets/castle/building_tavern_blue.gltf
+    category: city_building
+    buildable_tiles:
+      - city
+    resource_delta_per_hour:
+      food: -4
+      gold: 12
+    build_cost:
+      food: 20
+      coal: 15
+      gold: 35
+    build_time_hours: 4

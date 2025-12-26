@@ -37,21 +37,27 @@ func _test_inventory_operations() -> void:
 	npc.inventory = {}
 	
 	# Test 1: Add items to inventory
-	npc.add_to_inventory(&"food", 10)
+	var added := npc.add_to_inventory(&"food", 10)
+	_assert(added == true,
+		"Should successfully add 10 food")
 	_assert(npc.get_inventory_amount(&"food") == 10,
 		"Should have 10 food after adding")
 	_assert(npc.get_inventory_total() == 10,
 		"Total inventory should be 10")
 	
 	# Test 2: Add more of the same resource
-	npc.add_to_inventory(&"food", 5)
+	added = npc.add_to_inventory(&"food", 5)
+	_assert(added == true,
+		"Should successfully add 5 more food")
 	_assert(npc.get_inventory_amount(&"food") == 15,
 		"Should have 15 food after adding 5 more")
 	_assert(npc.get_inventory_total() == 15,
 		"Total inventory should be 15")
 	
 	# Test 3: Add different resource
-	npc.add_to_inventory(&"gold", 20)
+	added = npc.add_to_inventory(&"gold", 20)
+	_assert(added == true,
+		"Should successfully add 20 gold")
 	_assert(npc.get_inventory_amount(&"gold") == 20,
 		"Should have 20 gold after adding")
 	_assert(npc.get_inventory_total() == 35,
@@ -81,11 +87,15 @@ func _test_inventory_operations() -> void:
 		"Food should be removed from inventory dictionary")
 	
 	# Test 7: Try to add invalid amounts
-	npc.add_to_inventory(&"coal", 0)
+	added = npc.add_to_inventory(&"coal", 0)
+	_assert(added == false,
+		"Should fail to add 0 amount")
 	_assert(npc.get_inventory_amount(&"coal") == 0,
 		"Should not add 0 amount")
 	
-	npc.add_to_inventory(&"coal", -5)
+	added = npc.add_to_inventory(&"coal", -5)
+	_assert(added == false,
+		"Should fail to add negative amount")
 	_assert(npc.get_inventory_amount(&"coal") == 0,
 		"Should not add negative amount")
 
@@ -104,7 +114,9 @@ func _test_inventory_queries() -> void:
 		"Empty inventory total should be 0")
 	
 	# Test 2: Non-empty inventory
-	npc.add_to_inventory(&"wood", 5)
+	var added := npc.add_to_inventory(&"wood", 5)
+	_assert(added == true,
+		"Should successfully add 5 wood")
 	_assert(npc.is_inventory_empty() == false,
 		"Inventory should not be empty after adding items")
 	

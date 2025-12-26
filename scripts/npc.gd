@@ -17,12 +17,14 @@ class_name NPC
 
 
 ## Add resources to inventory
-func add_to_inventory(resource_id: StringName, amount: int) -> void:
+## Returns true if successful, false if amount is invalid
+func add_to_inventory(resource_id: StringName, amount: int) -> bool:
 	if amount <= 0:
-		return
+		return false
 	if not inventory.has(resource_id):
 		inventory[resource_id] = 0
 	inventory[resource_id] = int(inventory[resource_id]) + amount
+	return true
 
 
 ## Remove resources from inventory

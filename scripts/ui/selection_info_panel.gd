@@ -280,7 +280,7 @@ func _display_unit_inventory(unit: Node) -> void:
 		return
 	
 	# Get NPC data from faction system
-	if not _faction_system.has("npc_data"):
+	if not "npc_data" in _faction_system or _faction_system.npc_data == null:
 		return
 	
 	var npc_data = _faction_system.npc_data

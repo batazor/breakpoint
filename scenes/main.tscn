@@ -1,4 +1,4 @@
-[gd_scene load_steps=21 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=22 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -21,6 +21,7 @@
 [ext_resource type="PackedScene" uid="uid://cw8qd7jp2qrho" path="res://scenes/ui/notification_system.tscn" id="18_notification_system"]
 [ext_resource type="PackedScene" uid="uid://beqrjgq2p5a3w" path="res://scenes/ui/faction_status_panel.tscn" id="19_faction_panel"]
 [ext_resource type="PackedScene" uid="uid://cmfkq2yp5x8yx" path="res://scenes/ui/minimap.tscn" id="20_minimap"]
+[ext_resource type="PackedScene" uid="uid://b4dqn7gp5kfw2" path="res://scenes/ui/selection_info_panel.tscn" id="21_selection_info"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -122,5 +123,8 @@ economy_system_path = NodePath("../EconomySystem")
 hex_grid_path = NodePath("../HexGrid")
 faction_system_path = NodePath("../FactionSystem")
 territory_system_path = NodePath("../FactionTerritorySystem")
+
+[node name="SelectionInfoPanel" parent="." instance=ExtResource("21_selection_info")]
+faction_system_path = NodePath("../FactionSystem")
 
 [editable path="TimeControls"]

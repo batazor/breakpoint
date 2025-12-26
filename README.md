@@ -21,6 +21,11 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **AI NPCs**: Non-player characters with autonomous decision-making
 - **Dynamic World**: Day-night cycle and procedural world generation
 - **Build Mode**: Construction and development mechanics
+- **Building Upgrade System**: Progressive building development ✨ **NEW**
+  - ✅ **NEW**: Multi-level buildings with upgrade paths
+  - ✅ **NEW**: Resource production increases with building level
+  - ✅ **NEW**: Upgrade queue system with time-based progression
+  - ✅ **NEW**: Upgrade action in tile context menu
 - **City Screen**: Dedicated UI for managing city buildings (Phase 3+)
   - ✅ **NEW**: City building management interface (C key)
   - ✅ **NEW**: 8 new city building types: Archery Range, Barracks, Blacksmith, Church, Houses (2 types), Market, Tavern
@@ -49,6 +54,7 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 ### Interaction Controls
 - **Left Click**: Select tile or unit
 - **Right Click**: Open action menu for selected tile
+  - Build, Upgrade Building, Building Info, Move Unit, Tile Info
 - **B**: Toggle build mode
 - **C**: Open city screen for building management
 - **I**: Show tile/unit information
@@ -57,6 +63,14 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **Space**: Pause/unpause game
 - **1/2/3/4**: Set game speed (1x, 2x, 3x, 4x)
 - **Esc**: Cancel action, close menus, deselect units
+
+### Building Management
+1. **Construct Buildings**: Press **B** to enter build mode, select a building, click on a valid tile
+2. **View Building Info**: Right-click on a building tile and select "Building Info"
+3. **Upgrade Buildings**: Right-click on a building tile and select "Upgrade Building"
+   - Upgrades cost resources and take time to complete
+   - Production increases with each level
+   - Available upgrades: Well (3 levels), Mine (3 levels), Fortress (2 levels), Market (3 levels), Blacksmith (2 levels)
 
 ### Unit Controls
 1. **Select Unit**: Left-click on a tile containing a unit

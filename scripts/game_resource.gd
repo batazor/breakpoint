@@ -26,12 +26,12 @@ func can_build_on(biome_name: String) -> bool:
 
 
 func can_upgrade(current_level: int) -> bool:
-	"""Check if building can be upgraded from current level"""
+	## Check if building can be upgraded from current level
 	return current_level < max_level
 
 
 func get_upgrade_cost(current_level: int) -> Dictionary:
-	"""Get the upgrade cost for upgrading from current_level to next level"""
+	## Get the upgrade cost for upgrading from current_level to next level
 	if not can_upgrade(current_level):
 		return {}
 	
@@ -43,7 +43,7 @@ func get_upgrade_cost(current_level: int) -> Dictionary:
 
 
 func get_upgrade_time(current_level: int) -> int:
-	"""Get the upgrade time in hours for upgrading from current_level to next level"""
+	## Get the upgrade time in hours for upgrading from current_level to next level
 	if not can_upgrade(current_level):
 		return 0
 	
@@ -55,7 +55,7 @@ func get_upgrade_time(current_level: int) -> int:
 
 
 func get_resource_delta_at_level(level: int) -> Dictionary:
-	"""Get the total resource delta per hour at a specific level (base + bonuses)"""
+	## Get the total resource delta per hour at a specific level (base + bonuses)
 	var total_delta: Dictionary = resource_delta_per_hour.duplicate()
 	
 	# Add bonuses from all upgrade levels up to current level

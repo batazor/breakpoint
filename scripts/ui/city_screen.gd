@@ -24,7 +24,8 @@ signal building_queued(building_id: StringName)
 var _faction_system: Node
 var _build_controller: Node
 var _economy_system: Node
-var _current_city_axial: Vector2i = Vector2i(-1, -1)
+const INVALID_AXIAL := Vector2i(-1, -1)  # Sentinel value for unset city location
+var _current_city_axial: Vector2i = INVALID_AXIAL
 var _current_faction: StringName = &"kingdom"
 var _is_visible: bool = false
 var _city_buildings: Array[GameResource] = []
@@ -118,16 +119,19 @@ func _load_city_buildings() -> void:
 			var delta_dict = entry.get("resource_delta_per_hour", {})
 			if delta_dict is Dictionary:
 				for res_key in delta_dict.keys():
-					res.resource_delta_per_hour[str(res_key)] = int(delta_dict[res_key])
+					var value = delta_dict[res_key]
+					res.resource_delta_per_hour[str(res_key)] = int(value) if (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) else 0
 			
 			# Parse build cost
 			var cost_dict = entry.get("build_cost", {})
 			if cost_dict is Dictionary:
 				for res_key in cost_dict.keys():
-					res.build_cost[str(res_key)] = int(cost_dict[res_key])
+					var value = cost_dict[res_key]
+					res.build_cost[str(res_key)] = int(value) if (typeof(value) == TYPE_INT or typeof(value) == TYPE_FLOAT) else 0
 			
-			# Build time
-			res.build_time_hours = float(entry.get("build_time_hours", 1))
+			# Build time (must be int to match GameResource)
+			var build_time_value = entry.get("build_time_hours", 1)
+			res.build_time_hours = int(build_time_value) if (typeof(build_time_value) == TYPE_INT or typeof(build_time_value) == TYPE_FLOAT) else 1
 			
 			_city_buildings.append(res)
 

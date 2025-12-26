@@ -173,3 +173,14 @@ toggle_territory_overlay={
 "unicode": 0
 }]
 }
+toggle_faction_panel={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 70,
+"physical_keycode": 70,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}

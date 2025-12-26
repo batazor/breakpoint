@@ -1,4 +1,4 @@
-[gd_scene load_steps=18 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=21 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -18,6 +18,9 @@
 [ext_resource type="Script" path="res://scripts/hex_grid/territory_overlay.gd" id="15_territory_overlay"]
 [ext_resource type="PackedScene" uid="uid://ddoqwmhq4qotm" path="res://scenes/ui/territory_overlay_toggle.tscn" id="16_territory_toggle"]
 [ext_resource type="Script" path="res://scripts/ui/music_manager.gd" id="17_music_manager"]
+[ext_resource type="PackedScene" uid="uid://cw8qd7jp2qrho" path="res://scenes/ui/notification_system.tscn" id="18_notification_system"]
+[ext_resource type="PackedScene" uid="uid://beqrjgq2p5a3w" path="res://scenes/ui/faction_status_panel.tscn" id="19_faction_panel"]
+[ext_resource type="PackedScene" uid="uid://cmfkq2yp5x8yx" path="res://scenes/ui/minimap.tscn" id="20_minimap"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -106,5 +109,18 @@ build_menu_path = NodePath("../BuildMenu")
 
 [node name="MusicManager" type="Node" parent="."]
 script = ExtResource("17_music_manager")
+
+[node name="NotificationSystem" parent="." instance=ExtResource("18_notification_system")]
+layer = 100
+
+[node name="FactionStatusPanel" parent="." instance=ExtResource("19_faction_panel")]
+faction_system_path = NodePath("../FactionSystem")
+territory_system_path = NodePath("../FactionTerritorySystem")
+economy_system_path = NodePath("../EconomySystem")
+
+[node name="Minimap" parent="." instance=ExtResource("20_minimap")]
+hex_grid_path = NodePath("../HexGrid")
+faction_system_path = NodePath("../FactionSystem")
+territory_system_path = NodePath("../FactionTerritorySystem")
 
 [editable path="TimeControls"]

@@ -23,6 +23,13 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **Build Mode**: Construction and development mechanics
 - **Camera Controls**: Flexible camera system with zoom and movement
 - **Player Interaction**: Tile selection, unit control, and action menus
+- **In-Game UI**: Comprehensive HUD and game interface (Phase 3.2)
+  - ✅ **NEW**: Enhanced HUD with resources, time, and faction info
+  - ✅ **NEW**: Faction status panel (F key) - view stats, relationships, and production
+  - ✅ **NEW**: Minimap in bottom-right corner for world overview
+  - ✅ **NEW**: Notification system for important game events
+  - ✅ **NEW**: Background music system with world and city tracks
+  - ✅ **NEW**: Game speed controls (1x, 2x, 3x, 4x)
 
 ## Controls
 
@@ -39,8 +46,10 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 - **Right Click**: Open action menu for selected tile
 - **B**: Toggle build mode
 - **I**: Show tile/unit information
+- **F**: Toggle faction status panel
 - **T**: Toggle territory influence overlay
 - **Space**: Pause/unpause game
+- **1/2/3/4**: Set game speed (1x, 2x, 3x, 4x)
 - **Esc**: Cancel action, close menus, deselect units
 
 ### Unit Controls
@@ -157,6 +166,13 @@ Tests are automatically run via GitHub Actions on push and pull requests.
   - Current buildings managed through hex map placement
   - Territory influence visualization system implemented
   - City screen for complex buildings planned for Phase 3
+- 🔄 **Phase 3.2**: In-Game UI (In Progress)
+  - Enhanced HUD with faction info and time display
+  - Faction status panel with F key toggle
+  - Minimap for world overview
+  - Notification system for game events
+  - Background music integration
+  - Game speed controls
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 

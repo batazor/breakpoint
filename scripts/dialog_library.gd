@@ -155,8 +155,8 @@ static func _create_hostile_dialog(tree: DialogTree, npc: NPC) -> void:
 	peace.text = "Hmph. The %s faction doesn't trust outsiders easily. State your business quickly." % String(npc.faction_id)
 	
 	var response_gift := DialogResponse.new()
-	response_gift.text = "Let me offer you some gold as a gesture of goodwill."
-	response_gift.effect = "add_gold:-3"
+	response_gift.text = "Let me offer you some gold as a gesture of goodwill. (Cost: 3 gold)"
+	response_gift.effect = "add_gold:-3"  # Costs 3 gold (negative adds)
 	response_gift.relationship_change = 10
 	response_gift.next_dialog_id = "gift_accepted"
 	

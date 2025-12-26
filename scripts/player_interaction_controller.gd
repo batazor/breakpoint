@@ -83,7 +83,6 @@ func _input(event: InputEvent) -> void:
 	
 	elif event.is_action_pressed("ui_accept"):  # E or Space key to talk to selected NPC
 		_try_talk_to_selected_npc()
-		get_viewport().set_input_as_handled()
 
 
 func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3) -> void:
@@ -286,8 +285,9 @@ func _try_talk_to_selected_npc() -> void:
 		push_warning("NPC not found: %s" % String(npc_id))
 		return
 	
-	# Start dialog
+	# Start dialog and mark input as handled
 	_start_npc_dialog(npc)
+	get_viewport().set_input_as_handled()
 
 
 func _start_npc_dialog(npc: NPC) -> void:

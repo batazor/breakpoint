@@ -102,7 +102,7 @@ func _start_typewriter() -> void:
 	
 	if current_char_index < full_text.length():
 		if dialog_label:
-			dialog_label.text = full_text.substr(0, current_char_index + 1)
+			dialog_label.text = full_text.left(current_char_index + 1)
 		current_char_index += 1
 		
 		# Schedule next character

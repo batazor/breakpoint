@@ -152,37 +152,38 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 
 func _merge_resources(additional: Array[GameResource]) -> void:
 	var seen: Dictionary = {}
-	for res in resources:
-		if res == null:
-			continue
-		var res_id := String(res.id)
-		if not res_id.is_empty():
-			seen[res_id] = true
-	for res in buildings:
-		if res == null:
-			continue
-		var res_id := String(res.id)
-		if not res_id.is_empty():
-			seen[res_id] = true
-	for res in characters:
-		if res == null:
-			continue
-		var res_id := String(res.id)
-		if not res_id.is_empty():
-			seen[res_id] = true
-
+	
+	# Helper function to mark resources as seen
+	var mark_seen := func(res_array: Array[GameResource]) -> void:
+		for res in res_array:
+			if res == null:
+				continue
+			var res_id := String(res.id)
+			if not res_id.is_empty():
+				seen[res_id] = true
+	
+	# Mark all existing resources as seen
+	mark_seen.call(resources)
+	mark_seen.call(buildings)
+	mark_seen.call(characters)
+	
+	# Add new resources that haven't been seen
 	for res in additional:
 		if res == null:
 			continue
 		var res_id := String(res.id)
 		if res_id.is_empty() or seen.has(res_id):
 			continue
-		if res.category == "building":
-			buildings.append(res)
-		elif res.category == "character":
-			characters.append(res)
-		else:
-			resources.append(res)
+		
+		# Categorize and add
+		match res.category:
+			"building":
+				buildings.append(res)
+			"character":
+				characters.append(res)
+			_:
+				resources.append(res)
+		
 		seen[res_id] = true
 
 
@@ -242,27 +243,21 @@ func _set_selected_card(card: ResourceCard) -> void:
 func _store_scroll_position(key: String) -> void:
 	match key:
 		"resources":
-			if resources_scroll != null:
-				_scroll_positions["resources"] = resources_scroll.scroll_vertical
+			UIUtils.store_scroll_position(resources_scroll, _scroll_positions, "resources")
 		"buildings":
-			if buildings_scroll != null:
-				_scroll_positions["buildings"] = buildings_scroll.scroll_vertical
+			UIUtils.store_scroll_position(buildings_scroll, _scroll_positions, "buildings")
 		"characters":
-			if characters_scroll != null:
-				_scroll_positions["characters"] = characters_scroll.scroll_vertical
+			UIUtils.store_scroll_position(characters_scroll, _scroll_positions, "characters")
 
 
 func _restore_scroll_position(key: String) -> void:
 	match key:
 		"resources":
-			if resources_scroll != null:
-				resources_scroll.scroll_vertical = int(_scroll_positions.get("resources", 0))
+			UIUtils.restore_scroll_position(resources_scroll, _scroll_positions, "resources")
 		"buildings":
-			if buildings_scroll != null:
-				buildings_scroll.scroll_vertical = int(_scroll_positions.get("buildings", 0))
+			UIUtils.restore_scroll_position(buildings_scroll, _scroll_positions, "buildings")
 		"characters":
-			if characters_scroll != null:
-				characters_scroll.scroll_vertical = int(_scroll_positions.get("characters", 0))
+			UIUtils.restore_scroll_position(characters_scroll, _scroll_positions, "characters")
 
 
 func _on_tab_changed(tab: int) -> void:

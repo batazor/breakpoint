@@ -31,19 +31,7 @@ func _ready() -> void:
 	_resolve_game_store()
 	_resolve_faction_system()
 	_resolve_build_controller()
-	if game_store != null:
-		if not game_store.factions_changed.is_connected(_on_factions_changed):
-			game_store.factions_changed.connect(_on_factions_changed)
-		if not game_store.world_ready.is_connected(_on_world_ready):
-			game_store.world_ready.connect(_on_world_ready)
-	if game_store != null and not game_store.factions_changed.is_connected(_on_factions_changed):
-		game_store.factions_changed.connect(_on_factions_changed)
-	if faction_system != null and not faction_system.factions_changed.is_connected(_on_factions_changed):
-		faction_system.factions_changed.connect(_on_factions_changed)
-	if faction_system != null and not faction_system.resources_changed.is_connected(_on_resources_changed):
-		faction_system.resources_changed.connect(_on_resources_changed)
-	if faction_system != null and not faction_system.building_transferred.is_connected(_on_buildings_changed):
-		faction_system.building_transferred.connect(_on_buildings_changed)
+	_connect_signals()
 	_refresh_selector()
 	if focus_selector != null:
 		focus_selector.item_selected.connect(_on_focus_selected)
@@ -52,33 +40,32 @@ func _ready() -> void:
 	_render_all()
 
 
+func _connect_signals() -> void:
+	# Connect game store signals
+	if game_store != null:
+		UIUtils.safe_connect(game_store.factions_changed, _on_factions_changed)
+		UIUtils.safe_connect(game_store.world_ready, _on_world_ready)
+	
+	# Connect faction system signals
+	if faction_system != null:
+		UIUtils.safe_connect(faction_system.factions_changed, _on_factions_changed)
+		UIUtils.safe_connect(faction_system.resources_changed, _on_resources_changed)
+		UIUtils.safe_connect(faction_system.building_transferred, _on_buildings_changed)
+
+
 func _resolve_faction_system() -> void:
-	if not faction_system_path.is_empty():
-		faction_system = get_node_or_null(faction_system_path) as FactionSystem
-	else:
-		faction_system = get_tree().get_first_node_in_group("faction_system") as FactionSystem
+	faction_system = UIUtils.get_node_or_group(self, faction_system_path, "faction_system") as FactionSystemRes
 
 
 func _resolve_build_controller() -> void:
 	build_controller = get_tree().get_first_node_in_group("build_controller") as BuildControllerRes
-	if build_controller == null:
-		var nodes: Array = get_tree().get_nodes_in_group("build_controller")
-		if nodes.size() > 0:
-			var node_val: Variant = nodes[0]
-			build_controller = node_val as BuildControllerRes
 
 
 func _refresh_selector() -> void:
 	if focus_selector == null:
 		return
-	focus_selector.clear()
 	var ids: Array[StringName] = _faction_ids()
-	for i in range(ids.size()):
-		var id_val_var: Variant = ids[i]
-		var id_val: StringName = id_val_var as StringName
-		focus_selector.add_item(str(id_val), i)
-	if focus_selector.item_count > 0:
-		focus_selector.select(0)
+	UIUtils.populate_option_button(focus_selector, ids)
 
 
 func _on_focus_selected(_index: int) -> void:
@@ -86,8 +73,7 @@ func _on_focus_selected(_index: int) -> void:
 
 
 func _focus_faction() -> StringName:
-	if focus_selector == null:
-		return StringName("")
+	return UIUtils.get_selected_text_as_string_name(focus_selector)
 	if focus_selector.item_count == 0:
 		return StringName("")
 	var idx: int = focus_selector.get_selected()
@@ -98,26 +84,15 @@ func _focus_faction() -> StringName:
 
 
 func _faction_ids() -> Array[StringName]:
-	if game_store != null:
-		var ids: Array[StringName] = []
-		var keys: Array = game_store.factions.keys()
-		for i in range(keys.size()):
-			var k_val: Variant = keys[i]
-			var k_name: StringName = k_val as StringName
-			if String(k_name) != "":
-				ids.append(k_name)
-		ids.sort()
-		if not ids.is_empty():
-			return ids
-	if faction_system == null:
-		return []
-	var ids_fs: Array[StringName] = []
-	var keys_fs: Array = faction_system.factions.keys()
-	for i in range(keys_fs.size()):
-		var k_val: Variant = keys_fs[i]
-		var k_name: StringName = k_val as StringName
-		if String(k_name) != "":
-			ids_fs.append(k_name)
+	# Try game_store first
+	if game_store != null and not game_store.factions.is_empty():
+		return UIUtils.extract_string_name_ids(game_store.factions)
+	
+	# Fallback to faction_system
+	if faction_system != null and not faction_system.factions.is_empty():
+		return UIUtils.extract_string_name_ids(faction_system.factions)
+	
+	return []
 	ids_fs.sort()
 	return ids_fs
 

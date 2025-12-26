@@ -190,7 +190,13 @@ func _parse_resources_yaml(text: String) -> Array:
 				if parts.size() == 2:
 					var key := parts[0].strip_edges()
 					var value := parts[1].strip_edges()
-					current[current_dict_key][key] = int(value) if value.is_valid_int() else value
+					# Parse as int if valid, otherwise keep as string
+					if value.is_valid_int():
+						current[current_dict_key][key] = int(value)
+					elif value.is_valid_float():
+						current[current_dict_key][key] = float(value)
+					else:
+						current[current_dict_key][key] = value
 				continue
 			
 			if ":" in trimmed:
@@ -198,7 +204,13 @@ func _parse_resources_yaml(text: String) -> Array:
 				if parts.size() == 2:
 					var key := parts[0].strip_edges()
 					var value := parts[1].strip_edges().trim_prefix('"').trim_suffix('"')
-					current[key] = float(value) if value.is_valid_float() else value
+					# Try to parse as numeric, fallback to string
+					if value.is_valid_float():
+						current[key] = float(value)
+					elif value.is_valid_int():
+						current[key] = int(value)
+					else:
+						current[key] = value
 					collecting_list = false
 					collecting_dict = false
 	
@@ -302,39 +314,56 @@ func _update_queue_display() -> void:
 	if queue_list == null:
 		return
 	
-	# Clear existing items
-	for child in queue_list.get_children():
-		child.queue_free()
+	# Reuse existing labels where possible
+	var existing_children := queue_list.get_children()
 	
-	# Add queue items
+	# Update or create labels for queue items
 	for i in range(_construction_queue.size()):
 		var item: Dictionary = _construction_queue[i]
-		var label := Label.new()
+		var label: Label
+		
+		if i < existing_children.size():
+			label = existing_children[i] as Label
+		else:
+			label = Label.new()
+			queue_list.add_child(label)
 		
 		var status: String = "Building" if i == 0 else "Queued"
 		label.text = "%s: %s (%.1fh remaining)" % [status, item["building_title"], item["remaining_hours"]]
-		
-		queue_list.add_child(label)
+		label.visible = true
+	
+	# Hide excess labels
+	for i in range(_construction_queue.size(), existing_children.size()):
+		existing_children[i].visible = false
 
 
 func _update_resource_display() -> void:
 	if resource_display == null or _faction_system == null:
 		return
 	
-	# Clear existing displays
-	for child in resource_display.get_children():
-		child.queue_free()
-	
-	# Show food, coal, gold
 	var resources := ["food", "coal", "gold"]
-	for res_name in resources:
+	var existing_children := resource_display.get_children()
+	
+	# Update or create labels for resources
+	for i in range(resources.size()):
+		var res_name := resources[i]
 		var amount: int = 0
 		if _faction_system.has_method("resource_amount"):
 			amount = _faction_system.resource_amount(_current_faction, StringName(res_name))
 		
-		var label := Label.new()
+		var label: Label
+		if i < existing_children.size():
+			label = existing_children[i] as Label
+		else:
+			label = Label.new()
+			resource_display.add_child(label)
+		
 		label.text = "%s: %d" % [res_name.capitalize(), amount]
-		resource_display.add_child(label)
+		label.visible = true
+	
+	# Hide excess labels (shouldn't happen with fixed resource count)
+	for i in range(resources.size(), existing_children.size()):
+		existing_children[i].visible = false
 
 
 func _show_notification(message: String, type: String = "info") -> void:

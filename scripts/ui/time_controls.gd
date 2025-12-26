@@ -23,6 +23,11 @@ var _updating_slider: bool = false
 # Lifecycle
 # =========================
 func _ready() -> void:
+	add_to_group("time_controls")
+	
+	# Enable input processing for hotkeys
+	set_process_input(true)
+	
 	# Signals
 	pause_button.pressed.connect(_on_pause_pressed)
 	speed_1_button.pressed.connect(func() -> void: _set_speed(1.0))
@@ -117,3 +122,18 @@ func _update_speed_buttons() -> void:
 
 func _set_speed_button_state(button: Button, active: bool) -> void:
 	button.disabled = active
+
+
+func _input(event: InputEvent) -> void:
+	if event.is_action_pressed("speed_1x"):
+		_set_speed(1.0)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("speed_2x"):
+		_set_speed(2.0)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("speed_3x"):
+		_set_speed(3.0)
+		get_viewport().set_input_as_handled()
+	elif event.is_action_pressed("speed_4x"):
+		_set_speed(4.0)
+		get_viewport().set_input_as_handled()

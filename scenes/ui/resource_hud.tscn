@@ -27,7 +27,11 @@ theme_override_constants/margin_bottom = 8
 layout_mode = 2
 theme_override_constants/separation = 32
 
-[node name="FoodContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+[node name="LeftSection" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 32
+
+[node name="FoodContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/LeftSection"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
@@ -52,7 +56,7 @@ layout_mode = 2
 text = "+0.0/s"
 vertical_alignment = 1
 
-[node name="CoalContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+[node name="CoalContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/LeftSection"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
@@ -77,7 +81,7 @@ layout_mode = 2
 text = "+0.0/s"
 vertical_alignment = 1
 
-[node name="GoldContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+[node name="GoldContainer" type="HBoxContainer" parent="TopBar/MarginContainer/HBoxContainer/LeftSection"]
 layout_mode = 2
 theme_override_constants/separation = 8
 
@@ -95,9 +99,47 @@ text = "0"
 horizontal_alignment = 2
 vertical_alignment = 1
 
-[node name="GoldRateLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/GoldContainer"]
+[node name="GoldRateLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/LeftSection/GoldContainer"]
 unique_name_in_owner = true
 custom_minimum_size = Vector2(70, 0)
 layout_mode = 2
 text = "+0.0/s"
+vertical_alignment = 1
+
+[node name="CenterSection" type="VBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+alignment = 1
+
+[node name="TimeLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/CenterSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Day 1 - 06:00"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="SpeedLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/CenterSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Speed: 1x"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="RightSection" type="VBoxContainer" parent="TopBar/MarginContainer/HBoxContainer"]
+layout_mode = 2
+size_flags_horizontal = 10
+alignment = 1
+
+[node name="FactionLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/RightSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Kingdom"
+horizontal_alignment = 2
+vertical_alignment = 1
+
+[node name="TerritoryLabel" type="Label" parent="TopBar/MarginContainer/HBoxContainer/RightSection"]
+unique_name_in_owner = true
+layout_mode = 2
+text = "Territory: 0"
+horizontal_alignment = 2
 vertical_alignment = 1

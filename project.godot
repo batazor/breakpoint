@@ -173,3 +173,58 @@ toggle_territory_overlay={
 "unicode": 0
 }]
 }
+toggle_faction_panel={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 70,
+"physical_keycode": 70,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+speed_1x={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 49,
+"physical_keycode": 49,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+speed_2x={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 50,
+"physical_keycode": 50,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+speed_3x={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 51,
+"physical_keycode": 51,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}
+speed_4x={
+"deadzone": 0.5,
+"events": [{
+"echo": false,
+"keycode": 52,
+"physical_keycode": 52,
+"pressed": false,
+"type": "key",
+"unicode": 0
+}]
+}

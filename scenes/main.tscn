@@ -1,4 +1,4 @@
-[gd_scene load_steps=15 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=18 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -17,6 +17,7 @@
 [ext_resource type="Script" path="res://scripts/faction_territory_system.gd" id="14_territory_system"]
 [ext_resource type="Script" path="res://scripts/hex_grid/territory_overlay.gd" id="15_territory_overlay"]
 [ext_resource type="PackedScene" uid="uid://ddoqwmhq4qotm" path="res://scenes/ui/territory_overlay_toggle.tscn" id="16_territory_toggle"]
+[ext_resource type="Script" path="res://scripts/ui/music_manager.gd" id="17_music_manager"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -76,6 +77,9 @@ resources = Array[ExtResource("8_ya4ey")]([])
 
 [node name="TimeControls" parent="." instance=ExtResource("6")]
 
+[node name="Panel" parent="TimeControls" index="0"]
+visible = false
+
 [node name="SelectionBadge" parent="." instance=ExtResource("7")]
 
 [node name="HelpOverlay" parent="." instance=ExtResource("8")]
@@ -84,6 +88,8 @@ resources = Array[ExtResource("8_ya4ey")]([])
 
 [node name="ResourceHUD" parent="." instance=ExtResource("13_resource_hud")]
 faction_system_path = NodePath("../FactionSystem")
+day_night_cycle_path = NodePath("../DayNightCycle")
+territory_system_path = NodePath("../FactionTerritorySystem")
 
 [node name="TerritoryOverlayToggle" parent="." instance=ExtResource("16_territory_toggle")]
 offset_left = 10.0
@@ -97,3 +103,8 @@ script = ExtResource("12_interaction")
 hex_grid_path = NodePath("../HexGrid")
 tile_action_menu_path = NodePath("../TileActionMenu")
 build_menu_path = NodePath("../BuildMenu")
+
+[node name="MusicManager" type="Node" parent="."]
+script = ExtResource("17_music_manager")
+
+[editable path="TimeControls"]

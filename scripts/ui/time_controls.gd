@@ -23,6 +23,8 @@ var _updating_slider: bool = false
 # Lifecycle
 # =========================
 func _ready() -> void:
+	add_to_group("time_controls")
+	
 	# Signals
 	pause_button.pressed.connect(_on_pause_pressed)
 	speed_1_button.pressed.connect(func() -> void: _set_speed(1.0))

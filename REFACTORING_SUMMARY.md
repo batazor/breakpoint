@@ -106,7 +106,7 @@ func _connect_signals() -> void:
    - Reduced from ~15 lines to ~9 lines
 
 2. **Resource Merging Logic**
-   - Extracted common "mark as seen" logic into a lambda function
+   - Extracted common "mark as seen" logic into a separate helper method `_mark_resources_as_seen()`
    - Used `match` statement for cleaner categorization
    - Improved code organization and readability
    - Reduced from ~35 lines to ~30 lines with better structure

@@ -16,7 +16,9 @@ static func get_node_or_group(root: Node, node_path: NodePath, group_name: Strin
 	
 	# Fallback to group search
 	if not group_name.is_empty():
-		node = root.get_tree().get_first_node_in_group(group_name)
+		var tree := root.get_tree()
+		if tree != null:
+			node = tree.get_first_node_in_group(group_name)
 	
 	return node
 
@@ -79,13 +81,25 @@ static func get_selected_text_as_string_name(option_button: OptionButton) -> Str
 
 ## Deferred call helper - calls a method with arguments after a frame
 ## Useful for UI updates that need to wait for _ready() completion
-## Supports unlimited number of arguments using callv
+## Note: For complex deferred calls, consider using signals or call_deferred with bound Callables
 static func call_deferred_with_args(obj: Object, method: String, args: Array) -> void:
 	if obj == null or method.is_empty():
 		return
 	
-	# Use callv for flexible argument handling
-	obj.call_deferred("callv", method, args)
+	# Handle common cases efficiently
+	match args.size():
+		0:
+			obj.call_deferred(method)
+		1:
+			obj.call_deferred(method, args[0])
+		2:
+			obj.call_deferred(method, args[0], args[1])
+		3:
+			obj.call_deferred(method, args[0], args[1], args[2])
+		_:
+			# For more arguments, use Callable.bindv
+			var callable := Callable(obj, method).bindv(args)
+			callable.call_deferred()
 
 
 ## Updates children of a container based on a predicate function

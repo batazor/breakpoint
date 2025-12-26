@@ -165,14 +165,22 @@ Tests are automatically run via GitHub Actions on push and pull requests.
 - ✅ **Phase 2.4**: Building & Development via City Screen (Completed) - [Details](PHASE_2.4_SUMMARY.md)
   - Current buildings managed through hex map placement
   - Territory influence visualization system implemented
-  - City screen for complex buildings planned for Phase 3
-- 🔄 **Phase 3.2**: In-Game UI (In Progress)
-  - Enhanced HUD with faction info and time display
-  - Faction status panel with F key toggle
-  - Minimap for world overview
-  - Notification system for game events
-  - Background music integration
-  - Game speed controls
+  - City screen for complex buildings planned for Phase 3+
+- ✅ **Phase 3.2**: In-Game UI (Completed) - [Details](PHASE_3.2_SUMMARY.md)
+  - Enhanced HUD with resources, time, and faction info
+  - Faction status panel (F key) - view stats, relationships, and production
+  - Minimap in bottom-right corner for world overview
+  - Notification system for important game events
+  - Background music system with world and city tracks
+  - Game speed controls (1x, 2x, 3x, 4x)
+  - Selection info panels for buildings and units
+- 📋 **Phase 3.1**: Main Menu & Game Flow (Planned)
+- 📋 **Phase 3.3**: Tutorial & Onboarding (Planned)
+- 📋 **Phase 4**: Polish & Balance (Planned)
+- 📋 **Phase 5**: MVP Release Preparation (Planned)
+
+**Current Status**: ~60% complete toward MVP  
+**Target Release**: Q1 2025
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 

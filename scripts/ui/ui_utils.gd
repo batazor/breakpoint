@@ -24,7 +24,7 @@ static func get_node_or_group(root: Node, node_path: NodePath, group_name: Strin
 ## Safely connects a signal if not already connected
 ## Prevents duplicate connections and handles null checks
 static func safe_connect(sig: Signal, callable: Callable) -> void:
-	if sig == null or callable == null:
+	if callable == null:
 		return
 	if not sig.is_connected(callable):
 		sig.connect(callable)
@@ -33,7 +33,7 @@ static func safe_connect(sig: Signal, callable: Callable) -> void:
 ## Safely disconnects a signal if connected
 ## Handles null checks and connection verification
 static func safe_disconnect(sig: Signal, callable: Callable) -> void:
-	if sig == null or callable == null:
+	if callable == null:
 		return
 	if sig.is_connected(callable):
 		sig.disconnect(callable)

@@ -153,19 +153,10 @@ func _load_resources_from_yaml() -> Array[GameResource]:
 func _merge_resources(additional: Array[GameResource]) -> void:
 	var seen: Dictionary = {}
 	
-	# Helper function to mark resources as seen
-	var mark_seen := func(res_array: Array[GameResource]) -> void:
-		for res in res_array:
-			if res == null:
-				continue
-			var res_id := String(res.id)
-			if not res_id.is_empty():
-				seen[res_id] = true
-	
 	# Mark all existing resources as seen
-	mark_seen.call(resources)
-	mark_seen.call(buildings)
-	mark_seen.call(characters)
+	_mark_resources_as_seen(resources, seen)
+	_mark_resources_as_seen(buildings, seen)
+	_mark_resources_as_seen(characters, seen)
 	
 	# Add new resources that haven't been seen
 	for res in additional:
@@ -185,6 +176,15 @@ func _merge_resources(additional: Array[GameResource]) -> void:
 				resources.append(res)
 		
 		seen[res_id] = true
+
+
+func _mark_resources_as_seen(res_array: Array[GameResource], seen: Dictionary) -> void:
+	for res in res_array:
+		if res == null:
+			continue
+		var res_id := String(res.id)
+		if not res_id.is_empty():
+			seen[res_id] = true
 
 
 func set_tile_context(biome_name: String, has_selection: bool) -> void:

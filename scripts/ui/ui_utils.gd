@@ -4,8 +4,8 @@ class_name UIUtils
 ## Provides helper methods to reduce code duplication across UI scripts
 
 ## Gets a node from a NodePath or searches by group name as fallback
-## Returns the node cast to the specified type, or null if not found
-static func get_node_or_group(root: Node, node_path: NodePath, group_name: String, type: Variant = Node) -> Node:
+## Returns the node or null if not found
+static func get_node_or_group(root: Node, node_path: NodePath, group_name: String) -> Node:
 	var node: Node = null
 	
 	# Try NodePath first
@@ -83,23 +83,13 @@ static func get_selected_text_as_string_name(option_button: OptionButton) -> Str
 
 ## Deferred call helper - calls a method with arguments after a frame
 ## Useful for UI updates that need to wait for _ready() completion
+## Supports unlimited number of arguments using callv
 static func call_deferred_with_args(obj: Object, method: String, args: Array) -> void:
 	if obj == null or method.is_empty():
 		return
 	
-	match args.size():
-		0:
-			obj.call_deferred(method)
-		1:
-			obj.call_deferred(method, args[0])
-		2:
-			obj.call_deferred(method, args[0], args[1])
-		3:
-			obj.call_deferred(method, args[0], args[1], args[2])
-		4:
-			obj.call_deferred(method, args[0], args[1], args[2], args[3])
-		_:
-			push_warning("UIUtils.call_deferred_with_args: Too many arguments (%d), max 4 supported" % args.size())
+	# Use callv for flexible argument handling
+	obj.call_deferred("callv", method, args)
 
 
 ## Updates children of a container based on a predicate function

@@ -74,13 +74,6 @@ func _on_focus_selected(_index: int) -> void:
 
 func _focus_faction() -> StringName:
 	return UIUtils.get_selected_text_as_string_name(focus_selector)
-	if focus_selector.item_count == 0:
-		return StringName("")
-	var idx: int = focus_selector.get_selected()
-	if idx < 0 or idx >= focus_selector.item_count:
-		return StringName("")
-	var item_text: String = focus_selector.get_item_text(idx)
-	return StringName(item_text)
 
 
 func _faction_ids() -> Array[StringName]:
@@ -93,8 +86,6 @@ func _faction_ids() -> Array[StringName]:
 		return UIUtils.extract_string_name_ids(faction_system.factions)
 	
 	return []
-	ids_fs.sort()
-	return ids_fs
 
 
 func _relation_between(a: StringName, b: StringName) -> float:

@@ -1,4 +1,4 @@
-[gd_scene load_steps=22 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=23 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -23,6 +23,7 @@
 [ext_resource type="PackedScene" uid="uid://cmfkq2yp5x8yx" path="res://scenes/ui/minimap.tscn" id="20_minimap"]
 [ext_resource type="PackedScene" uid="uid://b4dqn7gp5kfw2" path="res://scenes/ui/selection_info_panel.tscn" id="21_selection_info"]
 [ext_resource type="PackedScene" uid="uid://dyr6htbc5u8nx" path="res://scenes/ui/city_screen.tscn" id="22_city_screen"]
+[ext_resource type="PackedScene" uid="uid://b8xh5tnqm8pqr" path="res://scenes/ui/dialog_panel.tscn" id="23_dialog_panel"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -108,6 +109,7 @@ script = ExtResource("12_interaction")
 hex_grid_path = NodePath("../HexGrid")
 tile_action_menu_path = NodePath("../TileActionMenu")
 build_menu_path = NodePath("../BuildMenu")
+dialog_panel_path = NodePath("../DialogPanel")
 
 [node name="MusicManager" type="Node" parent="."]
 script = ExtResource("17_music_manager")
@@ -133,5 +135,7 @@ visible = false
 faction_system_path = NodePath("../FactionSystem")
 build_controller_path = NodePath("../BuildController")
 economy_system_path = NodePath("../EconomySystem")
+
+[node name="DialogPanel" parent="." instance=ExtResource("23_dialog_panel")]
 
 [editable path="TimeControls"]

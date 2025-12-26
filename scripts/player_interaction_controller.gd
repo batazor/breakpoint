@@ -11,11 +11,13 @@ signal game_paused_toggled(paused: bool)
 @export var hex_grid_path: NodePath
 @export var tile_action_menu_path: NodePath
 @export var build_menu_path: NodePath
+@export var dialog_panel_path: NodePath
 
 var hex_grid: Node3D = null
 var tile_action_menu: PopupPanel = null
 var build_menu: CanvasLayer = null
 var unit_controller: UnitController = null
+var dialog_panel: CanvasLayer = null
 
 var _build_mode_active: bool = false
 var _game_paused: bool = false
@@ -27,6 +29,7 @@ func _ready() -> void:
 	hex_grid = get_node_or_null(hex_grid_path)
 	tile_action_menu = get_node_or_null(tile_action_menu_path)
 	build_menu = get_node_or_null(build_menu_path)
+	dialog_panel = get_node_or_null(dialog_panel_path)
 	
 	if hex_grid == null:
 		push_warning("PlayerInteractionController: HexGrid not found")
@@ -77,6 +80,10 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("open_action_menu"):
 		_open_action_menu_at_cursor()
 		get_viewport().set_input_as_handled()
+	
+	elif event.is_action_pressed("ui_accept"):  # E or Space key to talk to selected NPC
+		_try_talk_to_selected_npc()
+		get_viewport().set_input_as_handled()
 
 
 func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3) -> void:
@@ -94,7 +101,13 @@ func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3
 	
 	# Check if there's a unit at this tile
 	if unit_controller and unit_controller.select_unit_at_tile(axial):
-		# Unit selected
+		# Unit selected - check if it's an NPC that can talk
+		var selected_unit := unit_controller.get_selected_unit()
+		if selected_unit:
+			var char_brain := selected_unit.get_node_or_null("CharacterBrain")
+			if char_brain and char_brain.has("npc_id") and not String(char_brain.npc_id).is_empty():
+				# This is an NPC character, check for double-click or E key to talk
+				_check_npc_interaction(selected_unit, char_brain.npc_id)
 		return
 	
 	# No unit, deselect if any was selected
@@ -237,3 +250,66 @@ func _on_unit_deselected() -> void:
 	## Handle unit deselection
 	print("Unit deselected signal received")
 	_awaiting_move_destination = false
+
+
+func _check_npc_interaction(unit: Node3D, npc_id: StringName) -> void:
+	## Check if we should initiate dialog with NPC
+	# For now, we'll wait for explicit "talk" action
+	print("NPC selected: %s (press E or Space to talk)" % String(npc_id))
+
+
+func _try_talk_to_selected_npc() -> void:
+	## Try to initiate dialog with selected NPC
+	if not unit_controller or not unit_controller.has_selected_unit():
+		return
+	
+	var selected_unit := unit_controller.get_selected_unit()
+	if not selected_unit:
+		return
+	
+	var char_brain := selected_unit.get_node_or_null("CharacterBrain")
+	if not char_brain or not char_brain.has("npc_id"):
+		return
+	
+	var npc_id: StringName = char_brain.npc_id
+	if String(npc_id).is_empty():
+		return
+	
+	# Get NPC data from faction system
+	var faction_system := get_node_or_null("/root/Main/FactionSystem")
+	if not faction_system or not faction_system.has_method("get_npc"):
+		push_warning("FactionSystem not found or doesn't have get_npc method")
+		return
+	
+	var npc: NPC = faction_system.get_npc(npc_id)
+	if not npc:
+		push_warning("NPC not found: %s" % String(npc_id))
+		return
+	
+	# Start dialog
+	_start_npc_dialog(npc)
+
+
+func _start_npc_dialog(npc: NPC) -> void:
+	## Start a dialog conversation with an NPC
+	if not dialog_panel:
+		push_warning("Dialog panel not found")
+		return
+	
+	# Get dialog manager from dialog panel
+	var dialog_manager: DialogManager = null
+	if dialog_panel.has("dialog_manager"):
+		dialog_manager = dialog_panel.get("dialog_manager")
+	
+	if not dialog_manager:
+		push_warning("Dialog manager not found")
+		return
+	
+	# Get appropriate dialog based on relationship
+	# For now, use default neutral relationship
+	var relationship := 0.5
+	var dialog_tree := DialogLibrary.get_npc_dialog(npc, relationship)
+	
+	# Start the dialog
+	dialog_manager.start_dialog(npc.id, dialog_tree)
+	print("Started dialog with NPC: %s" % (npc.title if not npc.title.is_empty() else String(npc.id)))

@@ -27,6 +27,17 @@ func show_npc(npc: NPC, social: SocialSystem) -> void:
 	lines.append("Health: %d" % npc.health)
 	if not npc.description.is_empty():
 		lines.append("Note: %s" % npc.description)
+	
+	# Display inventory
+	if npc.inventory != null and not npc.inventory.is_empty():
+		lines.append("")
+		lines.append("Inventory:")
+		var resource_ids: Array = npc.inventory.keys()
+		resource_ids.sort()
+		for res_id in resource_ids:
+			var amount: int = int(npc.inventory[res_id])
+			if amount > 0:
+				lines.append("- %s: %d" % [String(res_id).capitalize(), amount])
 
 	if social != null:
 		var other_ids: Array = social.npcs.keys()

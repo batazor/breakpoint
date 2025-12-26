@@ -143,6 +143,9 @@ func _display_unit(unit: Node) -> void:
 	if "faction_id" in unit:
 		_add_info_item("Faction:", str(unit.faction_id).capitalize())
 	
+	# Inventory info
+	_display_unit_inventory(unit)
+	
 	# Actions
 	_setup_unit_actions(unit)
 
@@ -263,3 +266,38 @@ func _on_action_dismiss(unit: Node) -> void:
 func _is_building(obj: Node) -> bool:
 	# Check if object is a building
 	return obj.has_method("get_building_name") or "building_name" in obj
+
+
+func _display_unit_inventory(unit: Node) -> void:
+	# Try to get NPC data to access inventory
+	var npc_id: StringName = StringName("")
+	if unit.has_method("get_npc_id"):
+		npc_id = unit.call("get_npc_id")
+	elif "npc_id" in unit:
+		npc_id = unit.npc_id
+	
+	if npc_id == StringName("") or _faction_system == null:
+		return
+	
+	# Get NPC data from faction system
+	if not _faction_system.has("npc_data"):
+		return
+	
+	var npc_data = _faction_system.npc_data
+	if not npc_data.has(npc_id):
+		return
+	
+	var npc = npc_data[npc_id]
+	if npc == null:
+		return
+	
+	# Display inventory if not empty
+	if "inventory" in npc and npc.inventory != null and not npc.inventory.is_empty():
+		_add_info_item("Inventory:", "")
+		
+		var resource_ids: Array = npc.inventory.keys()
+		resource_ids.sort()
+		for res_id in resource_ids:
+			var amount: int = int(npc.inventory[res_id])
+			if amount > 0:
+				_add_info_item("  %s:" % String(res_id).capitalize(), str(amount))

@@ -34,15 +34,15 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 
 ---
 
-### Phase 2: Core Gameplay Loop (Priority: HIGH)
+### Phase 2: Core Gameplay Loop ✅ (Completed)
 
-**Timeline**: 3-4 weeks
+**Timeline**: 3-4 weeks (Completed)
 
 **Objectives**: Implement the minimum features needed for a complete gameplay experience.
 
-#### 2.1 Player Interaction & Controls
+#### 2.1 Player Interaction & Controls ✅ (Completed)
 
-**Timeline**: 5-7 days
+**Timeline**: 5-7 days (Completed)
 
 **Technical Requirements**:
 - Mouse raycast system for hex tile detection
@@ -50,39 +50,39 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 - Input mapping system for keyboard controls
 
 **Implementation Tasks**:
-- [ ] Implement hex tile selection and highlighting
+- [x] Implement hex tile selection and highlighting ✅
   - *Details*: Add raycast from camera to detect hex tile under mouse cursor
   - *Technical*: Use `PhysicsRayQueryParameters3D` with camera viewport coordinates
   - *Visual*: Create highlight shader with configurable color (default: white/yellow glow)
   - *Acceptance*: Click on any hex tile to select it; tile shows visual highlight
   
-- [ ] Add cursor/hover feedback on hex tiles
+- [x] Add cursor/hover feedback on hex tiles ✅
   - *Details*: Show different cursor states (normal, selectable, blocked, action available)
   - *Technical*: Implement `_on_mouse_entered()` and `_on_mouse_exited()` signals for hex tiles
   - *Visual*: Subtle outline or brightness change on hover; custom cursor icons
   - *Acceptance*: Hovering over tiles shows immediate visual feedback; cursor changes based on tile state
   
-- [ ] Create basic action menu for selected tiles
+- [x] Create basic action menu for selected tiles ✅
   - *Details*: Context menu with 3-5 actions (build, gather, move unit, info)
   - *Technical*: Instantiate UI popup at screen position near selected tile
   - *Visual*: Panel with icon buttons; positioned to not obscure selected tile
   - *Acceptance*: Right-click or specific key opens action menu; menu shows relevant actions for tile type
   
-- [ ] Implement unit selection and movement
+- [x] Implement unit selection and movement ✅
   - *Details*: Click to select units, click destination to move
   - *Technical*: Pathfinding using A* algorithm on hex grid; unit movement animation
   - *Visual*: Selected unit gets highlight ring; movement path preview with dotted line
   - *Acceptance*: Select unit with click; click destination tile to move; unit follows path smoothly
   
-- [ ] Add keyboard shortcuts for common actions
+- [x] Add keyboard shortcuts for common actions ✅
   - *Details*: Hotkeys for build (B), info (I), end turn (Space), cancel (Esc)
   - *Technical*: Extend input map in `project.godot`; add input handlers in relevant controllers
   - *Visual*: Show hotkey hints in tooltips and menus
   - *Acceptance*: All defined hotkeys trigger correct actions; shortcuts shown in UI
 
-#### 2.2 Faction & AI Systems
+#### 2.2 Faction & AI Systems ✅ (Completed)
 
-**Timeline**: 7-10 days
+**Timeline**: 7-10 days (Completed)
 
 **Technical Requirements**:
 - Behavior tree system or state machine for AI
@@ -136,9 +136,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Acceptance*: Factions can trade resources, form alliances, and resolve conflicts based on AI logic
   - *Implemented*: Created FactionInteractionSystem with propose_trade (utility-based acceptance), propose_alliance (considers common enemies), raise_territory_dispute, and offer_peace (resource-based reconciliation).
 
-#### 2.3 Economy & Resources
+#### 2.3 Economy & Resources ✅ (Completed)
 
-**Timeline**: 5-7 days
+**Timeline**: 5-7 days (Completed)
 
 **Technical Requirements**:
 - Resource data structure (type, amount, production rate)
@@ -194,11 +194,11 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Acceptance*: Resource amounts visible in HUD; production rates shown with +/- indicators; values update in real-time
   - *Implemented*: Created ResourceHUD component that displays food, coal, and gold amounts in a top bar. Tracks production rates using a rolling 10-second sample window and displays rates with +/- indicators in green/red. Updates every 0.5 seconds for real-time feedback. Integrated into main.tscn with connection to FactionSystem.
 
-#### 2.4 Building & Development (City Screen Approach)
+#### 2.4 Building & Development (City Screen Approach) ✅ (Completed)
 
-**Timeline**: 6-8 days
+**Timeline**: 6-8 days (Completed)
 
-**Status**: ✅ **Completed** - Core building system and territory visualization implemented. City screen deferred to Phase 3.
+**Status**: ✅ **Completed** - Core building system and territory visualization implemented. City screen deferred to Phase 3+.
 
 **Current Implementation**:
 - ✅ Basic build mode functionality with 'B' toggle
@@ -266,9 +266,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 
 ---
 
-### Phase 3: User Interface & Player Experience (Priority: HIGH)
+### Phase 3: User Interface & Player Experience (Priority: HIGH) 🔄 (In Progress)
 
-**Timeline**: 2-3 weeks
+**Timeline**: 2-3 weeks (In Progress)
 
 **Objectives**: Create intuitive interfaces that make the game accessible and enjoyable.
 
@@ -333,9 +333,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Dialog*: "You have unsaved changes. Save before quitting?" [Save & Quit] [Quit Without Saving] [Cancel]
   - *Acceptance*: Closing game with unsaved changes shows dialog; options work correctly; no loss of progress
 
-#### 3.2 In-Game UI
+#### 3.2 In-Game UI ✅ (Completed)
 
-**Timeline**: 6-8 days
+**Timeline**: 6-8 days (Completed)
 
 **Technical Requirements**:
 - HUD system with panel management
@@ -344,7 +344,7 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 - Dynamic panel system for info display
 
 **Implementation Tasks**:
-- [ ] Design and implement HUD (resources, faction info, time/date)
+- [x] Design and implement HUD (resources, faction info, time/date) ✅
   - *Details*: Always-visible top bar with critical game information
   - *Technical*: CanvasLayer with Control nodes; anchored to top of screen
   - *Layout*:
@@ -354,8 +354,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Visual*: Semi-transparent dark background; icons with values; color-coded rates (green +, red -)
   - *Updates*: Refresh every frame for smooth rate changes; animate value changes
   - *Acceptance*: HUD always visible; shows accurate real-time data; visually clear and unobtrusive
+  - *Implemented*: ResourceHUD with Food/Coal/Gold display, production rates, time/speed indicator, faction info
   
-- [ ] Create faction status panel
+- [x] Create faction status panel ✅
   - *Details*: Panel showing detailed faction information and relationships
   - *Technical*: Toggleable side panel (default: hidden); triggered by hotkey (F) or UI button
   - *Information Displayed*:
@@ -365,8 +366,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
     - Victory progress: Progress towards win conditions
   - *Visual*: Left-side panel; tabs for different info categories; relationship color coding
   - *Acceptance*: Panel toggles on/off; shows complete faction information; updates in real-time
+  - *Implemented*: FactionStatusPanel with F key toggle, stats/relationships/production sections
   
-- [ ] Implement minimap for world overview
+- [x] Implement minimap for world overview ✅
   - *Details*: Small map in corner showing entire world with fog of war
   - *Technical*: Use Viewport rendering hex grid from top-down orthogonal camera
   - *Position*: Bottom-right corner; 200x200 pixels; click to jump camera
@@ -378,8 +380,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
     - Fog of War: Unexplored areas darkened
   - *Interaction*: Click minimap to move camera; drag to pan; scroll to zoom
   - *Acceptance*: Minimap shows entire world; updates in real-time; click navigation works
+  - *Implemented*: Image-based minimap with terrain colors, territory overlay, click-to-navigate
   
-- [ ] Add notification system for game events
+- [x] Add notification system for game events ✅
   - *Details*: Toast-style notifications for important events
   - *Technical*: Notification queue system; display up to 3 simultaneously; auto-dismiss after 5 seconds
   - *Event Types*:
@@ -390,8 +393,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Visual*: Top-right corner; slide-in animation; icon + text; color-coded by severity (info, warning, error)
   - *Interaction*: Click notification to jump to location; hover to pause auto-dismiss
   - *Acceptance*: Events trigger notifications; multiple notifications queue properly; dismissal works
+  - *Implemented*: NotificationSystem with INFO/WARNING/ERROR/SUCCESS types, queue system, animations
   
-- [ ] Create building/unit info panels
+- [x] Create building/unit info panels ✅
   - *Details*: Detailed information panel when selecting buildings or units
   - *Technical*: Context-sensitive panel that appears on selection; positioned near selected object
   - *Building Info*:
@@ -408,8 +412,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
     - Actions: Move, Cancel Action, Dismiss buttons
   - *Visual*: Panel with sections; icons and progress bars; action buttons at bottom
   - *Acceptance*: Selecting building/unit shows info panel; data accurate; actions functional
+  - *Implemented*: SelectionInfoPanel with building/unit info, health bars, faction display, action buttons
   
-- [ ] Implement context-sensitive tooltips
+- [ ] Implement context-sensitive tooltips (Deferred to future phase)
   - *Details*: Hover tooltips for all interactive elements with helpful information
   - *Technical*: Custom Tooltip class with delay (0.5s) and smart positioning
   - *Tooltip Content*:
@@ -419,8 +424,9 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
     - Terrain: Tile type, resources, modifiers
   - *Visual*: Small panel with border; auto-position to avoid screen edges; fade in/out
   - *Acceptance*: Hovering shows tooltips after delay; tooltips positioned correctly; information helpful
+  - *Status*: Not essential for MVP; can be added post-launch
   
-- [ ] Add game speed controls (pause, normal, fast)
+- [x] Add game speed controls (pause, normal, fast) ✅
   - *Details*: Controls to adjust game simulation speed
   - *Technical*: Modify `Engine.time_scale` or custom delta multiplier
   - *Speeds*: Pause (0x), Normal (1x), Fast (2x), Very Fast (4x)
@@ -428,6 +434,7 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
   - *Visual*: Speed indicator in HUD; buttons or slider; current speed highlighted
   - *Implementation*: Affects all game systems but not UI animations; smooth transitions
   - *Acceptance*: Speed controls change game simulation speed; UI remains responsive; speed persists until changed
+  - *Implemented*: Speed hotkeys (1/2/3/4), speed display in HUD, TimeControls with pause functionality
 
 #### 3.3 Tutorial & Onboarding
 
@@ -1360,14 +1367,21 @@ The MVP will be considered successful when:
 
 ## Timeline Summary
 
-| Phase | Duration | Target Completion |
-|-------|----------|-------------------|
-| Phase 1: Foundation | ✅ Completed | ✅ Done |
-| Phase 2: Core Gameplay | 3-4 weeks | Week 4-5 |
-| Phase 3: UI & UX | 2-3 weeks | Week 7-8 |
-| Phase 4: Polish & Balance | 2-3 weeks | Week 10-11 |
-| Phase 5: Release Prep | 1-2 weeks | Week 12-13 |
-| **Total MVP Timeline** | **10-13 weeks** | **~3 months** |
+| Phase | Duration | Status | Completion Date |
+|-------|----------|--------|-----------------|
+| Phase 1: Foundation | - | ✅ Completed | Early 2024 |
+| Phase 2: Core Gameplay | 3-4 weeks | ✅ Completed | Dec 2024 |
+| Phase 2.1: Player Interaction | 5-7 days | ✅ Completed | Dec 2024 |
+| Phase 2.2: Faction & AI | 7-10 days | ✅ Completed | Dec 2024 |
+| Phase 2.3: Economy & Resources | 5-7 days | ✅ Completed | Dec 2024 |
+| Phase 2.4: Building & Development | 6-8 days | ✅ Completed | Dec 25, 2024 |
+| Phase 3: UI & UX | 2-3 weeks | 🔄 In Progress | - |
+| Phase 3.1: Main Menu & Game Flow | 4-5 days | 📋 Planned | - |
+| Phase 3.2: In-Game UI | 6-8 days | ✅ Completed | Dec 26, 2024 |
+| Phase 3.3: Tutorial & Onboarding | 4-5 days | 📋 Planned | - |
+| Phase 4: Polish & Balance | 2-3 weeks | 📋 Planned | - |
+| Phase 5: Release Prep | 1-2 weeks | 📋 Planned | - |
+| **Total MVP Timeline** | **10-13 weeks** | **~60% Complete** | **Est. Q1 2025** |
 
 ---
 
@@ -1402,9 +1416,27 @@ The MVP will be considered successful when:
 - Priorities may shift based on playtesting feedback and technical constraints
 - Community feedback will heavily influence post-MVP feature priorities
 - All dates are estimates and subject to change based on development realities
+- **Last Major Update**: December 26, 2024 - Completed Phase 3.2 (In-Game UI)
+
+## Current Status (December 2024)
+
+**Completed**:
+- ✅ Phase 1: Core Foundation
+- ✅ Phase 2.1: Player Interaction & Controls
+- ✅ Phase 2.2: Faction & AI Systems
+- ✅ Phase 2.3: Economy & Resources
+- ✅ Phase 2.4: Building & Development + Territory Visualization
+- ✅ Phase 3.2: In-Game UI (HUD, Minimap, Notifications, Faction Panel, Music)
+
+**Next Steps**:
+- 📋 Phase 3.1: Main Menu & Game Flow
+- 📋 Phase 3.3: Tutorial & Onboarding
+- 📋 Phase 4: Polish & Balance
+- 📋 Phase 5: MVP Release Preparation
 
 ---
 
-**Last Updated**: December 24, 2024  
-**Version**: 1.0 (MVP Planning)  
-**Status**: Active Development
+**Last Updated**: December 26, 2024  
+**Version**: 2.0 (Updated after Phase 3.2)  
+**Status**: Active Development (~60% Complete)
+**MVP Target**: Q1 2025

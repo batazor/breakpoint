@@ -110,6 +110,7 @@ hex_grid_path = NodePath("../HexGrid")
 tile_action_menu_path = NodePath("../TileActionMenu")
 build_menu_path = NodePath("../BuildMenu")
 dialog_panel_path = NodePath("../DialogPanel")
+build_controller_path = NodePath("../BuildController")
 
 [node name="MusicManager" type="Node" parent="."]
 script = ExtResource("17_music_manager")

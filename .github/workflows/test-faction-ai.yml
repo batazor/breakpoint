@@ -85,6 +85,25 @@ jobs:
             exit $exit_code
           fi
       
+      - name: Run NPC Inventory Tests
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --script scripts/tests/test_npc_inventory.gd 2>&1 | tee npc_inventory_test.log
+          exit_code=${PIPESTATUS[0]}
+          
+          cat npc_inventory_test.log
+          
+          if grep -q "✅ All tests passed!" npc_inventory_test.log; then
+            echo "NPC inventory tests passed"
+            exit 0
+          elif grep -q "tests failed" npc_inventory_test.log; then
+            echo "NPC inventory tests failed"
+            exit 1
+          else
+            echo "NPC inventory test execution may have had issues"
+            exit $exit_code
+          fi
+      
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -94,5 +113,6 @@ jobs:
             test_output.log
             river_test.log
             territory_overlay_test.log
+            npc_inventory_test.log
             import.log
           retention-days: 7

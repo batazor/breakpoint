@@ -12,12 +12,14 @@ signal game_paused_toggled(paused: bool)
 @export var tile_action_menu_path: NodePath
 @export var build_menu_path: NodePath
 @export var dialog_panel_path: NodePath
+@export var build_controller_path: NodePath
 
 var hex_grid: Node3D = null
 var tile_action_menu: PopupPanel = null
 var build_menu: CanvasLayer = null
 var unit_controller: UnitController = null
 var dialog_panel: CanvasLayer = null
+var build_controller: Node = null
 
 var _build_mode_active: bool = false
 var _game_paused: bool = false
@@ -30,6 +32,11 @@ func _ready() -> void:
 	tile_action_menu = get_node_or_null(tile_action_menu_path)
 	build_menu = get_node_or_null(build_menu_path)
 	dialog_panel = get_node_or_null(dialog_panel_path)
+	
+	if not build_controller_path.is_empty():
+		build_controller = get_node_or_null(build_controller_path)
+	else:
+		call_deferred("_resolve_build_controller")
 	
 	if hex_grid == null:
 		push_warning("PlayerInteractionController: HexGrid not found")
@@ -44,6 +51,10 @@ func _ready() -> void:
 	_connect_signals()
 	
 	print("PlayerInteractionController initialized")
+
+
+func _resolve_build_controller() -> void:
+	build_controller = get_tree().get_first_node_in_group("build_controller")
 
 
 func _connect_signals() -> void:
@@ -145,6 +156,10 @@ func _on_action_menu_selected(action_id: String) -> void:
 			_show_unit_info()
 		"move_unit":
 			_start_unit_movement()
+		"building_info":
+			_show_building_info()
+		"upgrade_building":
+			_upgrade_building_at_tile()
 
 
 func _toggle_build_mode() -> void:
@@ -313,3 +328,106 @@ func _start_npc_dialog(npc: NPC) -> void:
 	# Start the dialog
 	dialog_manager.start_dialog(npc.id, dialog_tree)
 	print("Started dialog with NPC: %s" % (npc.title if not npc.title.is_empty() else String(npc.id)))
+
+
+func _show_building_info() -> void:
+	## Show information about building at selected tile
+	if hex_grid == null or build_controller == null:
+		return
+	
+	var selected_tile := hex_grid.get_selected_axial()
+	if selected_tile == Vector2i(-1, -1):
+		print("No tile selected")
+		return
+	
+	# Check if there's a building here
+	if not build_controller.has("building_at"):
+		return
+	
+	var building_at: Dictionary = build_controller.get("building_at")
+	if not building_at.has(selected_tile):
+		print("No building at this tile")
+		return
+	
+	var building_id: StringName = building_at.get(selected_tile, StringName(""))
+	var level: int = 1
+	if build_controller.has_method("get_building_level"):
+		level = build_controller.call("get_building_level", selected_tile)
+	
+	# Extract building type
+	var building_type := _extract_building_type(building_id)
+	
+	print("=== Building Info ===")
+	print("Building ID: %s" % building_id)
+	print("Building Type: %s" % building_type)
+	print("Level: %d" % level)
+	print("Position: q=%d r=%d" % [selected_tile.x, selected_tile.y])
+	print("====================")
+
+
+func _upgrade_building_at_tile() -> void:
+	## Upgrade building at selected tile
+	if hex_grid == null or build_controller == null:
+		return
+	
+	var selected_tile := hex_grid.get_selected_axial()
+	if selected_tile == Vector2i(-1, -1):
+		print("No tile selected")
+		return
+	
+	# Check if there's a building here
+	if not build_controller.has("building_at"):
+		return
+	
+	var building_at: Dictionary = build_controller.get("building_at")
+	if not building_at.has(selected_tile):
+		print("No building at this tile")
+		return
+	
+	var building_id: StringName = building_at.get(selected_tile, StringName(""))
+	var building_type := _extract_building_type(building_id)
+	
+	# Get the resource for this building
+	var resource: GameResource = null
+	if build_controller.has_method("_find_resource_by_id"):
+		resource = build_controller.call("_find_resource_by_id", building_type)
+	
+	if resource == null:
+		print("Cannot find resource for building type: %s" % building_type)
+		return
+	
+	# Get player faction
+	var faction_id: StringName = StringName("kingdom")
+	if build_controller.has("faction_player"):
+		faction_id = build_controller.get("faction_player")
+	
+	# Get current level
+	var level: int = 1
+	if build_controller.has_method("get_building_level"):
+		level = build_controller.call("get_building_level", selected_tile)
+	
+	# Check if can upgrade
+	if not resource.can_upgrade(level):
+		print("Building is already at maximum level")
+		return
+	
+	# Try to upgrade
+	var success: bool = false
+	if build_controller.has_method("upgrade_building"):
+		success = build_controller.call("upgrade_building", selected_tile, resource, faction_id)
+	
+	if success:
+		print("Upgrade started for %s (Level %d -> %d)" % [resource.title, level, level + 1])
+		var upgrade_time := resource.get_upgrade_time(level)
+		print("Upgrade will complete in %d hours" % upgrade_time)
+	else:
+		print("Cannot upgrade: insufficient resources or already upgrading")
+
+
+func _extract_building_type(building_id: StringName) -> StringName:
+	## Extract building type from building_id (e.g., "well_1" -> "well")
+	var id_str := str(building_id)
+	var parts := id_str.rsplit("_", false, 1)
+	if parts.size() > 0:
+		return StringName(parts[0])
+	return building_id

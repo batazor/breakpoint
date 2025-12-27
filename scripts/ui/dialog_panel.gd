@@ -118,6 +118,8 @@ func _clear_responses() -> void:
 		return
 	
 	for child in response_container.get_children():
+		if child is Button:
+			child.disabled = true
 		child.queue_free()
 
 

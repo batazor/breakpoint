@@ -1,17 +1,18 @@
-# Breakpoint - MVP Roadmap
+# Breakpoint - Development Roadmap
 
 ## Project Vision
 
-Breakpoint is a strategy simulation game built with Godot 4.5 that combines hex-based world generation, faction management, and dynamic economic systems. The MVP aims to deliver a playable core experience that demonstrates the game's unique mechanics and strategic depth.
+Breakpoint is a strategy simulation game built with Godot 4.5 that combines hex-based world generation, faction management, and dynamic economic systems. This roadmap outlines the active development phases to complete the core gameplay experience.
 
-## MVP Goals
+## Development Goals
 
-The Minimum Viable Product will focus on delivering a complete gameplay loop with:
-- A functional procedurally generated hex world
-- Basic faction interactions and AI
-- Core economic gameplay mechanics
-- Essential UI for player interaction
-- Stable performance and core game systems
+Focus on delivering a complete gameplay loop with:
+- Procedurally generated hex world with multiple biomes
+- Faction AI with strategic behavior
+- Resource management and economy systems
+- Player interaction and building mechanics
+- Polished UI and user experience
+- Balanced and optimized gameplay
 
 ---
 
@@ -860,477 +861,38 @@ The Minimum Viable Product will focus on delivering a complete gameplay loop wit
 
 ---
 
-### Phase 5: MVP Release Preparation (Priority: HIGH)
+## Development Feature Scope
 
-**Timeline**: 1-2 weeks
-
-**Objectives**: Prepare for public release and gather feedback.
-
-#### 5.1 Testing & Quality Assurance
-
-**Timeline**: 3-4 days
-
-**Technical Requirements**:
-- Testing checklist and procedures
-- Bug tracking for release-blocking issues
-- Performance metrics collection
-
-**Implementation Tasks**:
-- [ ] Complete full playthrough testing
-  - *Details*: Play complete games from start to finish on each difficulty
-  - *Test Matrix*:
-    - 3 difficulty levels × 3 world sizes = 9 test games minimum
-    - Test different faction selections
-    - Test different strategies (economic, expansion, aggressive)
-    - Record time to completion, issues encountered, fun factor
-  - *Success Criteria for Each Game*:
-    - Reached victory or defeat condition
-    - No crashes or game-breaking bugs
-    - Save/load worked throughout
-    - AI behaved appropriately
-    - Gameplay felt balanced and engaging
-  - *Documentation*: Record playthrough time, strategy used, final state, any issues
-  - *Acceptance*: All 9+ test games completed successfully; major issues documented and addressed
-  
-- [ ] Test all game modes and features
-  - *Details*: Systematic verification of every feature
-  - *Feature Checklist*:
-    - World generation: All size options work; generates valid worlds
-    - Building system: All 5 building types placeable and functional
-    - Resource system: All 4 resources gather, store, and produce correctly
-    - Faction AI: All 3 factions have working AI
-    - UI systems: All menus, panels, and controls functional
-    - Save/load: Works from any game state
-    - Settings: All options apply correctly
-    - Tutorial: Completable and helpful
-    - Win/lose conditions: All trigger correctly
-  - *Testing Method*: Use checklist; test each item; mark pass/fail; log failures
-  - *Acceptance*: All features pass testing; no untested features in release
-  
-- [ ] Verify performance across target platforms
-  - *Details*: Test on Windows, macOS, and Linux
-  - *Platform-Specific Testing*:
-    - Windows 10/11: Test on AMD and NVIDIA GPUs
-    - macOS: Test on Intel and Apple Silicon Macs
-    - Linux: Test on Ubuntu 20.04/22.04; check Wayland and X11
-  - *Performance Checks*:
-    - Framerate: Minimum 45 FPS, target 60 FPS
-    - Load times: < 10 seconds to main menu, < 15 seconds to game
-    - Memory: < 1 GB RAM usage
-    - Input latency: < 50ms response time
-  - *Platform Issues*:
-    - File path separators (Windows vs Unix)
-    - Audio subsystem differences
-    - Graphics API compatibility (Vulkan, Metal, OpenGL)
-    - Input device handling
-  - *Acceptance*: Game runs on all three platforms; performance meets targets; platform-specific bugs fixed
-  
-- [ ] Test with different world generation seeds
-  - *Details*: Ensure procedural generation creates fair, interesting worlds
-  - *Testing Approach*:
-    - Generate 50+ worlds with random seeds
-    - Automated checks for fairness criteria
-    - Manual review of 10 worlds for quality
-  - *Validation Checks*:
-    - All factions have starting resources nearby
-    - No unreachable areas (landlocked regions)
-    - Resource distribution follows expected ratios
-    - Terrain variety present (not all plains or all mountains)
-    - No generation failures or crashes
-  - *Outlier Handling*: Flag unfair seeds; adjust generation algorithm if > 10% fail fairness
-  - *Acceptance*: 90%+ of generated worlds are fair and playable; generation never crashes
-  
-- [ ] Ensure game can be completed without crashes
-  - *Details*: Stability testing for long play sessions
-  - *Test Scenarios*:
-    - Play for 2+ hours continuous
-    - Complete multiple games in single session
-    - Stress test: 100+ buildings, 50+ units
-    - Memory leak testing: Monitor memory over extended play
-  - *Crash Scenarios to Test*:
-    - Rapidly building/destroying structures
-    - Saving/loading repeatedly
-    - Switching between UI panels rapidly
-    - Extreme camera movements
-    - AI performing many actions simultaneously
-  - *Stability Targets*:
-    - No crashes in 3+ hour sessions
-    - No memory leaks (memory stable after 1 hour)
-    - No degraded performance over time
-  - *Acceptance*: Game stable for extended play; no crashes in normal gameplay; no memory leaks
-
-#### 5.2 Documentation & Assets
-
-**Timeline**: 2-3 days
-
-**Technical Requirements**:
-- Documentation tools (markdown editors)
-- Screen capture and video recording software
-- Graphics editing tools for promotional materials
-
-**Implementation Tasks**:
-- [ ] Finalize README with current features
-  - *Details*: Update README to accurately reflect MVP features
-  - *Sections to Update*:
-    - Feature list: Accurate list of implemented features
-    - Installation: Step-by-step with screenshots
-    - Gameplay: Brief guide to getting started
-    - Controls: Complete control reference
-    - System requirements: Verified minimum and recommended specs
-    - Troubleshooting: Common issues and solutions
-  - *New Sections*:
-    - FAQ: Anticipate common questions
-    - Known Issues: List of minor bugs that aren't release-blocking
-    - Roadmap Link: Reference to ROADMAP.md for future plans
-  - *Acceptance*: README is comprehensive, accurate, and helpful; no outdated information
-  
-- [ ] Create user guide/manual
-  - *Details*: Comprehensive guide for players
-  - *Manual Structure* (15-25 pages):
-    1. Introduction & Getting Started (2 pages)
-    2. Game Concepts & Objectives (2 pages)
-    3. Controls & Interface (3 pages)
-    4. Buildings & Construction (3 pages)
-    5. Resources & Economy (3 pages)
-    6. Factions & Diplomacy (2 pages)
-    7. Strategy Tips (2 pages)
-    8. FAQ & Troubleshooting (2 pages)
-  - *Format*: PDF and web HTML; include screenshots and diagrams
-  - *Visual*: Screenshots for every major feature; annotated UI images; building stat tables
-  - *Accessibility*: Clear language; good contrast; searchable PDF
-  - *Acceptance*: Complete user manual available; covers all game systems; easy to navigate
-  
-- [ ] Prepare screenshots and gameplay videos
-  - *Details*: High-quality promotional and documentation media
-  - *Screenshots Needed* (20-30 total):
-    - Main menu and settings
-    - World generation in progress
-    - Early game setup
-    - Mid-game economy and buildings
-    - Late game with multiple factions
-    - UI panels and features (HUD, minimap, faction panel)
-    - Different biomes and terrain types
-    - Building construction in progress
-    - Victory and defeat screens
-  - *Gameplay Videos* (3-5 minutes each):
-    - Trailer: 60-90 second overview of game features
-    - Tutorial: 5 minute getting started guide
-    - Gameplay: 3 minute showing typical game session
-    - Features: Short clips (30s each) highlighting key features
-  - *Technical Specs*:
-    - Screenshots: 1920x1080 PNG, highest quality settings
-    - Videos: 1080p60, H.264, good compression
-  - *Acceptance*: Professional quality screenshots and videos; showcase game effectively; no UI bugs visible
-  
-- [ ] Write release notes
-  - *Details*: Document for MVP v0.1.0 release
-  - *Release Notes Structure*:
-    - Version number and date
-    - Introduction: What is this release
-    - Key Features: Highlight main systems
-    - Installation Instructions: How to get started
-    - Known Issues: List of non-critical bugs
-    - Future Plans: Brief mention of post-MVP roadmap
-    - Credits: Acknowledge contributors, assets, tools
-  - *Tone*: Professional but excited; honest about MVP scope
-  - *Distribution*: Include in download; post on website/store page
-  - *Acceptance*: Clear, comprehensive release notes; accurately describe MVP state
-  
-- [ ] Create credits and attribution list
-  - *Details*: Acknowledge all contributors and used resources
-  - *Credits Sections*:
-    - Development Team: Developer names and roles
-    - Assets: 3D models, textures, icons sources (with licenses)
-    - Music & Sound: Audio asset sources and composers
-    - Tools: Godot Engine, other development tools
-    - Special Thanks: Testers, supporters, inspirations
-    - Open Source Licenses: Full license texts for used assets
-  - *Format*: In-game credits screen; also in documentation
-  - *Legal*: Ensure all attributions meet license requirements
-  - *Acceptance*: All contributors and assets properly credited; licenses respected
-
-#### 5.3 Distribution Preparation
-
-**Timeline**: 2-3 days
-
-**Technical Requirements**:
-- Export templates for all platforms
-- Code signing certificates (optional but recommended)
-- Distribution platform accounts (itch.io, Steam)
-
-**Implementation Tasks**:
-- [ ] Configure export settings for all target platforms
-  - *Details*: Set up Godot export presets for Windows, macOS, Linux
-  - *Windows Export*:
-    - Executable icon and metadata
-    - Application name and version
-    - Required DLLs bundled
-    - Optional: Code signing for Windows Defender SmartScreen
-  - *macOS Export*:
-    - App bundle configuration
-    - Icon and info.plist settings
-    - Code signing and notarization (required for macOS 10.15+)
-    - Universal binary (Intel + Apple Silicon) or separate builds
-  - *Linux Export*:
-    - Executable permissions set correctly
-    - Desktop entry file for menu integration
-    - Required .so libraries bundled
-    - Support for both X11 and Wayland
-  - *Common Settings*:
-    - Embedded PCK for easier distribution
-    - Texture and audio compression
-    - Strip debug symbols for smaller size
-    - Include only necessary resources
-  - *Acceptance*: Export presets configured; test exports work on fresh systems
-  
-- [ ] Build and test platform-specific exports (Windows, macOS, Linux)
-  - *Details*: Create and verify builds for each platform
-  - *Build Process*:
-    - Export from Godot for each platform
-    - Test on clean systems (VM or physical hardware)
-    - Verify all assets load correctly
-    - Check file sizes are reasonable (target: < 300 MB per platform)
-  - *Testing Checklist Per Platform*:
-    - Game launches without errors
-    - All features work identically to development build
-    - Save files work and persist between launches
-    - Settings save correctly
-    - No missing textures or audio
-    - Performance meets targets
-  - *Package Formats*:
-    - Windows: .exe (optional: installer or portable zip)
-    - macOS: .dmg or .app in zip
-    - Linux: .tar.gz or AppImage
-  - *Acceptance*: All platform builds tested and working; no platform-specific bugs
-  
-- [ ] Create installer/launcher if needed
-  - *Details*: Optional installer for better user experience
-  - *Windows Installer*:
-    - Use Inno Setup or NSIS
-    - Install to Program Files
-    - Create Start Menu shortcuts
-    - Add uninstaller
-    - Optional: DirectX/VC++ redistributables check
-  - *macOS*:
-    - DMG with drag-to-Applications layout
-    - Background image with instructions
-    - Code signed and notarized
-  - *Linux*:
-    - AppImage for universal compatibility
-    - Or .deb/.rpm packages for specific distros
-    - Desktop integration
-  - *Alternative*: Portable builds (no installer) in zip files
-  - *Acceptance*: If implemented, installer works smoothly; if skipped, portable builds clearly documented
-  
-- [ ] Set up itch.io or Steam page (if applicable)
-  - *Details*: Create distribution platform presence
-  - *itch.io Setup* (Recommended for MVP):
-    - Create project page
-    - Upload builds for all platforms
-    - Configure pricing (free or paid)
-    - Add screenshots and gameplay video
-    - Write compelling description
-    - Set up tags and category
-    - Configure download options
-  - *Steam Setup* (Optional, requires more setup):
-    - Register as Steamworks partner ($100 fee)
-    - Create app ID and store page
-    - Configure achievements, cloud saves
-    - Upload builds to Steam depot
-    - Set pricing and regional restrictions
-    - Submit for review
-  - *Page Content*:
-    - Engaging description highlighting unique features
-    - System requirements clearly listed
-    - Screenshots and video embedded
-    - Community features enabled
-  - *Acceptance*: Distribution page live (or N/A if self-hosting); looks professional; easy to download
-  
-- [ ] Prepare marketing materials and descriptions
-  - *Details*: Create compelling content for promotion
-  - *Materials to Prepare*:
-    - Elevator pitch: 1-2 sentence game description
-    - Short description: 100-150 words for store pages
-    - Long description: 300-500 words with features and highlights
-    - Feature list: Bullet points of key features
-    - Press kit: High-res images, logos, fact sheet, press release
-  - *Key Selling Points*:
-    - "Strategy simulation game with procedural hex worlds"
-    - "Manage factions, economy, and diplomacy"
-    - "Built with Godot Engine 4.5"
-    - "Cross-platform: Windows, macOS, Linux"
-    - "Replayable with procedural generation"
-  - *Target Audience*: Strategy game fans, simulation enthusiasts, indie game players
-  - *Distribution Channels*:
-    - GitHub repository description
-    - itch.io/Steam page
-    - Social media posts
-    - Game dev forums
-  - *Acceptance*: Marketing materials complete; compelling and accurate; ready for distribution
-
-#### 5.4 Community & Feedback
-
-**Timeline**: 2-3 days
-
-**Technical Requirements**:
-- Issue tracking system (GitHub Issues)
-- Community platform (Discord, forum, or GitHub Discussions)
-- Analytics/telemetry (optional)
-
-**Implementation Tasks**:
-- [ ] Set up issue tracking system
-  - *Details*: Organize GitHub Issues for bug reports and feature requests
-  - *Issue Templates*:
-    - Bug Report: Template with sections for reproduction steps, expected vs actual behavior, system info, screenshots
-    - Feature Request: Template for suggesting new features with use case and rationale
-    - Question: Template for general help and questions
-  - *Labels to Create*:
-    - Type: bug, enhancement, question, documentation
-    - Priority: critical, high, medium, low
-    - Status: investigating, confirmed, in-progress, fixed, wont-fix
-    - Platform: windows, macos, linux
-    - Area: gameplay, ui, performance, save-system
-  - *Project Board*:
-    - Columns: Backlog, To Do, In Progress, Testing, Done
-    - Organize issues and track progress
-  - *Response Plan*:
-    - Acknowledge new issues within 24-48 hours
-    - Triage and label appropriately
-    - Provide status updates
-  - *Acceptance*: Issue tracking configured; templates clear; ready to receive community feedback
-  
-- [ ] Create community feedback channels
-  - *Details*: Enable players to share feedback and connect
-  - *Platform Options*:
-    - GitHub Discussions: Free, integrated with repo, good for development-focused community
-    - Discord Server: Real-time chat, voice, good for building active community
-    - Reddit: r/breakpointgame or post in r/godot, r/gamedev
-    - Itch.io Community: Built-in forum for itch.io releases
-  - *Recommended Setup* (GitHub Discussions):
-    - Categories: Announcements, General, Feedback, Show & Tell, Q&A
-    - Pin welcome message and FAQ
-    - Link from game and README
-  - *Community Guidelines*:
-    - Be respectful and constructive
-    - Report bugs via Issues, not discussions
-    - Search before posting
-    - Stay on topic
-  - *Moderation Plan*:
-    - Set clear rules
-    - Monitor regularly
-    - Respond to questions and feedback
-  - *Acceptance*: Community channel established; guidelines posted; monitoring plan in place
-  
-- [ ] Prepare post-release support plan
-  - *Details*: Strategy for supporting game after launch
-  - *Support Channels*:
-    - GitHub Issues: Primary for bug reports
-    - Community platform: Help and questions
-    - Email: Direct support (optional)
-  - *Response Time Goals*:
-    - Critical bugs: Within 24 hours
-    - High priority: Within 3 days
-    - General questions: Within 1 week
-  - *Patch Strategy*:
-    - Hotfixes: Critical bugs fixed within days
-    - Minor patches: Weekly or bi-weekly for bug fixes
-    - Feature updates: Monthly based on post-MVP roadmap
-  - *Known Issues Communication*:
-    - Maintain known issues list in documentation
-    - Update regularly with workarounds
-    - Communicate fixes when released
-  - *Acceptance*: Support plan documented; response time goals set; patch strategy defined
-  
-- [ ] Plan for future updates and features
-  - *Details*: Roadmap for post-MVP development
-  - *Immediate Post-Launch* (Weeks 1-4):
-    - Address critical bugs from player reports
-    - Balance adjustments based on feedback
-    - Performance improvements if needed
-    - Quality of life features (UI improvements, QoL features)
-  - *Version 0.2 Planning* (Months 2-3):
-    - Review post-MVP roadmap (from earlier in document)
-    - Prioritize features based on community feedback
-    - Plan: Combat system, tech tree, or multiplayer?
-    - Gather community input on priorities
-  - *Long-term Vision* (6-12 months):
-    - Multiple content updates
-    - Community-requested features
-    - Potential paid DLC or expansions
-    - Modding support consideration
-  - *Community Involvement*:
-    - Feature polls and surveys
-    - Beta testing program for major updates
-    - Community suggestions influence roadmap
-  - *Communication*:
-    - Regular development updates (monthly blog posts or videos)
-    - Transparent about what's being worked on
-    - Manage expectations about timeline
-  - *Acceptance*: Post-launch roadmap drafted; community feedback mechanisms in place; communication plan ready
-
----
-
-## MVP Feature Scope
-
-### Included in MVP
-
-**Core Gameplay**:
+### Core Gameplay Features
 - Procedurally generated hex-based world (multiple biomes)
 - 2-3 playable factions with distinct characteristics
-- Basic AI opponents with strategic behavior
-- Resource gathering and management (3-5 resource types)
-- Building construction and upgrades (5-10 building types)
-- Faction relationships and basic diplomacy
-- Turn-based or real-time strategic gameplay
-- Win/lose conditions
+- AI opponents with strategic behavior
+- Resource gathering and management (food, coal, gold)
+- Building construction (well, mine, lumbermill, fortress, characters)
+- Faction relationships and diplomacy
+- Real-time strategic gameplay with speed controls
+- Territory influence and visualization
 
-**Technical Features**:
+### Technical Features
+- Performance optimization for smooth gameplay
 - Save/load game system
 - Configurable game settings
-- Performance optimization for smooth gameplay
 - Cross-platform support (Windows, macOS, Linux)
 
-**User Experience**:
+### User Experience Features
 - Intuitive UI for all game systems
+- HUD with resource tracking and production rates
+- Minimap for world overview
+- Faction status panels
+- Notification system
 - Tutorial and help system
 - Visual and audio feedback
-- Minimap and game information displays
-
-### Excluded from MVP (Post-Launch)
-
-These features are planned for future updates after MVP release:
-
-- **Advanced Diplomacy**: Complex alliance systems, treaties, trade agreements
-- **Combat System**: Detailed tactical combat, unit types, military strategies
-- **Technology Tree**: Research and technological advancement
-- **Multiple Maps**: Pre-designed scenarios and campaign modes
-- **Multiplayer**: Online or local multiplayer gameplay
-- **Advanced Building**: Complex production chains, city management
-- **Character Progression**: Hero units, leveling, special abilities
-- **Modding Support**: Steam Workshop integration, mod tools
-- **Story/Campaign**: Narrative-driven campaign mode
-- **Advanced Graphics**: Enhanced shaders, weather effects, seasons
 
 ---
 
-## Success Criteria for MVP
+## System Requirements
 
-The MVP will be considered successful when:
-
-1. **Playability**: A complete game can be played from start to finish without critical bugs
-2. **Core Loop**: The resource gathering → building → expansion loop is engaging and balanced
-3. **AI Quality**: AI factions provide meaningful challenge and strategic gameplay
-4. **Performance**: Game runs at 60 FPS on minimum spec hardware (mid-range 5-year-old systems)
-5. **User Experience**: New players can understand and play the game within 15 minutes
-6. **Stability**: No game-breaking bugs or crashes in normal gameplay
-7. **Replayability**: Procedural generation provides varied experiences across multiple playthroughs
-8. **Feedback**: Positive initial player feedback indicating enjoyment and interest in future updates
-
----
-
-## Technical Requirements
-
-### Minimum System Requirements
+### Minimum Specifications
 - **OS**: Windows 10/11, macOS 10.15+, or Ubuntu 20.04+
 - **Processor**: Dual-core 2.5 GHz or equivalent
 - **Memory**: 4 GB RAM
@@ -1340,7 +902,6 @@ The MVP will be considered successful when:
 ### Development Tools
 - Godot Engine 4.5 or later
 - Git for version control
-- CI/CD pipeline for automated builds (optional for MVP)
 
 ---
 
@@ -1348,8 +909,8 @@ The MVP will be considered successful when:
 
 ### Potential Risks
 
-1. **Scope Creep**: Adding too many features delays MVP
-   - *Mitigation*: Strict adherence to MVP scope, defer non-critical features
+1. **Scope Creep**: Adding too many features delays development
+   - *Mitigation*: Strict adherence to roadmap scope, defer non-critical features
 
 2. **Performance Issues**: Complex simulations may impact framerate
    - *Mitigation*: Early performance testing, optimization sprints
@@ -1380,47 +941,13 @@ The MVP will be considered successful when:
 | Phase 3.2: In-Game UI | 6-8 days | ✅ Completed | Dec 26, 2024 |
 | Phase 3.3: Tutorial & Onboarding | 4-5 days | 📋 Planned | - |
 | Phase 4: Polish & Balance | 2-3 weeks | 📋 Planned | - |
-| Phase 5: Release Prep | 1-2 weeks | 📋 Planned | - |
-| **Total MVP Timeline** | **10-13 weeks** | **~60% Complete** | **Est. Q1 2025** |
+| **Total Development Timeline** | **8-11 weeks** | **~70% Complete** | **Est. Q1 2025** |
 
 ---
-
-## Post-MVP Roadmap (Future Versions)
-
-### Version 0.2 - Enhanced Gameplay (Post-MVP)
-- Advanced combat system
-- Technology research tree
-- More factions and building types
-- Enhanced AI behaviors
-- Additional victory conditions
-
-### Version 0.3 - Content Expansion
-- Campaign/story mode
-- Pre-designed scenarios
-- Advanced diplomacy options
-- Character progression system
-- More biomes and world generation options
-
-### Version 0.4 - Multiplayer & Community
-- Online multiplayer support
-- Modding tools and support
-- Steam Workshop integration
-- Community features
-- Leaderboards and achievements
-
----
-
-## Notes
-
-- This roadmap is a living document and will be updated as development progresses
-- Priorities may shift based on playtesting feedback and technical constraints
-- Community feedback will heavily influence post-MVP feature priorities
-- All dates are estimates and subject to change based on development realities
-- **Last Major Update**: December 26, 2024 - Completed Phase 3.2 (In-Game UI)
 
 ## Current Status (December 2024)
 
-**Completed**:
+**Completed Phases**:
 - ✅ Phase 1: Core Foundation
 - ✅ Phase 2.1: Player Interaction & Controls
 - ✅ Phase 2.2: Faction & AI Systems
@@ -1428,15 +955,16 @@ The MVP will be considered successful when:
 - ✅ Phase 2.4: Building & Development + Territory Visualization
 - ✅ Phase 3.2: In-Game UI (HUD, Minimap, Notifications, Faction Panel, Music)
 
+**Active Development**:
+- 🔄 Phase 3: UI & User Experience
+
 **Next Steps**:
 - 📋 Phase 3.1: Main Menu & Game Flow
 - 📋 Phase 3.3: Tutorial & Onboarding
-- 📋 Phase 4: Polish & Balance
-- 📋 Phase 5: MVP Release Preparation
+- 📋 Phase 4: Polish & Balance (gameplay balance, visual polish, performance optimization, bug fixing)
 
 ---
 
-**Last Updated**: December 26, 2024  
-**Version**: 2.0 (Updated after Phase 3.2)  
-**Status**: Active Development (~60% Complete)
-**MVP Target**: Q1 2025
+**Last Updated**: December 27, 2024  
+**Version**: 3.0 (Dev-mode focus)  
+**Status**: Active Development (~70% Complete)

@@ -19,6 +19,11 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
   - ✅ **NEW**: Expansion and defense strategies
 - **Economy System**: Complex economic simulation with resource management
 - **AI NPCs**: Non-player characters with autonomous decision-making
+  - ✅ **NEW**: NPC Dialog System - Interactive conversations with NPCs
+    - Dialog trees with branching conversation paths
+    - Response options that affect relationships and resources
+    - Dynamic dialog content based on NPC faction and relationship status
+    - Typewriter text effect for immersive storytelling
 - **Dynamic World**: Day-night cycle and procedural world generation
 - **Build Mode**: Construction and development mechanics
 - **Building Upgrade System**: Progressive building development ✨ **NEW**
@@ -53,6 +58,8 @@ Breakpoint is a simulation game that combines strategic gameplay elements with p
 
 ### Interaction Controls
 - **Left Click**: Select tile or unit
+- **E / Space**: Talk to selected NPC (opens dialog)
+- **Right Click**: Open action menu
 - **Right Click**: Open action menu for selected tile
   - Build, Upgrade Building, Building Info, Move Unit, Tile Info
 - **B**: Toggle build mode

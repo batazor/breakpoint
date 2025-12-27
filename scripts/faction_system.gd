@@ -72,6 +72,13 @@ func register_npc(npc: NPC) -> void:
 	npc_data[npc.id] = npc
 
 
+func get_npc(npc_id: StringName) -> NPC:
+	## Get NPC data by ID
+	if npc_data.has(npc_id):
+		return npc_data[npc_id]
+	return null
+
+
 func register_building(building_id: StringName, owner_faction: StringName, building_type: StringName, roles: Array[RoleSlot] = [], axial: Vector2i = Vector2i(-1, -1), position: Vector3 = Vector3.ZERO) -> void:
 	if building_id == StringName(""):
 		return

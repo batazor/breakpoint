@@ -29,6 +29,12 @@ func _ready() -> void:
 	hex_grid = get_node_or_null(hex_grid_path)
 	tile_action_menu = get_node_or_null(tile_action_menu_path)
 	build_menu = get_node_or_null(build_menu_path)
+	dialog_panel = get_node_or_null(dialog_panel_path)
+	
+	if not build_controller_path.is_empty():
+		build_controller = get_node_or_null(build_controller_path)
+	else:
+		call_deferred("_resolve_build_controller")
 	
 	if not build_controller_path.is_empty():
 		build_controller = get_node_or_null(build_controller_path)
@@ -88,6 +94,9 @@ func _input(event: InputEvent) -> void:
 	elif event.is_action_pressed("open_action_menu"):
 		_open_action_menu_at_cursor()
 		get_viewport().set_input_as_handled()
+	
+	elif event.is_action_pressed("ui_accept"):  # E or Space key to talk to selected NPC
+		_try_talk_to_selected_npc()
 
 
 func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3) -> void:
@@ -105,7 +114,13 @@ func _on_tile_selected(axial: Vector2i, biome_name: String, surface_pos: Vector3
 	
 	# Check if there's a unit at this tile
 	if unit_controller and unit_controller.select_unit_at_tile(axial):
-		# Unit selected
+		# Unit selected - check if it's an NPC that can talk
+		var selected_unit := unit_controller.get_selected_unit()
+		if selected_unit:
+			var char_brain := selected_unit.get_node_or_null("CharacterBrain")
+			if char_brain and char_brain.has("npc_id") and not String(char_brain.npc_id).is_empty():
+				# This is an NPC character, check for double-click or E key to talk
+				_check_npc_interaction(selected_unit, char_brain.npc_id)
 		return
 	
 	# No unit, deselect if any was selected

@@ -40,13 +40,8 @@ var settings_manager: SettingsManager
 
 
 func _ready() -> void:
-	# Get or create settings manager
-	var root := get_tree().root
-	settings_manager = root.get_node_or_null("SettingsManager")
-	if settings_manager == null:
-		settings_manager = SettingsManager.new()
-		settings_manager.name = "SettingsManager"
-		root.add_child(settings_manager)
+	# Get settings manager from autoload
+	settings_manager = get_node("/root/SettingsManager")
 	
 	# Load current settings
 	_load_settings_to_ui()

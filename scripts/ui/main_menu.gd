@@ -21,9 +21,8 @@ var has_save_game: bool = false
 
 
 func _ready() -> void:
-	# Set up settings manager
-	settings_manager = SettingsManager.new()
-	add_child(settings_manager)
+	# Get settings manager from autoload
+	settings_manager = get_node("/root/SettingsManager")
 	
 	# Check for existing save games
 	has_save_game = _check_for_save_games()

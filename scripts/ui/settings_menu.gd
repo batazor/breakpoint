@@ -175,13 +175,13 @@ func _on_edge_scroll_toggled(pressed: bool) -> void:
 func _on_apply_pressed() -> void:
 	settings_manager.save_settings()
 	settings_manager.apply_settings()
-	emit_signal("closed")
+	closed.emit()
 
 
 func _on_cancel_pressed() -> void:
 	# Reload settings from file
 	settings_manager.load_settings()
-	emit_signal("closed")
+	closed.emit()
 
 
 func _on_defaults_pressed() -> void:

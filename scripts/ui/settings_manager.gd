@@ -125,7 +125,7 @@ func save_settings() -> void:
 func apply_settings() -> void:
 	apply_graphics_settings()
 	apply_audio_settings()
-	emit_signal("settings_changed")
+	settings_changed.emit()
 
 
 ## Apply graphics settings
@@ -146,7 +146,7 @@ func apply_graphics_settings() -> void:
 	else:
 		DisplayServer.window_set_vsync_mode(DisplayServer.VSYNC_DISABLED)
 	
-	emit_signal("graphics_settings_changed")
+	graphics_settings_changed.emit()
 
 
 ## Apply audio settings
@@ -162,7 +162,7 @@ func apply_audio_settings() -> void:
 		var master_db := linear_to_db(master_volume)
 		AudioServer.set_bus_volume_db(master_bus_index, master_db)
 	
-	emit_signal("audio_settings_changed", master_volume, music_volume, sfx_volume)
+	audio_settings_changed.emit(master_volume, music_volume, sfx_volume)
 
 
 ## Reset to default settings

@@ -58,7 +58,7 @@ func hide_pause_menu() -> void:
 
 func _on_resume_pressed() -> void:
 	hide_pause_menu()
-	emit_signal("resume_requested")
+	resume_requested.emit()
 
 
 func _on_settings_pressed() -> void:

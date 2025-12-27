@@ -29,13 +29,13 @@ func _ready() -> void:
 func save_game(slot: int = 1) -> bool:
 	if slot < 0 or slot >= MAX_SAVE_SLOTS:
 		push_error("SaveLoadSystem: Invalid save slot: %d" % slot)
-		emit_signal("save_failed", "Invalid save slot")
+		save_failed.emit("Invalid save slot")
 		return false
 	
 	var save_data := _collect_save_data()
 	if save_data.is_empty():
 		push_error("SaveLoadSystem: Failed to collect save data")
-		emit_signal("save_failed", "Failed to collect save data")
+		save_failed.emit("Failed to collect save data")
 		return false
 	
 	var save_path := _get_save_path(slot)
@@ -43,7 +43,7 @@ func save_game(slot: int = 1) -> bool:
 	if file == null:
 		var error := FileAccess.get_open_error()
 		push_error("SaveLoadSystem: Failed to open save file for writing: %d" % error)
-		emit_signal("save_failed", "Failed to open save file")
+		save_failed.emit("Failed to open save file")
 		return false
 	
 	# Add metadata
@@ -60,7 +60,7 @@ func save_game(slot: int = 1) -> bool:
 	
 	current_save_slot = slot
 	print("SaveLoadSystem: Game saved to slot %d" % slot)
-	emit_signal("save_completed", slot)
+	save_completed.emit(slot)
 	return true
 
 
@@ -68,20 +68,20 @@ func save_game(slot: int = 1) -> bool:
 func load_game(slot: int = 1) -> bool:
 	if slot < 0 or slot >= MAX_SAVE_SLOTS:
 		push_error("SaveLoadSystem: Invalid load slot: %d" % slot)
-		emit_signal("load_failed", "Invalid load slot")
+		load_failed.emit("Invalid load slot")
 		return false
 	
 	var save_path := _get_save_path(slot)
 	if not FileAccess.file_exists(save_path):
 		push_error("SaveLoadSystem: Save file does not exist: %s" % save_path)
-		emit_signal("load_failed", "Save file does not exist")
+		load_failed.emit("Save file does not exist")
 		return false
 	
 	var file := FileAccess.open(save_path, FileAccess.READ)
 	if file == null:
 		var error := FileAccess.get_open_error()
 		push_error("SaveLoadSystem: Failed to open save file for reading: %d" % error)
-		emit_signal("load_failed", "Failed to open save file")
+		load_failed.emit("Failed to open save file")
 		return false
 	
 	var json_string := file.get_as_text()
@@ -91,23 +91,23 @@ func load_game(slot: int = 1) -> bool:
 	var parse_result := json.parse(json_string)
 	if parse_result != OK:
 		push_error("SaveLoadSystem: Failed to parse save file JSON")
-		emit_signal("load_failed", "Failed to parse save file")
+		load_failed.emit("Failed to parse save file")
 		return false
 	
 	var save_data: Dictionary = json.data
 	if not save_data.has("metadata"):
 		push_error("SaveLoadSystem: Save file missing metadata")
-		emit_signal("load_failed", "Invalid save file format")
+		load_failed.emit("Invalid save file format")
 		return false
 	
 	if not _restore_save_data(save_data):
 		push_error("SaveLoadSystem: Failed to restore save data")
-		emit_signal("load_failed", "Failed to restore save data")
+		load_failed.emit("Failed to restore save data")
 		return false
 	
 	current_save_slot = slot
 	print("SaveLoadSystem: Game loaded from slot %d" % slot)
-	emit_signal("load_completed", slot)
+	load_completed.emit(slot)
 	return true
 
 
@@ -130,7 +130,7 @@ func auto_save() -> bool:
 func load_latest_game() -> bool:
 	var latest_slot := _find_latest_save_slot()
 	if latest_slot < 0:
-		emit_signal("load_failed", "No save files found")
+		load_failed.emit("No save files found")
 		return false
 	return load_game(latest_slot)
 

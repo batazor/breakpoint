@@ -74,8 +74,8 @@ func _on_start_pressed() -> void:
 		"difficulty": selected_difficulty,
 		"faction": selected_faction
 	}
-	emit_signal("game_started", options)
+	game_started.emit(options)
 
 
 func _on_cancel_pressed() -> void:
-	emit_signal("cancelled")
+	cancelled.emit()

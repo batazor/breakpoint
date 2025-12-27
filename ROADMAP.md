@@ -861,6 +861,160 @@ Focus on delivering a complete gameplay loop with:
 
 ---
 
+### Phase 5: Quest & Narrative System (Priority: HIGH) 📋 (Planned)
+
+**Timeline**: 10-11 weeks
+
+**Objectives**: Implement quest system and narrative content to provide structured gameplay progression and engaging storytelling.
+
+**Documentation**: See [QUEST_SYSTEM.md](QUEST_SYSTEM.md), [GAME_PLOT.md](GAME_PLOT.md), and [QUEST_ROADMAP.md](QUEST_ROADMAP.md) for complete details.
+
+#### 5.1 Core Quest Infrastructure
+
+**Timeline**: 1.5-2 weeks
+
+**Technical Requirements**:
+- Quest resource classes (Quest, QuestObjective)
+- Quest state management system
+- Save/load serialization for quests
+- Integration with existing systems
+
+**Implementation Tasks**:
+- [ ] Create Quest and QuestObjective resource classes
+  - *Details*: Core data structures for quest system
+  - *Technical*: `scripts/quests/quest.gd` and `scripts/quests/quest_objective.gd`
+  - *Features*: Quest states (not started, active, completed, failed), objective types (build, gather, talk, explore, relationship, survive)
+  - *Acceptance*: Quest classes functional with all required properties and methods
+
+- [ ] Implement QuestManager singleton
+  - *Details*: Central system for managing all quests
+  - *Technical*: `scripts/quests/quest_manager.gd` autoloaded singleton
+  - *Features*: Quest registration, state tracking, automatic objective updates, reward distribution
+  - *Integration*: Connect to BuildController, FactionSystem, DialogManager for automatic progress tracking
+  - *Acceptance*: QuestManager tracks active/completed quests; objectives update automatically
+
+- [ ] Create basic quest UI components
+  - *Details*: Quest log panel and HUD tracker
+  - *Technical*: `scenes/ui/quest_log_panel.tscn` and `scenes/ui/quest_tracker.tscn`
+  - *Features*: Active quests display, objective progress bars, quest descriptions, rewards preview
+  - *Visual*: Quest log accessible via hotkey (Q); tracker shows current objectives in HUD
+  - *Acceptance*: Players can view active quests and track progress
+
+#### 5.2 Tutorial & Early Game Quests
+
+**Timeline**: 1 week
+
+**Content**: 5 tutorial quests introducing core mechanics
+
+**Quests to Implement**:
+- "Establishing Your Settlement" - First fortress and NPCs
+- "Resource Basics" - Build resource buildings and gather materials
+- "Meeting the Neighbors" - Introduction to factions
+- "The Hexagonal World" - Exploration and map discovery
+- "Choose Your Path" - Faction alignment choice
+
+**Acceptance**: New players guided through game mechanics via quest system
+
+#### 5.3 Main Story - Act I: "A New Beginning"
+
+**Timeline**: 1.5 weeks
+
+**Content**: 7 quests establishing player presence and revealing world lore
+
+**Quest Chains**:
+- Main storyline: Building foundations → First contact → Hexagonal mystery → Establishing power
+- Faction-specific: Kingdom trade route, Horde trial of strength, Nomad sacred sites
+
+**Acceptance**: Complete Act I story arc with branching faction paths
+
+#### 5.4 Side Quests & Repeatable Content
+
+**Timeline**: 1 week
+
+**Content**: 4 side quests + repeatable daily/weekly quest system
+
+**Side Quests**:
+- "The Lost Caravan" - Investigation and moral choice
+- "The Singing Stones" - Exploration and lore discovery
+- "The Deserter" - Diplomatic consequences
+- "The Blacksmith's Legacy" - Crafting chain
+
+**Repeatable System**:
+- Daily quests: Resource gathering challenges
+- Weekly quests: Exploration and building objectives
+
+**Acceptance**: Varied content for replayability and sustained engagement
+
+#### 5.5 Main Story - Act II: "Echoes of the Past"
+
+**Timeline**: 2 weeks
+
+**Content**: 6 quests with major branching narrative
+
+**Quest Chain**:
+- The Awakening - Discover ancient technology
+- Sharing or Hoarding - Major choice affecting all relationships
+- Factional Tensions - Alliance, balance, or conquest path
+- The Prophet's Warning - Revelation of imprisoned threat
+
+**Features**: Multiple paths based on player choices, significant consequences
+
+**Acceptance**: Act II story complete with 3 distinct narrative branches
+
+#### 5.6 Main Story - Act III & Endgame: "Breakpoint"
+
+**Timeline**: 2 weeks
+
+**Content**: Finale quests with 3 distinct endings + 3 alternative victory conditions
+
+**Main Endings**:
+- Unity Ending - Cooperation and restoration
+- Conquest Ending - Domination through force
+- Balance Ending - Harmony with chaos
+
+**Victory Conditions**:
+- Master of Commerce - Economic supremacy
+- The Peacemaker - Diplomatic unity
+- Keeper of Legacy - Cultural preservation
+
+**Acceptance**: Complete narrative conclusion with multiple ending paths
+
+#### 5.7 Polish & Content Enhancement
+
+**Timeline**: 1 week
+
+**Tasks**:
+- Quest system polish and UX improvements
+- Content review for consistency and balance
+- Quest reward balancing
+- Integration testing and bug fixes
+
+**Acceptance**: Quest system polished and ready for release
+
+#### Story & World Building
+
+**Setting**: The Fractured Lands, 347 years after "The Sundering"
+- Post-apocalyptic medieval fantasy world
+- Hexagonal land patterns from catastrophic magical event
+- Three factions rebuilding civilization
+
+**Factions**:
+1. **Kingdom of Meridian** - Diplomacy and order (Queen Aeliana)
+2. **Crimson Horde** - Military strength (Warlord Kargoth)
+3. **Nomadic Tribes** - Balance and adaptation (Sage Miriam)
+
+**Main Plot**: Ancient evil sealed during Sundering begins breaking free; player must choose how to respond (unity, domination, or balance)
+
+**Features**:
+- 40+ unique quests
+- 3-act story structure
+- Branching narrative with meaningful choices
+- 6 victory paths (3 story endings + 3 alternative victories)
+- Rich lore and world-building
+- Character-driven storytelling through NPCs
+
+---
+
 ## Development Feature Scope
 
 ### Core Gameplay Features
@@ -872,6 +1026,9 @@ Focus on delivering a complete gameplay loop with:
 - Faction relationships and diplomacy
 - Real-time strategic gameplay with speed controls
 - Territory influence and visualization
+- Quest system with 40+ quests (main story, side quests, faction quests)
+- Branching narrative with multiple endings
+- Character-driven storytelling through NPCs
 
 ### Technical Features
 - Performance optimization for smooth gameplay
@@ -941,7 +1098,8 @@ Focus on delivering a complete gameplay loop with:
 | Phase 3.2: In-Game UI | 6-8 days | ✅ Completed | Dec 26, 2024 |
 | Phase 3.3: Tutorial & Onboarding | 4-5 days | 📋 Planned | - |
 | Phase 4: Polish & Balance | 2-3 weeks | 📋 Planned | - |
-| **Total Development Timeline** | **8-11 weeks** | **~70% Complete** | **Est. Q1 2025** |
+| Phase 5: Quest & Narrative | 10-11 weeks | 📋 Planned | - |
+| **Total Development Timeline** | **20-25 weeks** | **~60% Complete** | **Est. Q2 2025** |
 
 ---
 
@@ -958,13 +1116,21 @@ Focus on delivering a complete gameplay loop with:
 **Active Development**:
 - 🔄 Phase 3: UI & User Experience
 
+**Documentation Complete**:
+- 📚 Phase 5: Quest & Narrative System design documents ready
+  - [QUEST_SYSTEM.md](QUEST_SYSTEM.md) - Technical architecture (40+ quests)
+  - [GAME_PLOT.md](GAME_PLOT.md) - Story and world building (3-act structure)
+  - [QUEST_ROADMAP.md](QUEST_ROADMAP.md) - Implementation timeline (10-11 weeks)
+  - [QUEST_EXAMPLES.md](QUEST_EXAMPLES.md) - Code examples and templates
+
 **Next Steps**:
 - 📋 Phase 3.1: Main Menu & Game Flow
 - 📋 Phase 3.3: Tutorial & Onboarding
 - 📋 Phase 4: Polish & Balance (gameplay balance, visual polish, performance optimization, bug fixing)
+- 📋 Phase 5: Quest & Narrative System (implementation after core polish)
 
 ---
 
 **Last Updated**: December 27, 2024  
-**Version**: 3.0 (Dev-mode focus)  
-**Status**: Active Development (~70% Complete)
+**Version**: 3.1 (Quest System Documentation Added)  
+**Status**: Active Development (~60% Complete, Quest System Designed)

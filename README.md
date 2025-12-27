@@ -204,10 +204,15 @@ Tests are automatically run via GitHub Actions on push and pull requests.
 - 📋 **Phase 3.1**: Main Menu & Game Flow (Planned)
 - 📋 **Phase 3.3**: Tutorial & Onboarding (Planned)
 - 📋 **Phase 4**: Polish & Balance (Planned)
-- 📋 **Phase 5**: MVP Release Preparation (Planned)
+- 📚 **Phase 5**: Quest & Narrative System (Designed) - [Details](QUEST_SYSTEM.md)
+  - 40+ quests across 3-act story structure
+  - Branching narrative with multiple endings
+  - Quest system integrated with dialog and faction systems
+  - Complete world-building: The Fractured Lands post-Sundering
+  - See also: [GAME_PLOT.md](GAME_PLOT.md), [QUEST_ROADMAP.md](QUEST_ROADMAP.md)
 
-**Current Status**: ~60% complete toward MVP  
-**Target Release**: Q1 2025
+**Current Status**: ~60% complete toward MVP (Quest system designed, ready for implementation)  
+**Target Release**: Q2 2025
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.
 

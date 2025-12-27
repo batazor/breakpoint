@@ -11,20 +11,31 @@ class_name DialogPanel
 
 var dialog_manager: DialogManager = null
 var typewriter_active: bool = false
+var typewriter_timer: Timer = null  # Track typewriter timer to cancel it if needed
 var full_text: String = ""
 var current_char_index: int = 0
-var typewriter_speed: float = 0.05  # seconds per character
+@export var typewriter_speed: float = 0.05  # seconds per character (configurable)
 
 
 func _ready() -> void:
 	hide_panel()
 	
-	# Find or create dialog manager
+	# Find dialog manager (should be created by the main scene or game manager)
 	dialog_manager = get_node_or_null("/root/Main/DialogManager")
 	if not dialog_manager:
-		dialog_manager = DialogManager.new()
-		dialog_manager.name = "DialogManager"
-		get_node("/root/Main").add_child(dialog_manager)
+		# Only create if it truly doesn't exist, to avoid multiple instances
+		var main_node = get_node_or_null("/root/Main")
+		if main_node:
+			# Check if another DialogPanel already created the manager
+			dialog_manager = main_node.get_node_or_null("DialogManager")
+			if not dialog_manager:
+				# Safe to create now
+				dialog_manager = DialogManager.new()
+				dialog_manager.name = "DialogManager"
+				main_node.add_child(dialog_manager)
+				print("DialogPanel: Created DialogManager singleton")
+			else:
+				print("DialogPanel: Using existing DialogManager")
 	
 	# Connect signals
 	if dialog_manager:
@@ -60,6 +71,9 @@ func _on_dialog_line_changed(dialog_line: DialogLine) -> void:
 	if not dialog_line:
 		return
 	
+	# Cancel any existing typewriter effect
+	_cancel_typewriter()
+	
 	# Set speaker name
 	if speaker_label:
 		speaker_label.text = dialog_line.speaker_name
@@ -91,25 +105,44 @@ func _on_dialog_line_changed(dialog_line: DialogLine) -> void:
 
 func _on_dialog_ended() -> void:
 	## Handle dialog end
+	_cancel_typewriter()
 	hide_panel()
+
+
+func _cancel_typewriter() -> void:
+	## Cancel any active typewriter effect
 	typewriter_active = false
+	if typewriter_timer and is_instance_valid(typewriter_timer):
+		typewriter_timer.stop()
+		typewriter_timer.queue_free()
+		typewriter_timer = null
 
 
 func _start_typewriter() -> void:
-	## Start typewriter effect for dialog text
+	## Start typewriter effect for dialog text using a while loop instead of recursion
 	if not typewriter_active:
 		return
 	
-	if current_char_index < full_text.length():
+	# Use a while loop to avoid recursive stack buildup
+	while typewriter_active and current_char_index < full_text.length():
 		if dialog_label:
 			dialog_label.text = full_text.left(current_char_index + 1)
 		current_char_index += 1
 		
-		# Schedule next character
-		await get_tree().create_timer(typewriter_speed).timeout
-		_start_typewriter()
-	else:
-		typewriter_active = false
+		# Create a new timer for the delay
+		if typewriter_timer:
+			typewriter_timer.queue_free()
+		typewriter_timer = Timer.new()
+		typewriter_timer.one_shot = true
+		typewriter_timer.wait_time = typewriter_speed
+		add_child(typewriter_timer)
+		typewriter_timer.start()
+		await typewriter_timer.timeout
+	
+	typewriter_active = false
+	if typewriter_timer:
+		typewriter_timer.queue_free()
+		typewriter_timer = null
 
 
 func _clear_responses() -> void:

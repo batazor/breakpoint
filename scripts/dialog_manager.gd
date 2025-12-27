@@ -135,7 +135,32 @@ func _apply_resource_effect(resource_id: String, amount: int) -> void:
 	## Apply a resource change effect
 	# Get player faction and add resources
 	var faction_system := get_node_or_null("/root/Main/FactionSystem")
-	if faction_system and faction_system.has_method("add_resource"):
-		# Assuming player is faction 0
-		faction_system.add_resource(&"player", StringName(resource_id), amount)
-		print("Dialog effect: Added %d %s" % [amount, resource_id])
+	if not faction_system or not faction_system.has_method("add_resource"):
+		push_warning("FactionSystem or add_resource method not available; cannot apply resource effect.")
+		return
+	
+	# Prevent resource values from going negative when applying costs (negative amounts)
+	if amount < 0:
+		var resource_name := StringName(resource_id)
+		var faction_id := &"player"
+		
+		if faction_system.has_method("get_resource"):
+			var current_amount = faction_system.get_resource(faction_id, resource_name)
+			if typeof(current_amount) == TYPE_INT or typeof(current_amount) == TYPE_FLOAT:
+				if current_amount < -amount:
+					# Not enough resources to pay this cost; skip applying the effect
+					push_warning("Insufficient %s to apply dialog cost %d (current: %s)." % [resource_id, amount, str(current_amount)])
+					return
+			else:
+				push_warning("get_resource returned non-numeric value for %s; skipping negative resource effect." % resource_id)
+				return
+		else:
+			# Without a way to query current resources, avoid applying negative changes to prevent negative totals
+			push_warning("Cannot validate negative resource effect for %s (no get_resource); skipping effect." % resource_id)
+			return
+	
+	# At this point either amount is positive, or we verified that the player has enough to cover the cost
+	var resource_name_to_apply := StringName(resource_id)
+	var faction_id_to_apply := &"player"
+	faction_system.add_resource(faction_id_to_apply, resource_name_to_apply, amount)
+	print("Dialog effect: Applied %d %s" % [amount, resource_id])

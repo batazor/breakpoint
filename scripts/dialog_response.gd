@@ -5,6 +5,5 @@ class_name DialogResponse
 
 @export var text: String = ""
 @export var next_dialog_id: String = ""
-@export var condition: String = ""  # Optional condition to show this response
 @export var effect: String = ""  # Optional effect when chosen (e.g., "add_gold:10")
 @export var relationship_change: int = 0  # Change to NPC relationship

@@ -62,12 +62,14 @@ var resource_axials: Array[Vector2i] = []
 var faction_system: Node
 var fortress_owner: Dictionary = {} # axial -> faction_id
 var building_at: Dictionary = {} # axial -> building_id
+var building_level: Dictionary = {} # axial_key -> int (level of building at that position)
 var building_counter: Dictionary = {} # res_id -> int
 var unit_counter: Dictionary = {} # unit_type -> int
 var _current_owner_override: StringName = StringName("")
 var _default_factions_registered: bool = false
 var _construction_reserved: Dictionary = {} # axial_key -> true
 var _build_queue: Array = [] # Array[Dictionary] {res_id, axial, remaining_hours, owner}
+var _upgrade_queue: Array = [] # Array[Dictionary] {axial, building_id, target_level, remaining_hours, owner}
 var _day_night: DayNightCycle
 const HEX_DIRS: Array[Vector2i] = [
 	Vector2i(1, 0),
@@ -452,6 +454,9 @@ func _register_building_if_needed(resource: GameResource, axial: Vector2i, pos: 
 	building_counter[resource.id] = count
 	var building_id: StringName = StringName("%s_%d" % [resource.id, count])
 	building_at[axial] = building_id
+	# Initialize building level to 1
+	var key := _axial_key(axial)
+	building_level[key] = 1
 	var owner_id: StringName = _current_owner_override
 	if owner_id == StringName(""):
 		owner_id = _faction_for_resource(resource.id)
@@ -569,6 +574,7 @@ func _resolve_day_night() -> void:
 
 func _on_game_hour_passed(_day: int, _hour: int) -> void:
 	_process_build_queue()
+	_process_upgrade_queue(1.0)  # 1 hour passed
 
 
 func _process_build_queue() -> void:
@@ -596,6 +602,18 @@ func get_build_queue_for_faction(faction_id: StringName) -> Array[Dictionary]:
 	if _build_queue.is_empty():
 		return result
 	for entry in _build_queue:
+		var entry_dict: Dictionary = entry as Dictionary
+		var owner: StringName = entry_dict.get("owner", faction_player) as StringName
+		if owner == faction_id:
+			result.append(entry_dict.duplicate())
+	return result
+
+
+func get_upgrade_queue_for_faction(faction_id: StringName) -> Array[Dictionary]:
+	var result: Array[Dictionary] = []
+	if _upgrade_queue.is_empty():
+		return result
+	for entry in _upgrade_queue:
 		var entry_dict: Dictionary = entry as Dictionary
 		var owner: StringName = entry_dict.get("owner", faction_player) as StringName
 		if owner == faction_id:
@@ -991,6 +1009,98 @@ func _axial_distance(a: Vector2i, b: Vector2i) -> int:
 	var dr: int = abs(a.y - b.y)
 	var ds: int = abs((-a.x - a.y) - (-b.x - b.y))
 	return max(dq, max(dr, ds))
+
+
+## Get the current level of a building at the given axial position
+func get_building_level(axial: Vector2i) -> int:
+	var key := _axial_key(axial)
+	return int(building_level.get(key, 1))
+
+
+## Check if a building at the given position can be upgraded
+func can_upgrade_building(axial: Vector2i, resource: GameResource, owner_id: StringName) -> bool:
+	if resource == null:
+		return false
+	
+	var key := _axial_key(axial)
+	if not building_at.has(axial):
+		return false
+	
+	var current_level := get_building_level(axial)
+	if not resource.can_upgrade(current_level):
+		return false
+	
+	# Check if not already upgrading
+	for upgrade_data in _upgrade_queue:
+		if upgrade_data.get("axial", Vector2i(-1, -1)) == axial:
+			return false
+	
+	# Check upgrade cost
+	var upgrade_cost := resource.get_upgrade_cost(current_level)
+	if not _can_pay_cost(owner_id, upgrade_cost):
+		return false
+	
+	return true
+
+
+## Start upgrading a building at the given position
+func upgrade_building(axial: Vector2i, resource: GameResource, owner_id: StringName) -> bool:
+	if not can_upgrade_building(axial, resource, owner_id):
+		return false
+	
+	var current_level := get_building_level(axial)
+	var upgrade_cost := resource.get_upgrade_cost(current_level)
+	var upgrade_time := resource.get_upgrade_time(current_level)
+	
+	# Pay the upgrade cost
+	_pay_cost(owner_id, upgrade_cost)
+	
+	# Add to upgrade queue
+	_upgrade_queue.append({
+		"axial": axial,
+		"building_id": resource.id,
+		"target_level": current_level + 1,
+		"remaining_hours": upgrade_time,
+		"owner": owner_id,
+	})
+	
+	return true
+
+
+## Process upgrade queue (called by day-night cycle)
+func _process_upgrade_queue(hours_passed: float) -> void:
+	var completed: Array = []
+	
+	for i in range(_upgrade_queue.size()):
+		var upgrade_data: Dictionary = _upgrade_queue[i]
+		var remaining: float = float(upgrade_data.get("remaining_hours", 0.0))
+		remaining -= hours_passed
+		
+		if remaining <= 0.0:
+			completed.append(i)
+			_complete_upgrade(upgrade_data)
+		else:
+			upgrade_data["remaining_hours"] = remaining
+	
+	# Remove completed upgrades (reverse order to preserve indices)
+	for i in range(completed.size() - 1, -1, -1):
+		_upgrade_queue.remove_at(completed[i])
+
+
+## Complete a building upgrade
+func _complete_upgrade(upgrade_data: Dictionary) -> void:
+	var axial: Vector2i = upgrade_data.get("axial", Vector2i(-1, -1))
+	var target_level: int = int(upgrade_data.get("target_level", 1))
+	
+	if axial.x < 0 or axial.y < 0:
+		return
+	
+	var key := _axial_key(axial)
+	building_level[key] = target_level
+	
+	# Notify economy system to update production rates
+	if faction_system != null and faction_system.has_signal("building_upgraded"):
+		faction_system.emit_signal("building_upgraded", axial, target_level)
 
 
 func _is_axial_in_list(axial: Vector2i, list: Array[Vector2i]) -> bool:

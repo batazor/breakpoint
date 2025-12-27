@@ -160,7 +160,11 @@ func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 	
-	# Skip typewriter or advance on space/enter
+	# Skip typewriter or advance on space/enter, but only when there are no responses
 	if event.is_action_pressed("ui_accept"):
+		# If there are response buttons, let them handle ui_accept (e.g. Space/Enter to select)
+		if response_container and response_container.get_child_count() > 0:
+			return
+		
 		_on_continue_pressed()
 		get_viewport().set_input_as_handled()

@@ -1,9 +1,9 @@
-extends Node
+extends SceneTree
 
 ## Test script for Quest System Classes
 ## Run with: godot --headless --script scripts/tests/test_quest_system.gd
 
-func _ready() -> void:
+func _initialize() -> void:
 	print("\n=== Quest System Classes Test ===\n")
 	
 	var passed := 0
@@ -95,10 +95,10 @@ func _ready() -> void:
 	
 	if failed == 0:
 		print("\n✓ All tests passed!")
-		get_tree().quit(0)
+		quit(0)
 	else:
 		print("\n✗ Some tests failed!")
-		get_tree().quit(1)
+		quit(1)
 
 
 func test_quest_objective_creation() -> bool:

@@ -35,8 +35,12 @@ func get_progress() -> float:
 	
 	match type:
 		"build", "gather", "talk", "explore", "defeat":
+			if count == 0:
+				push_warning("QuestObjective '%s' has count = 0, this may be a configuration error" % id)
 			return float(current) / float(max(count, 1))
 		"relationship", "survive":
+			if value == 0.0:
+				push_warning("QuestObjective '%s' has value = 0.0, this may be a configuration error" % id)
 			return float(current) / float(max(value, 1.0))
 		_:
 			return 0.0

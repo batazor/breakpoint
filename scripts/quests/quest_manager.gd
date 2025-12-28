@@ -13,6 +13,12 @@ signal objective_completed(quest: Quest, objective: QuestObjective)
 var active_quests: Array[Quest] = []
 var completed_quests: Array[StringName] = []
 var available_quests: Dictionary = {}  # quest_id -> Quest
+var player_faction_id: StringName = &"kingdom"  # Default player faction, can be configured
+
+
+func set_player_faction(faction_id: StringName) -> void:
+	## Set the player's faction ID for quest tracking
+	player_faction_id = faction_id
 
 
 func _ready() -> void:
@@ -151,9 +157,6 @@ func _give_rewards(quest: Quest) -> void:
 	if not faction_system:
 		return
 	
-	# TODO: Get player faction ID from game configuration
-	var player_faction_id := &"kingdom"
-	
 	for resource_id in quest.rewards:
 		var amount: int = quest.rewards[resource_id]
 		if faction_system.has_method("add_resource"):
@@ -207,8 +210,8 @@ func _on_building_placed(building_id: String, position: Vector2i) -> void:
 
 func _on_resources_changed(faction_id: StringName, resource_id: StringName, amount: int) -> void:
 	## Track resource gathering objectives
-	# TODO: Get player faction ID from game configuration instead of hardcoded value
-	if faction_id != &"kingdom":
+	# Check if this is the player's faction
+	if faction_id != player_faction_id:
 		return
 	
 	for quest in active_quests:
@@ -218,8 +221,8 @@ func _on_resources_changed(faction_id: StringName, resource_id: StringName, amou
 				var faction_system = get_node_or_null("/root/Main/FactionSystem")
 				if faction_system and faction_system.has_method("resource_amount"):
 					var current_amount = faction_system.resource_amount(faction_id, resource_id)
-					if current_amount >= objective.count:
-						objective.current = objective.count
+					# Update progress - track actual amount up to the target
+					objective.current = min(current_amount, objective.count)
 					quest_updated.emit(quest)
 					
 					if objective.is_completed():

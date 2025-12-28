@@ -9,6 +9,12 @@ signal quest_generated(quest: Quest)
 var quest_templates: Dictionary = {}  # template_id -> QuestTemplate
 var last_quest_time: float = 0.0
 var min_quest_interval: float = 300.0  # 5 minutes between auto-generated quests
+var player_faction_id: StringName = &"kingdom"  # Default player faction, can be configured
+
+
+func set_player_faction(faction_id: StringName) -> void:
+	## Set the player's faction ID for quest generation filtering
+	player_faction_id = faction_id
 
 
 func _ready() -> void:
@@ -53,7 +59,7 @@ func _on_resources_changed(faction_id: StringName, resource_id: StringName, amou
 		return
 	
 	# Only generate quests for player faction
-	if faction_id != &"kingdom":
+	if faction_id != player_faction_id:
 		return
 	
 	if not faction_system.has_method("resource_amount"):

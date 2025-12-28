@@ -12,6 +12,7 @@ class_name QuestTemplate
 @export var faction_id: StringName = &""
 
 var config: Dictionary = {}
+var _quest_counter: int = 0  # Counter for unique quest IDs
 
 
 func _init(initial_config: Dictionary = {}) -> void:
@@ -33,7 +34,9 @@ func _init(initial_config: Dictionary = {}) -> void:
 func instantiate(context: Dictionary) -> Quest:
 	## Create a quest instance from this template with given context
 	var quest = Quest.new()
-	quest.id = StringName("dynamic_%d" % Time.get_ticks_msec())
+	# Generate unique ID using counter and template info to avoid collisions
+	_quest_counter += 1
+	quest.id = StringName("quest_%s_%d_%d" % [objective_type, Time.get_ticks_msec(), _quest_counter])
 	quest.category = category
 	
 	# Fill in template placeholders with context

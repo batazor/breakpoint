@@ -33,19 +33,22 @@ func assign_quest_to_npc(npc_id: StringName, quest_id: StringName) -> bool:
 		push_error("FactionSystem not found")
 		return false
 	
-	var npc = faction_system.get_npc(npc_id) if faction_system.has_method("get_npc") else null
+	if not faction_system.has_method("get_npc"):
+		push_error("FactionSystem does not support get_npc method")
+		return false
+	
+	var npc = faction_system.get_npc(npc_id)
 	if not npc:
 		push_error("NPC not found: %s" % npc_id)
 		return false
 	
 	# Check if NPC already has a quest
-	if npc.has_method("has_active_quest") and npc.has_active_quest():
+	if npc.has_active_quest():
 		push_warning("NPC %s already has an active quest" % npc_id)
 		return false
 	
 	# Assign quest to NPC
-	if npc.has_method("assign_quest"):
-		npc.assign_quest(quest_id)
+	npc.assign_quest(quest_id)
 	npc_quests[npc_id] = quest_id
 	
 	npc_quest_assigned.emit(npc_id, quest_id)
@@ -85,9 +88,9 @@ func complete_npc_quest(npc_id: StringName) -> void:
 	var quest_id = npc_quests[npc_id]
 	
 	# Clear NPC's quest
-	if faction_system:
-		var npc = faction_system.get_npc(npc_id) if faction_system.has_method("get_npc") else null
-		if npc and npc.has_method("clear_quest"):
+	if faction_system and faction_system.has_method("get_npc"):
+		var npc = faction_system.get_npc(npc_id)
+		if npc:
 			npc.clear_quest()
 	
 	npc_quests.erase(npc_id)
@@ -106,10 +109,10 @@ func _on_quest_completed(quest: Quest) -> void:
 
 func get_available_quests_for_npc(npc_id: StringName) -> Array[Quest]:
 	## Get quests available for an NPC based on their faction
-	if not faction_system:
+	if not faction_system or not faction_system.has_method("get_npc"):
 		return []
 	
-	var npc = faction_system.get_npc(npc_id) if faction_system.has_method("get_npc") else null
+	var npc = faction_system.get_npc(npc_id)
 	if not npc:
 		return []
 	

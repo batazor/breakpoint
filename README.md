@@ -203,14 +203,19 @@ Tests are automatically run via GitHub Actions on push and pull requests.
   - Selection info panels for buildings and units
 - 📋 **Phase 3.1**: Main Menu & Game Flow (Planned)
 - 📋 **Phase 4**: Polish & Balance (Planned)
-- 📚 **Phase 5**: Quest & Narrative System (Designed) - [Details](QUEST_SYSTEM.md)
-  - 40+ quests across 3-act story structure
-  - Branching narrative with multiple endings
+- 📚 **Phase 5**: Quest & Narrative System (In Progress) - [Details](QUEST_SYSTEM.md)
+  - ✅ **NEW**: Quest Manager - Core quest state management system
+  - ✅ **NEW**: Quest Generator - Dynamic quest creation from game events
+  - ✅ **NEW**: Quest Templates - Procedural quest generation system
+  - ✅ **NEW**: Quest Library - Pre-defined tutorial and faction quests
+  - ✅ **NEW**: NPC Quest System - NPCs can pursue their own missions - [Details](NPC_QUEST_SYSTEM.md)
+  - 40+ quests across 3-act story structure (designed)
+  - Branching narrative with multiple endings (designed)
   - Quest system integrated with dialog and faction systems
   - Complete world-building: The Fractured Lands post-Sundering
   - See also: [GAME_PLOT.md](GAME_PLOT.md), [QUEST_ROADMAP.md](QUEST_ROADMAP.md)
 
-**Current Status**: ~60% complete toward MVP (Quest system designed, ready for implementation)  
+**Current Status**: ~65% complete toward MVP (Quest Manager implemented)  
 **Target Release**: Q2 2025
 
 See [ROADMAP.md](ROADMAP.md) for complete development timeline.

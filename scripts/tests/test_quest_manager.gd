@@ -89,6 +89,26 @@ func _initialize() -> void:
 		failed += 1
 		print("  ✗ FAILED")
 	
+	# Test 9: NPC quest assignment
+	print("\nTest 9: NPC quest assignment")
+	result = test_npc_quest_assignment()
+	if result:
+		passed += 1
+		print("  ✓ PASSED")
+	else:
+		failed += 1
+		print("  ✗ FAILED")
+	
+	# Test 10: NPC quest tracking
+	print("\nTest 10: NPC quest tracking")
+	result = test_npc_quest_tracking()
+	if result:
+		passed += 1
+		print("  ✓ PASSED")
+	else:
+		failed += 1
+		print("  ✗ FAILED")
+	
 	print("\n=== Test Results ===")
 	print("Passed: %d" % passed)
 	print("Failed: %d" % failed)
@@ -348,6 +368,68 @@ func test_quest_library() -> bool:
 	
 	if first_quest.rewards.is_empty():
 		print("    ERROR: Tutorial quest should have rewards")
+		return false
+	
+	return true
+
+
+func test_npc_quest_assignment() -> bool:
+	## Test NPC quest assignment
+	var npc = NPC.new()
+	npc.id = StringName("test_npc_1")
+	npc.faction_id = &"kingdom"
+	
+	# Test initial state
+	if npc.has_active_quest():
+		print("    ERROR: NPC should not have active quest initially")
+		return false
+	
+	# Assign quest
+	var quest_id = StringName("test_quest_npc")
+	npc.assign_quest(quest_id)
+	
+	if not npc.has_active_quest():
+		print("    ERROR: NPC should have active quest after assignment")
+		return false
+	
+	if npc.current_quest_id != quest_id:
+		print("    ERROR: NPC's quest ID should match assigned quest")
+		return false
+	
+	# Clear quest
+	npc.clear_quest()
+	
+	if npc.has_active_quest():
+		print("    ERROR: NPC should not have active quest after clearing")
+		return false
+	
+	return true
+
+
+func test_npc_quest_tracking() -> bool:
+	## Test NPC quest tracking through NPCQuestController
+	var controller = NPCQuestController.new()
+	var npc = NPC.new()
+	npc.id = StringName("test_npc_tracking")
+	npc.faction_id = &"kingdom"
+	
+	var quest_id = StringName("test_quest_tracking")
+	
+	# Manually add to tracking
+	controller.npc_quests[npc.id] = quest_id
+	npc.assign_quest(quest_id)
+	
+	# Get NPC's quest
+	var tracked_quest = controller.get_npc_quest(npc.id)
+	if tracked_quest != quest_id:
+		print("    ERROR: Controller should track NPC's quest")
+		return false
+	
+	# Complete quest
+	controller.complete_npc_quest(npc.id)
+	
+	if controller.get_npc_quest(npc.id) != StringName(""):
+		print("    ERROR: Quest should be cleared after completion")
 		return false
 	
 	return true

@@ -9,16 +9,17 @@ This document outlines the implementation roadmap for quests in Breakpoint, orga
 ### Phase 1: Core Quest Infrastructure (1-2 weeks)
 
 **Priority**: CRITICAL  
-**Status**: Not Started
+**Status**: In Progress (Task 1 Complete)
 
 #### Technical Tasks
 
 1. **Create Quest System Classes**
-   - [ ] Implement `Quest` resource class (scripts/quests/quest.gd)
-   - [ ] Implement `QuestObjective` resource class (scripts/quests/quest_objective.gd)
-   - [ ] Create quest state enums and helper functions
-   - [ ] Add quest serialization for save/load
+   - [x] Implement `Quest` resource class (scripts/quests/quest.gd)
+   - [x] Implement `QuestObjective` resource class (scripts/quests/quest_objective.gd)
+   - [x] Create quest state enums and helper functions
+   - [x] Add quest serialization for save/load
    - **Estimate**: 2-3 days
+   - **Status**: ✅ COMPLETED
 
 2. **Implement Quest Manager**
    - [ ] Create `QuestManager` singleton (scripts/quests/quest_manager.gd)

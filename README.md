@@ -202,7 +202,6 @@ Tests are automatically run via GitHub Actions on push and pull requests.
   - Game speed controls (1x, 2x, 3x, 4x)
   - Selection info panels for buildings and units
 - 📋 **Phase 3.1**: Main Menu & Game Flow (Planned)
-- 📋 **Phase 3.3**: Tutorial & Onboarding (Planned)
 - 📋 **Phase 4**: Polish & Balance (Planned)
 - 📋 **Phase 5**: MVP Release Preparation (Planned)
 

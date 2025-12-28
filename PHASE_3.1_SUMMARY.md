@@ -186,12 +186,6 @@ From ROADMAP.md Phase 3.1, all tasks completed:
 2. **Visual Polish** - Add background images or shaders to main menu
 3. **Sound Effects** - Add button click sounds and menu transitions
 
-### Phase 3.3 (Tutorial & Onboarding)
-- Create tutorial sequence
-- Add tooltips for first-time interactions
-- Implement help/reference screen
-- Create control quick reference card
-
 ### Phase 4 (Polish & Balance)
 - Add particle effects for menu transitions
 - Smooth animations for panel transitions

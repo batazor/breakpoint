@@ -437,73 +437,6 @@ Focus on delivering a complete gameplay loop with:
   - *Acceptance*: Speed controls change game simulation speed; UI remains responsive; speed persists until changed
   - *Implemented*: Speed hotkeys (1/2/3/4), speed display in HUD, TimeControls with pause functionality
 
-#### 3.3 Tutorial & Onboarding
-
-**Timeline**: 4-5 days
-
-**Technical Requirements**:
-- Tutorial step sequencer
-- Highlight/spotlight system for UI elements
-- Progress tracking system
-
-**Implementation Tasks**:
-- [ ] Create basic tutorial sequence
-  - *Details*: Step-by-step guided tutorial for first-time players (10-15 steps)
-  - *Technical*: `TutorialManager` singleton with step definitions; pause game during steps
-  - *Tutorial Flow*:
-    1. Welcome & game overview
-    2. Camera controls (WASD, zoom)
-    3. Selecting hex tiles
-    4. Reading the HUD
-    5. Building your first structure (Town Hall)
-    6. Resource gathering basics
-    7. Checking faction status
-    8. Understanding the minimap
-    9. Basic AI faction interaction
-    10. Win conditions explained
-  - *Implementation*: Each step has text, highlight target, wait condition (user action or time)
-  - *Visual*: Spotlight effect on relevant UI; arrow pointing to elements; dialog box with instructions
-  - *Skip Option*: "Skip Tutorial" button for experienced players
-  - *Acceptance*: Tutorial activates on first game; guides through all steps; can be completed or skipped
-  
-- [ ] Add tooltips for first-time interactions
-  - *Details*: One-time helpful hints that appear on first interaction with game elements
-  - *Technical*: Track shown tooltips in user settings; show once per element type
-  - *First-Time Tips*:
-    - First tile selection: "Select tiles to see actions and information"
-    - First resource full: "Build warehouses to increase storage capacity"
-    - First building placed: "Buildings take time to construct"
-    - First faction contact: "Manage relationships in the faction panel"
-  - *Visual*: Yellow info box with lightbulb icon; "Got it" button to dismiss; "Don't show again" checkbox
-  - *Acceptance*: Tips appear once per account; helpful without being intrusive; dismissal works
-  
-- [ ] Implement help/reference screen
-  - *Details*: Comprehensive in-game help accessible anytime
-  - *Technical*: Overlay panel with searchable/categorized help topics
-  - *Categories*:
-    - Getting Started: Basic controls, game objective
-    - Controls: All keyboard shortcuts and mouse controls
-    - Buildings: List of all buildings with stats and functions
-    - Resources: Resource types, gathering, production
-    - Factions: How factions work, relationships, AI
-    - Economy: Production chains, trade, storage
-    - Victory: Win conditions and strategies
-  - *Features*: Search bar, table of contents, bookmarks, print-friendly
-  - *Visual*: Modal window with sidebar navigation; content area with text and images
-  - *Acceptance*: Help screen accessible via hotkey (F1) or menu; searchable; comprehensive information
-  
-- [ ] Create quick reference card for controls
-  - *Details*: Condensed one-page control reference
-  - *Technical*: UI overlay or PDF; always accessible with hotkey
-  - *Content*:
-    - Camera: WASD (move), Mouse Wheel (zoom), Middle Click (pan)
-    - Selection: Left Click (select), Right Click (action menu), Shift+Click (multi-select)
-    - Actions: B (build), I (info), Space (pause), Esc (menu)
-    - Speed: 1/2/3/4 (set speed), +/- (adjust speed)
-    - UI: F (faction panel), M (minimap toggle), F1 (help)
-  - *Visual*: Overlay with key graphics; organized by category; minimizable
-  - *Acceptance*: Quick reference accessible; shows all key controls; clear and readable
-
 ---
 
 ### Phase 4: Polish & Balance (Priority: MEDIUM)
@@ -885,7 +818,7 @@ Focus on delivering a complete gameplay loop with:
 - Minimap for world overview
 - Faction status panels
 - Notification system
-- Tutorial and help system
+
 - Visual and audio feedback
 
 ---
@@ -939,7 +872,7 @@ Focus on delivering a complete gameplay loop with:
 | Phase 3: UI & UX | 2-3 weeks | 🔄 In Progress | - |
 | Phase 3.1: Main Menu & Game Flow | 4-5 days | 📋 Planned | - |
 | Phase 3.2: In-Game UI | 6-8 days | ✅ Completed | Dec 26, 2024 |
-| Phase 3.3: Tutorial & Onboarding | 4-5 days | 📋 Planned | - |
+
 | Phase 4: Polish & Balance | 2-3 weeks | 📋 Planned | - |
 | **Total Development Timeline** | **8-11 weeks** | **~70% Complete** | **Est. Q1 2025** |
 
@@ -960,7 +893,6 @@ Focus on delivering a complete gameplay loop with:
 
 **Next Steps**:
 - 📋 Phase 3.1: Main Menu & Game Flow
-- 📋 Phase 3.3: Tutorial & Onboarding
 - 📋 Phase 4: Polish & Balance (gameplay balance, visual polish, performance optimization, bug fixing)
 
 ---

@@ -104,6 +104,25 @@ jobs:
             exit $exit_code
           fi
       
+      - name: Run Quest Manager Tests
+        run: |
+          cd ${{ github.workspace }}
+          godot --headless --script scripts/tests/test_quest_manager.gd 2>&1 | tee quest_manager_test.log
+          exit_code=${PIPESTATUS[0]}
+          
+          cat quest_manager_test.log
+          
+          if grep -q "✅ All tests passed!" quest_manager_test.log; then
+            echo "Quest Manager tests passed"
+            exit 0
+          elif grep -q "tests failed" quest_manager_test.log; then
+            echo "Quest Manager tests failed"
+            exit 1
+          else
+            echo "Quest Manager test execution may have had issues"
+            exit $exit_code
+          fi
+      
       - name: Upload test logs
         if: always()
         uses: actions/upload-artifact@v4
@@ -114,5 +133,6 @@ jobs:
             river_test.log
             territory_overlay_test.log
             npc_inventory_test.log
+            quest_manager_test.log
             import.log
           retention-days: 7

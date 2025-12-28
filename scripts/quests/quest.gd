@@ -27,7 +27,7 @@ enum QuestState {
 @export var repeatable: bool = false
 @export var time_limit_hours: float = 0.0  # 0 = no limit
 
-var state: int = QuestState.NOT_STARTED
+var state: QuestState = QuestState.NOT_STARTED
 var start_time: float = 0.0  # Set by QuestManager when quest becomes ACTIVE (Time.get_ticks_msec() / 1000.0)
 var completion_time: float = 0.0
 
@@ -64,9 +64,8 @@ func can_start(player_faction_id: StringName = &"") -> bool:
 	if requirements.has("faction"):
 		var required_faction = requirements["faction"]
 		# If quest requires a specific faction, player must match
-		if required_faction != &"" and player_faction_id != &"":
-			if required_faction != player_faction_id:
-				return false
+		if required_faction != &"" and player_faction_id != &"" and required_faction != player_faction_id:
+			return false
 	
 	# Check if quest is already active or completed (unless repeatable)
 	if not repeatable and (state == QuestState.COMPLETED or state == QuestState.ACTIVE):

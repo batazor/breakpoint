@@ -8,10 +8,12 @@ The Quest System provides **dynamic, event-driven objectives** that emerge from 
 
 Breakpoint is a **sandbox strategy game**, not a narrative-driven RPG. Therefore, quests are:
 - **Event-triggered**: Generated in response to game state changes
-- **Procedural**: Objectives and rewards scale based on context
+- **Procedural**: Objectives and rewards are assembled from templates and parameterized by current context
 - **Emergent**: Arise from faction interactions and world events
 - **Optional**: Players drive their own narrative through choices
-- **Dynamic**: Quest availability changes based on game state
+- **Dynamic**: Quest availability is state-based, changing as overall game state and player actions evolve
+
+**Hybrid Approach**: The system uses **80% procedurally-generated quests** (from templates triggered by events) and **20% pre-scripted quests** (tutorials and major story beats that are still event-triggered). All quests are optional - players can focus purely on sandbox strategy.
 
 ## Architecture
 
@@ -204,8 +206,8 @@ func _on_relationship_changed(faction1: StringName, faction2: StringName, old_va
 		if quest:
 			quest_generated.emit(quest)
 	
-	# Relationship deteriorated significantly
-	elif new_value < old_value - 20 and new_value < -30:
+	# Relationship deteriorated significantly (using same threshold for consistency)
+	elif new_value < old_value - 20 and new_value < -50:
 		var quest = _generate_from_template("conflict_resolution", {
 			"faction1": faction1,
 			"faction2": faction2,
@@ -480,17 +482,17 @@ func _on_quest_generated(quest: Quest) -> void:
 func _connect_to_systems() -> void:
 	# Connect to build controller for build objectives
 	var build_controller = get_node_or_null("/root/Main/BuildController")
-	if build_controller and build_controller.has_signal("building_placed"):
+	if build_controller:
 		build_controller.building_placed.connect(_on_building_placed)
 	
 	# Connect to faction system for resource objectives
 	var faction_system = get_node_or_null("/root/Main/FactionSystem")
-	if faction_system and faction_system.has_signal("resources_changed"):
+	if faction_system:
 		faction_system.resources_changed.connect(_on_resources_changed)
 	
 	# Connect to dialog manager for talk objectives
 	var dialog_manager = get_node_or_null("/root/Main/DialogManager")
-	if dialog_manager and dialog_manager.has_signal("dialog_ended"):
+	if dialog_manager:
 		dialog_manager.dialog_ended.connect(_on_dialog_ended)
 
 
@@ -610,7 +612,7 @@ func _on_building_placed(building_id: String, position: Vector2i) -> void:
 
 func _on_resources_changed(faction_id: StringName, resource_id: StringName, amount: int) -> void:
 	## Track resource gathering objectives
-	# TODO: Get player faction ID
+	# TODO: Get player faction ID from game configuration instead of hardcoded value
 	if faction_id != &"kingdom":
 		return
 	
@@ -619,10 +621,11 @@ func _on_resources_changed(faction_id: StringName, resource_id: StringName, amou
 			if objective.type == "gather" and StringName(objective.target) == resource_id:
 				# Check total resource amount
 				var faction_system = get_node_or_null("/root/Main/FactionSystem")
-				if faction_system and faction_system.has_method("resource_amount"):
-					var current_amount = faction_system.resource_amount(faction_id, resource_id)
-					if current_amount >= objective.count:
-						objective.current = objective.count
+				if faction_system:
+					if faction_system.has_method("resource_amount"):
+						var current_amount = faction_system.resource_amount(faction_id, resource_id)
+						if current_amount >= objective.count:
+							objective.current = objective.count
 						quest_updated.emit(quest)
 						
 						if objective.is_completed():

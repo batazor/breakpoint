@@ -883,7 +883,7 @@ Focus on delivering a complete gameplay loop with:
 - [ ] Create Quest and QuestObjective resource classes
   - *Details*: Core data structures for quest system
   - *Technical*: `scripts/quests/quest.gd` and `scripts/quests/quest_objective.gd`
-  - *Features*: Quest states (not started, active, completed, failed), objective types (build, gather, talk, explore, relationship, survive)
+  - *Features*: Quest states (not started, active, completed, failed), objective types (build, gather, talk, explore, relationship, survive, defeat)
   - *Acceptance*: Quest classes functional with all required properties and methods
 
 - [ ] Implement QuestManager singleton
@@ -1006,11 +1006,12 @@ Focus on delivering a complete gameplay loop with:
 **Main Plot**: Ancient evil sealed during Sundering begins breaking free; player must choose how to respond (unity, domination, or balance)
 
 **Features**:
-- 40+ unique quests
-- 3-act story structure
-- Branching narrative with meaningful choices
-- 6 victory paths (3 story endings + 3 alternative victories)
-- Rich lore and world-building
+- Event-driven quest generation with templates
+- Dynamic quest creation based on gameplay state
+- 40 unique quest templates + repeatable quest types
+- Emergent narrative framework (not fixed story acts)
+- 5 victory recognition paths (Economic/Military/Diplomatic/Cultural/Survival)
+- Rich lore and world-building (optional)
 - Character-driven storytelling through NPCs
 
 ---

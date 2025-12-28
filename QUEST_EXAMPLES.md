@@ -11,6 +11,9 @@ This document provides concrete examples of how quests would be implemented usin
 extends Quest
 
 func _init() -> void:
+	# Initialize arrays
+	objectives = []
+	
 	# Basic quest info
 	id = &"tutorial_establishing_settlement"
 	title = "Establishing Your Settlement"
@@ -194,6 +197,24 @@ func _init() -> void:
 	# next_quest_id is set dynamically based on player choice
 ```
 
+### Dialog-Quest Integration
+
+The dialog system uses effect strings to trigger quest-related actions. The DialogManager should parse these effects:
+
+```gdscript
+# In dialog_manager.gd - extend _apply_response_effects()
+func _apply_response_effects(response: DialogResponse) -> void:
+	# ... existing resource effect handling ...
+	
+	# Handle quest effect strings
+	var effect_str := response.effect.strip_edges()
+	if effect_str.begins_with("start_quest:"):
+		var quest_id = effect_str.substr(12)  # Remove "start_quest:" prefix
+		var quest_manager = get_node_or_null("/root/Main/QuestManager")
+		if quest_manager:
+			quest_manager.start_quest(StringName(quest_id))
+```
+
 ### Branching Dialog
 
 ```gdscript
@@ -208,6 +229,7 @@ func create_prophet_choice_sharing() -> DialogTree:
 	var response_share = DialogResponse.new()
 	response_share.text = "This knowledge belongs to everyone. I'll share it."
 	response_share.next_dialog_id = "choice_share"
+	# Effect format: "start_quest:{quest_id}" - DialogManager should parse and call QuestManager.start_quest()
 	response_share.effect = "start_quest:main_path_cooperation"
 	response_share.relationship_change = 20  # All factions improve
 	
@@ -584,7 +606,8 @@ func save_state() -> Dictionary:
 		for objective in quest.objectives:
 			quest_data["objectives"].append({
 				"id": objective.id,
-				"current": objective.current
+				"current": objective.current,
+				"value": objective.value  # Save value field for relationship/survive objectives
 			})
 		
 		state["active_quests"].append(quest_data)

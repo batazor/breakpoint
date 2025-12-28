@@ -56,7 +56,7 @@ This document provides a quick reference guide to the complete Quest & Narrative
 ### 🗺️ [QUEST_ROADMAP.md](QUEST_ROADMAP.md) - Implementation Plan
 **Size**: 18 KB | **Focus**: Development timeline
 
-**Total Timeline**: 10-11 weeks across 7 phases
+**Total Timeline**: ~11-13 weeks across 7 phases
 
 **Phase Breakdown**:
 1. **Phase 1**: Core Infrastructure (1.5-2 weeks)

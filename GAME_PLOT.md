@@ -210,24 +210,6 @@ NPCs provide world context, react to player actions, and can **trigger quest gen
 - Adaptation and change
 - The land's memory
 
-**Dialog Themes**:
-- Survival of the fittest
-- Weakness of the old empire
-- True strength through adversity
-
-### Sage Miriam (Nomads)
-**Role**: Spiritual Leader, Lore Keeper  
-**Personality**: Wise, cryptic, deeply connected to the land  
-**Quests**:
-- "The Old Ways" - Learn ancient survival techniques
-- "Sacred Sites" - Protect natural wonders
-- "Visions of Tomorrow" - Interpret prophetic dreams
-
-**Dialog Themes**:
-- Balance and harmony
-- Adaptation and change
-- The land's memory
-
 ### The Prophet (Mysterious - Optional Lore)
 **Role**: Lore Provider (appears if player engages with ruins)  
 **Personality**: Enigmatic, knows more than they share  

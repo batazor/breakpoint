@@ -2,7 +2,16 @@
 
 ## Overview
 
-The Quest System provides structured objectives, narrative progression, and rewards for players in Breakpoint. It integrates with the existing dialog system, faction relationships, and resource management to create engaging gameplay experiences.
+The Quest System provides **dynamic, event-driven objectives** that emerge from gameplay in Breakpoint's sandbox environment. Rather than pre-scripted linear quests, the system **generates quests procedurally** based on game events, faction activities, resource states, and player actions. It integrates with the existing dialog system, faction relationships, and resource management to create organic gameplay experiences.
+
+## Design Philosophy: Sandbox-Driven Quests
+
+Breakpoint is a **sandbox strategy game**, not a narrative-driven RPG. Therefore, quests are:
+- **Event-triggered**: Generated in response to game state changes
+- **Procedural**: Objectives and rewards scale based on context
+- **Emergent**: Arise from faction interactions and world events
+- **Optional**: Players drive their own narrative through choices
+- **Dynamic**: Quest availability changes based on game state
 
 ## Architecture
 
@@ -10,9 +19,10 @@ The Quest System provides structured objectives, narrative progression, and rewa
 
 1. **Quest** - Resource class defining quest data
 2. **QuestObjective** - Individual objectives within a quest
-3. **QuestManager** - Singleton managing quest state
-4. **QuestUI** - User interface for quest tracking
-5. **QuestLibrary** - Pre-defined quest templates
+3. **QuestManager** - Singleton managing quest state and generation
+4. **QuestGenerator** - Procedural quest creation from events
+5. **QuestTemplate** - Flexible templates for different quest types
+6. **QuestUI** - User interface for quest tracking
 
 ### Quest Structure
 
@@ -90,6 +100,239 @@ enum QuestState {
 	FAILED,       # Quest failed (optional)
 	ABANDONED     # Player abandoned quest
 }
+```
+
+## Event-Driven Quest Generation
+
+### Quest Generation Philosophy
+
+Instead of pre-scripted quests, the system **generates quests dynamically** based on game events:
+
+**Example Triggers**:
+- **Resource Scarcity**: Food drops below 50 → Generate "Emergency Harvest" quest
+- **Faction Conflict**: Horde attacks Kingdom territory → Generate "Border Defense" quest  
+- **Building Destroyed**: Mine destroyed by event → Generate "Rebuild Infrastructure" quest
+- **NPC Request**: Trader NPC arrives → Generate "Supply Trade" quest
+- **Discovery**: Player finds ancient ruins → Generate "Investigate Ruins" quest
+- **Time-Based**: 10 in-game days pass → Generate "Expansion Opportunity" quest
+
+### Quest Generator (scripts/quests/quest_generator.gd)
+
+```gdscript
+extends Node
+class_name QuestGenerator
+
+## Generates quests dynamically based on game events
+
+signal quest_generated(quest: Quest)
+
+var quest_templates: Dictionary = {}  # template_id -> QuestTemplate
+var generation_rules: Array[QuestGenerationRule] = []
+
+
+func _ready() -> void:
+	_load_templates()
+	_setup_generation_rules()
+	_connect_to_game_events()
+
+
+func _connect_to_game_events() -> void:
+	## Connect to game systems to listen for quest-triggering events
+	
+	# Resource events
+	var faction_system = get_node_or_null("/root/Main/FactionSystem")
+	if faction_system:
+		faction_system.resources_changed.connect(_on_resources_changed)
+	
+	# Building events
+	var build_controller = get_node_or_null("/root/Main/BuildController")
+	if build_controller:
+		build_controller.building_placed.connect(_on_building_placed)
+		build_controller.building_destroyed.connect(_on_building_destroyed)
+	
+	# Faction events
+	if faction_system:
+		faction_system.relationship_changed.connect(_on_relationship_changed)
+	
+	# Time events
+	var day_night_cycle = get_node_or_null("/root/Main/DayNightCycle")
+	if day_night_cycle:
+		day_night_cycle.hour_changed.connect(_on_hour_changed)
+
+
+func _on_resources_changed(faction_id: StringName, resource_id: StringName, amount: int) -> void:
+	## Generate quests based on resource state
+	var faction_system = get_node_or_null("/root/Main/FactionSystem")
+	if not faction_system:
+		return
+	
+	var current_amount = faction_system.resource_amount(faction_id, resource_id)
+	
+	# Resource scarcity quest
+	if current_amount < 50:
+		var quest = _generate_from_template("resource_scarcity", {
+			"resource_id": resource_id,
+			"target_amount": 100,
+			"faction_id": faction_id
+		})
+		if quest:
+			quest_generated.emit(quest)
+
+
+func _on_building_destroyed(building_id: String, position: Vector2i, faction_id: StringName) -> void:
+	## Generate rebuild quest when important buildings are destroyed
+	if building_id in ["fortress", "mine", "well"]:
+		var quest = _generate_from_template("rebuild_structure", {
+			"building_id": building_id,
+			"position": position,
+			"faction_id": faction_id
+		})
+		if quest:
+			quest_generated.emit(quest)
+
+
+func _on_relationship_changed(faction1: StringName, faction2: StringName, old_value: int, new_value: int) -> void:
+	## Generate diplomacy quests based on relationship changes
+	
+	# Relationship improved significantly
+	if new_value > old_value + 20 and new_value > 50:
+		var quest = _generate_from_template("alliance_opportunity", {
+			"faction1": faction1,
+			"faction2": faction2,
+			"relationship": new_value
+		})
+		if quest:
+			quest_generated.emit(quest)
+	
+	# Relationship deteriorated significantly
+	elif new_value < old_value - 20 and new_value < -30:
+		var quest = _generate_from_template("conflict_resolution", {
+			"faction1": faction1,
+			"faction2": faction2,
+			"relationship": new_value
+		})
+		if quest:
+			quest_generated.emit(quest)
+
+
+func _generate_from_template(template_id: String, context: Dictionary) -> Quest:
+	## Generate a quest instance from a template with given context
+	if not quest_templates.has(template_id):
+		push_error("Quest template not found: %s" % template_id)
+		return null
+	
+	var template: QuestTemplate = quest_templates[template_id]
+	return template.instantiate(context)
+
+
+func _load_templates() -> void:
+	## Load quest templates
+	# Templates define quest structure with placeholders for context
+	quest_templates["resource_scarcity"] = QuestTemplate.new({
+		"title_pattern": "Gather {resource_name}",
+		"description_pattern": "Your {resource_name} reserves are critically low. Gather {target_amount} {resource_name} to stabilize your economy.",
+		"objective_type": "gather",
+		"reward_scale": 1.5  # Rewards scale with difficulty
+	})
+	
+	quest_templates["rebuild_structure"] = QuestTemplate.new({
+		"title_pattern": "Rebuild {building_name}",
+		"description_pattern": "Your {building_name} has been destroyed. Rebuild it to restore production.",
+		"objective_type": "build",
+		"reward_scale": 1.0
+	})
+	
+	quest_templates["alliance_opportunity"] = QuestTemplate.new({
+		"title_pattern": "Strengthen Alliance with {faction_name}",
+		"description_pattern": "Your improving relationship with {faction_name} opens opportunities for cooperation.",
+		"objective_type": "relationship",
+		"reward_scale": 2.0
+	})
+	
+	quest_templates["conflict_resolution"] = QuestTemplate.new({
+		"title_pattern": "Resolve Conflict with {faction_name}",
+		"description_pattern": "Tensions with {faction_name} are escalating. Take action to prevent war.",
+		"objective_type": "relationship",
+		"reward_scale": 1.5
+	})
+```
+
+### Quest Template (scripts/quests/quest_template.gd)
+
+```gdscript
+extends Resource
+class_name QuestTemplate
+
+## Template for generating quests with context
+
+var title_pattern: String = ""
+var description_pattern: String = ""
+var objective_type: String = ""
+var reward_scale: float = 1.0
+var category: String = "dynamic"
+
+
+func instantiate(context: Dictionary) -> Quest:
+	## Create a quest instance from this template with given context
+	var quest = Quest.new()
+	quest.id = StringName("dynamic_%d" % Time.get_ticks_msec())
+	quest.category = category
+	
+	# Fill in template placeholders with context
+	quest.title = _fill_pattern(title_pattern, context)
+	quest.description = _fill_pattern(description_pattern, context)
+	
+	# Generate objectives based on type and context
+	var objective = QuestObjective.new()
+	objective.type = objective_type
+	
+	match objective_type:
+		"gather":
+			objective.target = context.get("resource_id", "gold")
+			objective.count = context.get("target_amount", 100)
+			objective.description = "Gather %d %s" % [objective.count, objective.target]
+		
+		"build":
+			objective.target = context.get("building_id", "fortress")
+			objective.count = 1
+			objective.description = "Build 1 %s" % objective.target
+		
+		"relationship":
+			objective.target = context.get("faction2", "")
+			objective.value = context.get("target_relationship", 50)
+			objective.description = "Achieve relationship %d with %s" % [objective.value, objective.target]
+	
+	quest.objectives.append(objective)
+	
+	# Calculate rewards based on difficulty and context
+	quest.rewards = _calculate_rewards(context, reward_scale)
+	quest.faction_id = context.get("faction_id", &"kingdom")
+	
+	return quest
+
+
+func _fill_pattern(pattern: String, context: Dictionary) -> String:
+	## Replace {placeholder} with values from context
+	var result = pattern
+	for key in context:
+		var placeholder = "{%s}" % key
+		if result.contains(placeholder):
+			result = result.replace(placeholder, str(context[key]))
+	return result
+
+
+func _calculate_rewards(context: Dictionary, scale: float) -> Dictionary:
+	## Calculate appropriate rewards based on quest difficulty
+	var base_gold = 50
+	var rewards = {}
+	
+	# Scale rewards based on context
+	if context.has("target_amount"):
+		rewards["gold"] = int(base_gold * scale * (context["target_amount"] / 100.0))
+	else:
+		rewards["gold"] = int(base_gold * scale)
+	
+	return rewards
 ```
 
 ## Implementation
@@ -216,6 +459,22 @@ var available_quests: Dictionary = {}  # quest_id -> Quest
 func _ready() -> void:
 	# Connect to game systems
 	_connect_to_systems()
+	
+	# Connect to quest generator for dynamic quests
+	var quest_generator = get_node_or_null("/root/Main/QuestGenerator")
+	if quest_generator:
+		quest_generator.quest_generated.connect(_on_quest_generated)
+
+
+func _on_quest_generated(quest: Quest) -> void:
+	## Handle dynamically generated quest
+	# Auto-register and optionally auto-start based on urgency
+	register_quest(quest)
+	
+	# Notify player of new quest opportunity
+	print("New quest available: %s" % quest.title)
+	# Emit signal for UI notification
+	quest_started.emit(quest) if quest.category == "urgent" else quest_updated.emit(quest)
 
 
 func _connect_to_systems() -> void:
@@ -492,17 +751,54 @@ Pre-defined quest templates in `scripts/quests/quest_library.gd`:
 - **Scout Report** - Explore new hexes
 - **Trade Mission** - Exchange resources
 
+## Hybrid Approach: Dynamic + Scripted Quests
+
+While the core quest system is **event-driven and dynamic** to support sandbox gameplay, the system also supports **optional scripted quests** for:
+
+### Scripted Quest Use Cases
+
+1. **Tutorial Quests** - Onboarding sequence teaching core mechanics
+   - "Establishing Your Settlement" - Build first fortress
+   - "Resource Basics" - Understand economy system
+   - These are pre-defined but can still be triggered by events (e.g., game start)
+
+2. **Major Story Moments** - Optional narrative content
+   - "The Awakening" - Discover ancient technology (triggered by exploring specific hex)
+   - "The Choice" - Major decision point (triggered when player controls 30% of map)
+   - These provide narrative flavor but don't restrict sandbox freedom
+
+3. **Faction-Specific Content** - Identity quests for each faction
+   - Kingdom: "Diplomatic Summit" (triggered when allied with 2+ factions)
+   - Horde: "Trial of Strength" (triggered after building barracks)
+   - Nomads: "Sacred Sites" (triggered when discovering natural wonders)
+
+### Balance Between Dynamic and Scripted
+
+- **80% Dynamic**: Most quests generated from gameplay events
+- **20% Scripted**: Tutorial, major story beats, faction identity quests
+- **Player Choice**: All quests optional; players can ignore them entirely
+- **Organic Triggers**: Even scripted quests triggered by game state, not forced
+
+### Quest Library Role
+
+The QuestLibrary provides:
+- **Templates** for quest generation (not pre-scripted quests)
+- **Tutorial sequences** that can be disabled after first playthrough
+- **Faction quest patterns** that QuestGenerator can reference
+- **Story moment triggers** for players who want narrative context
+
 ## Future Enhancements
 
+- [x] **Dynamic quest generation** - Core feature (implemented above)
 - [ ] Quest chains with branching paths
 - [ ] Timed quests with failure conditions
-- [ ] Dynamic quest generation
 - [ ] Multiplayer quest cooperation
 - [ ] Quest rewards: buildings, units, abilities
 - [ ] Quest journal with lore entries
 - [ ] Achievement system integration
-- [ ] Quest difficulty scaling
-- [ ] Secret/hidden quests
+- [ ] Quest difficulty scaling based on player power
+- [ ] Secret/hidden quests revealed by exploration
+- [ ] Community-driven quest templates (modding)
 
 ## Files
 
@@ -510,7 +806,9 @@ Quest system files to be created:
 - `scripts/quests/quest.gd` - Quest resource
 - `scripts/quests/quest_objective.gd` - Objective resource
 - `scripts/quests/quest_manager.gd` - Quest state manager
-- `scripts/quests/quest_library.gd` - Pre-defined quests
+- `scripts/quests/quest_generator.gd` - **Dynamic quest generation** ⭐
+- `scripts/quests/quest_template.gd` - **Template for procedural quests** ⭐
+- `scripts/quests/quest_library.gd` - Templates and tutorial quests
 - `scripts/ui/quest_log_panel.gd` - Quest UI controller
 - `scenes/ui/quest_log_panel.tscn` - Quest UI scene
 - `scenes/ui/quest_tracker.tscn` - HUD quest tracker

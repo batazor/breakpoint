@@ -11,7 +11,7 @@ config_version=5
 [application]
 
 config/name="Breakpoint"
-run/main_scene="res://scenes/main.tscn"
+run/main_scene="res://scenes/ui/main_menu.tscn"
 config/features=PackedStringArray("4.5", "Forward Plus")
 config/icon="res://icon.svg"
 
@@ -33,6 +33,8 @@ enabled=PackedStringArray("res://addons/tile_sides_editor/plugin.cfg")
 [autoload]
 
 GameStore="*res://scripts/game_store.gd"
+SettingsManager="*res://scripts/ui/settings_manager.gd"
+SaveLoadSystem="*res://scripts/save_load_system.gd"
 
 [input]
 

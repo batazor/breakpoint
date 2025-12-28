@@ -1,4 +1,4 @@
-[gd_scene load_steps=23 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=25 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -24,6 +24,8 @@
 [ext_resource type="PackedScene" uid="uid://b4dqn7gp5kfw2" path="res://scenes/ui/selection_info_panel.tscn" id="21_selection_info"]
 [ext_resource type="PackedScene" uid="uid://dyr6htbc5u8nx" path="res://scenes/ui/city_screen.tscn" id="22_city_screen"]
 [ext_resource type="PackedScene" uid="uid://b8xh5tnqm8pqr" path="res://scenes/ui/dialog_panel.tscn" id="23_dialog_panel"]
+[ext_resource type="PackedScene" uid="uid://cgmq2xf0f7wqf" path="res://scenes/ui/pause_menu.tscn" id="24_pause_menu"]
+[ext_resource type="PackedScene" uid="uid://c8hvk3p8m2w71" path="res://scenes/ui/settings_menu.tscn" id="25_settings_menu"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -138,5 +140,8 @@ build_controller_path = NodePath("../BuildController")
 economy_system_path = NodePath("../EconomySystem")
 
 [node name="DialogPanel" parent="." instance=ExtResource("23_dialog_panel")]
+
+[node name="PauseMenu" parent="." instance=ExtResource("24_pause_menu")]
+settings_menu_scene = ExtResource("25_settings_menu")
 
 [editable path="TimeControls"]

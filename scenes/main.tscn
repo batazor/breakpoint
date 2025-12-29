@@ -1,4 +1,4 @@
-[gd_scene load_steps=29 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=31 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -30,6 +30,8 @@
 [ext_resource type="Script" path="res://scripts/quests/quest_manager.gd" id="27_quest_manager"]
 [ext_resource type="Script" path="res://scripts/quests/quest_generator.gd" id="28_quest_generator"]
 [ext_resource type="Script" path="res://scripts/quests/npc_quest_controller.gd" id="29_npc_quest_controller"]
+[ext_resource type="Script" path="res://scripts/quests/quest_library.gd" id="30_quest_library"]
+[ext_resource type="Script" path="res://scripts/faction_relationship_system.gd" id="31_faction_relationship"]
 
 [sub_resource type="Environment" id="1"]
 
@@ -55,6 +57,10 @@ environment = SubResource("1")
 
 [node name="FactionSystem" type="Node" parent="."]
 script = ExtResource("9")
+
+[node name="FactionRelationshipSystem" type="Node" parent="."]
+script = ExtResource("31_faction_relationship")
+faction_system_path = NodePath("../FactionSystem")
 
 [node name="FactionTerritorySystem" type="Node" parent="."]
 script = ExtResource("14_territory_system")
@@ -156,6 +162,9 @@ script = ExtResource("28_quest_generator")
 
 [node name="NPCQuestController" type="Node" parent="."]
 script = ExtResource("29_npc_quest_controller")
+
+[node name="QuestLibrary" type="Node" parent="."]
+script = ExtResource("30_quest_library")
 
 [node name="PauseMenu" parent="." instance=ExtResource("24_pause_menu")]
 settings_menu_scene = ExtResource("25_settings_menu")

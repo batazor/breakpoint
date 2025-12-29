@@ -25,8 +25,8 @@ This document describes the integration of the Quest Manager system into the mai
 
 - Updated node references from "World" to "Main" to match new scene structure
 - Affected methods:
-  - `_collect_save_data()` - line 130
-  - `_restore_save_data()` - line 185
+  - `_collect_save_data()` - line 204
+  - `_restore_save_data()` - line 244
 
 ### 3. Node Hierarchy
 

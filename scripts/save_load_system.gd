@@ -205,7 +205,7 @@ func _collect_save_data() -> Dictionary:
 	var data := {}
 	
 	# Get the main scene
-	var world := get_tree().root.get_node_or_null("World")
+	var world := get_tree().root.get_node_or_null("Main")
 	if world == null:
 		return {}
 	
@@ -243,7 +243,7 @@ func _collect_save_data() -> Dictionary:
 ## Restore game state from save data
 func _restore_save_data(save_data: Dictionary) -> bool:
 	# Get the main scene
-	var world := get_tree().root.get_node_or_null("World")
+	var world := get_tree().root.get_node_or_null("Main")
 	if world == null:
 		return false
 	

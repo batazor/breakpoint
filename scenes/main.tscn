@@ -1,4 +1,4 @@
-[gd_scene load_steps=25 format=3 uid="uid://xl4hksv34nbd"]
+[gd_scene load_steps=31 format=3 uid="uid://xl4hksv34nbd"]
 
 [ext_resource type="Script" uid="uid://c0rjtfmqmy6u1" path="res://scripts/hex_grid.gd" id="1"]
 [ext_resource type="Script" uid="uid://ixjeokh4ikkr" path="res://scripts/camera_controller.gd" id="2"]
@@ -26,10 +26,16 @@
 [ext_resource type="PackedScene" uid="uid://b8xh5tnqm8pqr" path="res://scenes/ui/dialog_panel.tscn" id="23_dialog_panel"]
 [ext_resource type="PackedScene" uid="uid://cgmq2xf0f7wqf" path="res://scenes/ui/pause_menu.tscn" id="24_pause_menu"]
 [ext_resource type="PackedScene" uid="uid://c8hvk3p8m2w71" path="res://scenes/ui/settings_menu.tscn" id="25_settings_menu"]
+[ext_resource type="Script" path="res://scripts/dialog_manager.gd" id="26_dialog_manager"]
+[ext_resource type="Script" path="res://scripts/quests/quest_manager.gd" id="27_quest_manager"]
+[ext_resource type="Script" path="res://scripts/quests/quest_generator.gd" id="28_quest_generator"]
+[ext_resource type="Script" path="res://scripts/quests/npc_quest_controller.gd" id="29_npc_quest_controller"]
+[ext_resource type="Script" path="res://scripts/quests/quest_library.gd" id="30_quest_library"]
+[ext_resource type="Script" path="res://scripts/faction_relationship_system.gd" id="31_faction_relationship"]
 
 [sub_resource type="Environment" id="1"]
 
-[node name="World" type="Node3D"]
+[node name="Main" type="Node3D"]
 
 [node name="HexGrid" type="Node3D" parent="."]
 script = ExtResource("1")
@@ -51,6 +57,10 @@ environment = SubResource("1")
 
 [node name="FactionSystem" type="Node" parent="."]
 script = ExtResource("9")
+
+[node name="FactionRelationshipSystem" type="Node" parent="."]
+script = ExtResource("31_faction_relationship")
+faction_system_path = NodePath("../FactionSystem")
 
 [node name="FactionTerritorySystem" type="Node" parent="."]
 script = ExtResource("14_territory_system")
@@ -140,6 +150,21 @@ build_controller_path = NodePath("../BuildController")
 economy_system_path = NodePath("../EconomySystem")
 
 [node name="DialogPanel" parent="." instance=ExtResource("23_dialog_panel")]
+
+[node name="DialogManager" type="Node" parent="."]
+script = ExtResource("26_dialog_manager")
+
+[node name="QuestManager" type="Node" parent="."]
+script = ExtResource("27_quest_manager")
+
+[node name="QuestGenerator" type="Node" parent="."]
+script = ExtResource("28_quest_generator")
+
+[node name="NPCQuestController" type="Node" parent="."]
+script = ExtResource("29_npc_quest_controller")
+
+[node name="QuestLibrary" type="Node" parent="."]
+script = ExtResource("30_quest_library")
 
 [node name="PauseMenu" parent="." instance=ExtResource("24_pause_menu")]
 settings_menu_scene = ExtResource("25_settings_menu")

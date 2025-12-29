@@ -14,6 +14,7 @@ class_name NPC
 @export var home_building: StringName = &""
 @export var workplace: StringName = &""
 @export var inventory: Dictionary = {} # resource_id -> amount
+@export var current_quest_id: StringName = &""  # Quest this NPC is currently pursuing
 
 
 ## Add resources to inventory
@@ -61,3 +62,18 @@ func get_inventory_total() -> int:
 ## Check if inventory is empty
 func is_inventory_empty() -> bool:
 	return inventory.is_empty()
+
+
+## Assign a quest to this NPC
+func assign_quest(quest_id: StringName) -> void:
+	current_quest_id = quest_id
+
+
+## Check if NPC has an active quest
+func has_active_quest() -> bool:
+	return current_quest_id != StringName("")
+
+
+## Clear NPC's current quest
+func clear_quest() -> void:
+	current_quest_id = StringName("")
